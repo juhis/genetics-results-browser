@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./static/",
+    "sourceMap": true,
+    "lib": ["es6", "dom"],
+    "module": "es6",
+    "target": "es6",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src/"]
+}
