@@ -1,8 +1,8 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import {
   handleFineMappingTableExport,
-  handleGWASTableExport,
+  handleAssocTableExport,
   handleMainTableExport,
 } from "./utils/export";
 import { MRT_TableInstance } from "material-react-table";
@@ -13,8 +13,6 @@ import { useDataStore } from "../../store/store";
 import { useServerQuery } from "../../store/serverQuery";
 
 const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
-  const theme = useTheme();
-
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const clientData: TableData = useDataStore((state) => state.clientData)!;
   const selectedPheno: Phenotype | undefined = useDataStore((state) => state.selectedPheno);
@@ -73,13 +71,12 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           disabled={isError || isFetching || isLoading}
           color="primary"
           onClick={() => {
-            handleGWASTableExport(
+            handleAssocTableExport(
               props.table,
               getVariantMainTableColumns(clientData, selectedPheno, selectedPopulation, true),
               clientData.phenos,
               clientData.datasets,
-              clientData.meta,
-              theme
+              clientData.meta
             );
           }}
           startIcon={<FileDownloadIcon />}

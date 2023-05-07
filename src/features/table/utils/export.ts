@@ -12,7 +12,6 @@ import {
 import { ExportToCsv } from "export-to-csv";
 import { getAssociationTableColumns } from "../tables/VariantAssocTable.columns";
 import { pValRepr } from "./tableutil";
-import { Theme } from "@mui/material";
 
 const csvExporter = new ExportToCsv({
   fieldSeparator: "\t",
@@ -27,6 +26,8 @@ const csvExporter = new ExportToCsv({
 
 // TODO these functions are complicated and error prone if the tables are changed and should be refactored
 // perhaps munging the data to a more direct export format helps
+// or make all HTML columns use the same format, e.g. give a value prop
+// or use the meta property of the columns
 export const handleMainTableExport = (
   table: MRT_TableInstance<VariantRecord>,
   columns: MRT_ColumnDef<VariantRecord>[]
@@ -129,8 +130,9 @@ export const handleFineMappingTableExport = (
       return row.original.finemapped.data.map((fm) => {
         const fmCols = columns.reduce((p, c) => {
           const hdr = c.header;
-          if (c.id === "direction") {
-            p[hdr] = fm["beta"] > 0 ? "up" : "down";
+          if (hdr == "phenotype or gene") {
+            // TODO phenostring
+            p[hdr] = fm.phenocode;
           } else {
             const colId = c.id
               ? (c.id as keyof FineMappedRecord)
@@ -149,13 +151,12 @@ export const handleFineMappingTableExport = (
   csvExporter.generateCsv(dataExport);
 };
 
-export const handleGWASTableExport = (
+export const handleAssocTableExport = (
   table: MRT_TableInstance<VariantRecord>,
   mainTableColumns: MRT_ColumnDef<VariantRecord>[],
   phenos: PhenoMap,
   datasets: DatasetMap,
-  meta: TableData["meta"],
-  theme: Theme
+  meta: TableData["meta"]
 ) => {
   const assocColumns = getAssociationTableColumns(phenos, datasets, meta);
   const dataExport = table
@@ -202,6 +203,10 @@ export const handleGWASTableExport = (
           const hdr = c.header;
           if (hdr == "resource") {
             p[hdr] = assoc.resource;
+          } else if (hdr == "dataset") {
+            p[hdr] = assoc.dataset;
+          } else if (hdr == "type") {
+            p[hdr] = assoc.data_type;
           } else if (hdr === "phenotype or gene") {
             // TODO we want the phenostring here
             p[hdr] = assoc.phenocode;

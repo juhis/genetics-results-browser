@@ -161,3 +161,4 @@ cython_debug/
 
 *.private
 bundle.js*
+node_modules
