@@ -148,22 +148,12 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
           {afRangeDispl}
           {popsNotAvailableDispl}
           <Plot data={trace} layout={layout} config={{ displayModeBar: false }} />
-          <span>
-            This chart uses a logarithmic scale. This helps compare frequencies of uncommon
-            variants.
-            <br />
-            Common variants may visually seem to have a more similar frequency in different
-            populations <br />
-            than they actually do.
-            <br />
-            <br />
-            <Link
-              color="inherit"
-              href={gnomadUrl.replace("[VARIANT]", props.variant)}
-              target="_blank">
-              Go to gnomAD variant page
-            </Link>
-          </span>
+          <Link
+            color="inherit"
+            href={gnomadUrl.replace("[VARIANT]", props.variant)}
+            target="_blank">
+            Go to gnomAD variant page
+          </Link>
         </div>
       }>
       <span
