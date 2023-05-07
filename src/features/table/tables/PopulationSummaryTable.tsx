@@ -7,7 +7,6 @@ import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 const VariantSummaryStats = (props: {}) => {
   const clientData: TableData = useDataStore((state) => state.clientData)!;
   const freqSummary = useMemo(() => summarizeFreq(clientData), [clientData]);
-  console.log(freqSummary);
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {

@@ -1,6 +1,11 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { Phenotype, VariantRecord, TableData } from "../../../types/types";
-import { filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
+import {
+  filterContainsWithTooltip,
+  filterAbsGreaterThanHTML,
+  filterLessThanHTML,
+  pValRepr,
+} from "../utils/tableutil";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { ConsequenceTooltip } from "../../tooltips/ConsequenceTooltip";
 import { VariantGnomadToolTip } from "../../tooltips/VariantGnomadTooltip";
@@ -38,7 +43,7 @@ export const getVariantMainTableColumns = (
       accessorKey: "variant",
       header: "variant",
       id: "variant",
-      filterFn: "startsWith",
+      filterFn: "contains",
       sortingFn: "variantSort",
       muiTableHeadCellFilterTextFieldProps: { placeholder: "variant" },
       size: 100,
@@ -55,11 +60,19 @@ export const getVariantMainTableColumns = (
       accessorFn: (row) => <VariantGnomadToolTip variant={row.variant} gnomadData={row.gnomad} />,
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
       header: `gnomAD ${selectedPopulation || ""} AF`,
-      filterFn: "lessThan",
+      filterFn: filterLessThanHTML,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "AF" },
       sortingFn: "naInfSort",
       sortDescFirst: false,
       size: 80,
+    },
+    {
+      accessorFn: (row) =>
+        selectedPopulation === undefined
+          ? row.gnomad.AF
+          : row.gnomad[`AF_${selectedPopulation}` as keyof typeof row.gnomad],
+      id: "af_hidden",
+      header: "AF",
     },
     {
       accessorFn: (row) => (
@@ -149,7 +162,6 @@ export const getVariantMainTableColumns = (
                 phenocode
             ]
         );
-        console.log(phenos);
         const resource =
           data.meta.assoc.resources.find((r) => r.resource == phenos[0].resource) || null;
         return (
@@ -185,7 +197,7 @@ export const getVariantMainTableColumns = (
       header: "p-value",
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.mlogp.0",
-      filterFn: "lessThan",
+      filterFn: filterLessThanHTML,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "p-value" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
@@ -207,8 +219,7 @@ export const getVariantMainTableColumns = (
       header: "beta",
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.beta.0",
-      //TODO abs filter
-      filterFn: "greaterThan",
+      filterFn: filterAbsGreaterThanHTML,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
       sortingFn: "naInfSort",
       sortDescFirst: true,

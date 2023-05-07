@@ -1,6 +1,6 @@
 import type { MRT_ColumnDef } from "material-react-table";
 import { DatasetMap, GroupedAssocRecord, PhenoMap, TableData } from "../../../types/types";
-import { filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
+import { filterAbsGreaterThanHTML, filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
 
@@ -67,8 +67,7 @@ export const getAssociationTableColumns = (
     header: "beta",
     sortingFn: "naInfSort",
     sortDescFirst: true,
-    //TODO implement abs greater than
-    filterFn: "greaterThan",
+    filterFn: filterAbsGreaterThanHTML,
     muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
     size: 60,
   },

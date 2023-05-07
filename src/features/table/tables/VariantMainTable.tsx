@@ -81,6 +81,7 @@ const VariantMainTable = (props: {
         showColumnFilters: true,
         density: "compact",
         columnOrder: ["mrt-row-expand"].concat(columns.map((c) => c.id!)),
+        columnVisibility: { af_hidden: false },
       }}
       state={{
         isLoading: isLoading,

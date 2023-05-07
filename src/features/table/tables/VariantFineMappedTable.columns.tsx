@@ -1,6 +1,6 @@
 import type { MRT_ColumnDef } from "material-react-table";
 import { PhenoMap, GroupedFineMappedRecord, DatasetMap } from "../../../types/types";
-import { filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
+import { filterAbsGreaterThanHTML, filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
 import { HtmlTooltip } from "../../tooltips/HtmlTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
 
@@ -76,8 +76,7 @@ export const getFineMappingTableColumns = (
     header: "beta",
     sortingFn: "naInfSort",
     sortDescFirst: true,
-    //TODO implement abs greater than
-    filterFn: "greaterThan",
+    filterFn: filterAbsGreaterThanHTML,
     muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
     size: 60,
   },
@@ -117,7 +116,7 @@ export const getFineMappingTableColumns = (
     header: "PIP",
     sortingFn: "alphanumeric",
     sortDescFirst: true,
-    filterFn: "greaterThan",
+    filterFn: filterAbsGreaterThanHTML,
     muiTableHeadCellFilterTextFieldProps: { placeholder: "PIP" },
     size: 75,
   },
