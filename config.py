@@ -1,5 +1,4 @@
 import logging
-from collections import OrderedDict as od
 
 log_level = logging.INFO
 
@@ -12,7 +11,7 @@ group_auth = {
     "DELEGATED_ACCOUNT": "admin@domain.org",
 }
 
-metadata_db = "/mnt/disks/data/finemapping_meta.db"
+metadata_db = "/mnt/disks/data/meta.db"
 
 rsid_db = {
     "file": "/mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.rsid.db",
