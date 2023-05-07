@@ -4,7 +4,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "./features/page/Header";
-import About from "./features/page/About";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TableContainer from "./features/table/TableContainer";
 
@@ -45,7 +44,6 @@ export const App = () => {
             <Header />
             <Routes>
               <Route path="/" element={<TableContainer />} />
-              <Route path="/about" element={<About />} />
             </Routes>
           </div>
         </ThemeProvider>
