@@ -5,7 +5,7 @@ import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
 import VariantFinemappedTable from "./VariantFinemappedTable";
 import { Phenotype, TableData, VariantRecord } from "../../../types/types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getVariantMainTableColumns } from "./VariantMainTable.columns";
 import ExportButtons from "../ExportToolbar";
 import { useDataStore } from "../../../store/store";
@@ -35,14 +35,7 @@ const VariantMainTable = (props: {
     props.phenotype || useDataStore((state) => state.selectedPheno);
   const selectedPopulation: string | undefined = useDataStore((state) => state.selectedPopulation);
 
-  const { error, isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
-
-  // const columns = useMemo<MRT_ColumnDef<VariantRecord>[]>(() => {
-  //   return getVariantMainTableColumns(clientData!, selectedPheno, selectedPopulation);
-  // }, [clientData, selectedPheno, selectedPopulation]);
+  const { error, isError, isFetching, isLoading } = useServerQuery(variantInput);
 
   const columns = getVariantMainTableColumns(
     clientData!,

@@ -26,10 +26,7 @@ const GlobalThresholds = (props: {}) => {
   const setPipThreshold = useDataStore((state) => state.setPipThreshold);
 
   const variantInput: string = useDataStore((state) => state.variantInput)!;
-  const { isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
+  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
   const isNotDone = isError || isFetching || isLoading;
 
   const updatePThreshold = (value: string) => {

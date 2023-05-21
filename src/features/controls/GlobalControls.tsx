@@ -7,10 +7,7 @@ import GnomadPopChoice from "./GnomadPopChoice";
 
 const GlobalControls = () => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
-  const { isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
+  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
   const isNotDone = isError || isFetching || isLoading;
 
   return (
@@ -47,42 +44,6 @@ const GlobalControls = () => {
           <Divider sx={{ margin: "auto" }} orientation="vertical" />
           <GnomadPopChoice />
         </Box>
-        {/* <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-end" }}>
-          <Autocomplete
-            //disablePortal
-            disabled={isNotDone}
-            id="phenotype-select"
-            options={
-              clientData
-                ? Object.values(clientData.phenos)
-                    .filter((pheno) => toggledGWASTypes[pheno.trait_type] && !pheno.is_na)
-                    .sort((a, b) => (b.num_cases || b.num_samples) - (a.num_cases || a.num_samples))
-                : []
-            }
-            getOptionLabel={(option) =>
-              // these are needed for searching
-              `${option.phenocode.split(":").slice(1).join(":")} ${option.phenostring} ${
-                option.pub_author || ""
-              }`
-            }
-            renderOption={(prps, pheno) => (
-              <span {...prps}>
-                {pheno.phenostring}
-                <br />
-                {pheno.pub_author
-                  ? pheno.pub_author + " " + pheno.pub_date!.split("-")[0]
-                  : pheno.phenocode}
-                <br />
-                {pheno.num_cases ? pheno.num_cases + " cases" : pheno.num_samples + " samples"}
-              </span>
-            )}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Show association for trait" />}
-            onChange={(event, newValue: Phenotype | null) => {
-              setSelectedPheno(newValue ?? undefined);
-            }}
-          />
-        </Box> */}
       </Box>
     </>
   );

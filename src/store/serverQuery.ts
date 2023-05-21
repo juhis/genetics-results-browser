@@ -2,11 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TableData } from "../types/types";
 
-export const useServerQuery = (
-  variantInput: string,
-  setServerData: (serverData: TableData) => void
-) =>
-  useQuery<null>({
+export const useServerQuery = (variantInput: string | undefined) => {
+  return useQuery<TableData>({
     queryKey: ["table-data", variantInput],
     queryFn: async () => {
       let { data } = await axios.post("/api/v1/results", {
@@ -25,11 +22,11 @@ export const useServerQuery = (
         throw Error("Invalid data received from the server");
       }
       console.info(data);
-      setServerData(data);
-      // from now on the store is the source of truth
-      return null;
+      return data;
     },
+    enabled: !!variantInput,
     keepPreviousData: true,
     staleTime: Infinity,
     cacheTime: Infinity,
   });
+};

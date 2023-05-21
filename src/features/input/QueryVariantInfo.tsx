@@ -1,14 +1,25 @@
 import { Typography } from "@mui/material";
 import { useDataStore } from "../../store/store";
 import { HtmlTooltip } from "../tooltips/HtmlTooltip";
+import { useServerQuery } from "../../store/serverQuery";
 
 const QueryVariantInfo = (props: {}) => {
+  const variantInput: string = useDataStore((state) => state.variantInput)!;
+  const message: string | undefined = useDataStore((state) => state.message);
+  const { error, isError, isFetching, isLoading } = useServerQuery(variantInput);
   const input = useDataStore((state) => state.clientData?.input_variants);
   const gnomadVersion = useDataStore((state) => state.serverData?.meta.gnomad.version);
 
-  if (!input) {
+  if (!input || isLoading || isFetching || isError) {
     return <></>;
   }
+  let messageElem = message ? (
+    <Typography variant="h6" gutterBottom>
+      {message}
+    </Typography>
+  ) : (
+    <></>
+  );
   let foundElem = <></>;
   if (input.found.length > 0) {
     if (input.found.length > 1) {
@@ -132,6 +143,7 @@ const QueryVariantInfo = (props: {}) => {
   }
   return (
     <>
+      {messageElem}
       {foundElem}
       {notFoundElem}
       {unparsedElem}

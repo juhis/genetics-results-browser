@@ -13,10 +13,7 @@ const GlobalSwitches = (props: {}) => {
   const toggledGWASTypes: Record<string, boolean> = useDataStore((state) => state.toggledGWASTypes);
   const toggleGWASType = useDataStore((state) => state.toggleGWASType);
 
-  const { isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
+  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
   const isNotDone = isError || isFetching || isLoading;
 
   const dataTypeSwitches: ReactElement<"FormControlLabel">[] = useMemo(
