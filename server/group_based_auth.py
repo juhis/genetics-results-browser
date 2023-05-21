@@ -1,6 +1,6 @@
 # TODO refactor this file, the variables are all over the place
 from typing import Any, Dict
-from flask import redirect, request, url_for, session  # type: ignore
+from flask import Response, redirect, request, url_for, session
 from flask_login import current_user  # type: ignore
 import threading
 import imp
@@ -11,6 +11,7 @@ from rauth import OAuth2Service  # type: ignore
 
 from googleapiclient.discovery import build  # type: ignore
 from google.oauth2 import service_account  # type: ignore
+import werkzeug
 
 try:
     _conf_module = imp.load_source("config", "config.py")
@@ -48,7 +49,7 @@ if config["authentication"]:
     )
 
 
-def get_all_members(group_names):
+def get_all_members(group_names: list[str]) -> list[dict[str, Any]]:
     members = []
     for name in group_names:
         all = services[threading.get_ident()].members().list(groupKey=name).execute()
@@ -56,19 +57,18 @@ def get_all_members(group_names):
     return members
 
 
-def get_member_status(username):
+def get_member_status(username: str) -> Any | None:
     allmembers = get_all_members(group_names)
-
     for m in allmembers:
         user = m["email"]
         if "gserviceaccount" in user:  # service accounts are excluded
             continue
         if user == username:
             return m["status"]
+    return None
 
 
-def verify_membership(username):
-
+def verify_membership(username: str) -> bool:
     if username in whitelist:
         return True
     # auth service .hasMember will only work for accounts of the domain
@@ -88,7 +88,7 @@ def verify_membership(username):
     return False
 
 
-def before_request():
+def before_request() -> werkzeug.wrappers.Response | None:
     if not config["authentication"]:
         print("anonymous visited {!r}".format(request.path))
         return None
@@ -108,7 +108,7 @@ def before_request():
 
 
 class GoogleSignIn(object):
-    def __init__(self, current_app):
+    def __init__(self) -> None:
         google_params = self._get_google_info()
         self.service = OAuth2Service(
             name="google",
@@ -119,12 +119,12 @@ class GoogleSignIn(object):
             access_token_url=google_params.get("token_endpoint"),
         )
 
-    def _get_google_info(self):
+    def _get_google_info(self) -> Any:
         r = requests.get("https://accounts.google.com/.well-known/openid-configuration")
         r.raise_for_status()
         return r.json()
 
-    def authorize(self):
+    def authorize(self) -> werkzeug.wrappers.Response:
         return redirect(
             self.service.get_authorize_url(
                 scope="email",
@@ -134,10 +134,10 @@ class GoogleSignIn(object):
             )
         )
 
-    def get_callback_url(self):
+    def get_callback_url(self) -> str:
         return url_for("oauth_callback_google", _scheme="https", _external=True)
 
-    def callback(self):
+    def callback(self) -> tuple[str | None, str | None]:
         if "code" not in request.args:
             return (None, None)
         # The following two commands pass **kwargs to requests.

@@ -1,4 +1,5 @@
 import math
+from typing import Any
 import numpy as np
 import pysam
 import threading
@@ -10,6 +11,7 @@ from datatypes import (
     AssociationResult,
     AssociationResults,
 )
+from variant import Variant
 from singleton import Singleton
 
 
@@ -27,7 +29,7 @@ class Datafetch(object, metaclass=Singleton):
             }
         )
 
-    def __init__(self, conf) -> None:
+    def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
         self._init_tabix()
         self.assoc_resource_ids = set(
@@ -36,7 +38,7 @@ class Datafetch(object, metaclass=Singleton):
         # NA resource placeholder
         self.assoc_resource_ids.add("NA")
 
-    def get_assoc(self, variant) -> AssociationResults:
+    def get_assoc(self, variant: Variant) -> AssociationResults:
         start_time = timeit.default_timer()
         assoc: list[AssociationResult] = []
         resources = set()

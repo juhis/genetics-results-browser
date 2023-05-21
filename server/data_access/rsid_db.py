@@ -7,7 +7,7 @@ from exceptions import ParseException
 from variant import Variant
 from singleton import Singleton
 
-RSID_REGEX: re.Pattern = re.compile("rs[0-9]+")
+RSID_REGEX: re.Pattern[str] = re.compile("rs[0-9]+")
 
 
 class RsidDB(object, metaclass=Singleton):

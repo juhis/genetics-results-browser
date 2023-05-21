@@ -11,10 +11,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: 3.10.6
+        python-version: 3.11.3
     - name: Install requirements
       run: pip install -r requirements.txt
     - name: Install mypy
       run: pip install mypy
     - name: mypy
-      run: cd server && mypy server.py
+      run: |
+        cd server
+	mypy *.py --explicit-package-bases --strict
