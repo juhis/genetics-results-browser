@@ -1,13 +1,14 @@
 import sqlite3
 import threading
 from collections import OrderedDict as od, defaultdict as dd
+from typing import Any
 
 from exceptions import DataException
 from singleton import Singleton
 
 
 class Metadata(object, metaclass=Singleton):
-    def __init__(self, conf) -> None:
+    def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
         self.rsid_conn: dict[int, sqlite3.Connection] = dd(
             lambda: sqlite3.connect(conf["metadata_db"])
@@ -31,13 +32,13 @@ class Metadata(object, metaclass=Singleton):
             """,
             (dataset,),
         )
-        rows = c.fetchall()
+        rows: list[dict[str, str | int | None]] = c.fetchall()
         if len(rows) == 0:
             return None
         return rows[0]
 
     def get_phenotype(
-        self, data_type, resource, dataset, phenocode
+        self, data_type: str, resource: str, dataset: str, phenocode: str
     ) -> dict[str, str | int | None]:
         if self.rsid_conn[threading.get_ident()].row_factory is None:
             self.rsid_conn[threading.get_ident()].row_factory = self._dict_factory
@@ -53,7 +54,7 @@ class Metadata(object, metaclass=Singleton):
                 phenocode,
             ),
         )
-        rows = c.fetchall()
+        rows: list[dict[str, str | int | None]] = c.fetchall()
         if len(rows) == 0:
             # TODO insert NA into metadata db?
             if phenocode == "NA":

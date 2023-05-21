@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Any
 import pysam
 import threading
 import timeit
@@ -26,7 +27,7 @@ class Finemapped(object, metaclass=Singleton):
             }
         )
 
-    def __init__(self, conf) -> None:
+    def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
         self._init_tabix()
         self.rsid_conn: dict[int, sqlite3.Connection] = dd(

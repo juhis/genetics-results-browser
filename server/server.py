@@ -1,5 +1,5 @@
 import timeit
-from typing import Callable, Literal
+from typing import Any, Callable, Literal
 from flask import (
     Flask,
     Response,
@@ -16,6 +16,8 @@ from flask_compress import Compress  # type: ignore
 import imp
 import logging
 import re
+
+import werkzeug
 from exceptions import DataException, ParseException, VariantNotFoundException
 from data_access.assoc import Datafetch
 from data_access.gnomad import GnomAD
@@ -60,7 +62,7 @@ rsid_db = RsidDB(config)
 
 
 def parse_query(
-    query,
+    query: str,
 ) -> tuple[Literal["single", "group"], list[tuple[str, str | None, str | None]]]:
     items = sep_re_line.split(query)
     len_first = len(sep_re_delim.split(items[0]))
@@ -88,13 +90,13 @@ def parse_query(
         return ("single", input)
 
 
-def is_public(function) -> Callable:
-    function.is_public = True
+def is_public(function: Callable[..., Any]) -> Callable[..., Any]:
+    function.is_public = True  # type: ignore
     return function
 
 
 @app.before_request
-def check_auth() -> Response | None:
+def check_auth() -> werkzeug.wrappers.Response | None:
     # check if endpoint is mapped then
     # check if endpoint has is_public annotation
     if (
@@ -116,14 +118,14 @@ def auth() -> str:
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-def homepage(path) -> str:
+def homepage(path: str) -> str:
     return render_template("index.html")
 
 
 @app.route("/api/v1/results", methods=["POST"])
-def results() -> Response | tuple[Response, int]:
+def results() -> Any | tuple[Any, int]:
     start_time = timeit.default_timer()
-    query = request.json["variants"].strip()  # type: ignore
+    query = request.json["variants"].strip()
     try:
         parsed = parse_query(query)
     except ParseException as e:
@@ -247,26 +249,28 @@ def results() -> Response | tuple[Response, int]:
 
 # OAUTH2
 if "login" in config:
-    google_sign_in = GoogleSignIn(app)
+    google_sign_in = GoogleSignIn()
 
     lm = LoginManager(app)
     lm.login_view = "homepage"
 
-    class User(UserMixin):
+    class User(UserMixin):  # type: ignore
         "A user's id is their email address."
 
-        def __init__(self, username=None, email=None):
+        def __init__(
+            self, username: str | None = None, email: str | None = None
+        ) -> None:
             self.username = username
             self.email = email
 
-        def get_id(self):
+        def get_id(self) -> str | None:
             return self.email
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return "<User email={!r}>".format(self.email)
 
-    @lm.user_loader
-    def load_user(id):
+    @lm.user_loader  # type: ignore
+    def load_user(id: str) -> User | None:
         if id.endswith("@finngen.fi") or id in (
             config["login"]["whitelist"]
             if "whitelist" in config["login"].keys()
@@ -277,14 +281,14 @@ if "login" in config:
 
     @app.route("/logout")
     @is_public
-    def logout():
+    def logout() -> werkzeug.wrappers.Response:
         print(current_user.email, "logged out")
         logout_user()
         return redirect(url_for("homepage", _scheme="https", _external=True))
 
     @app.route("/login_with_google")
     @is_public
-    def login_with_google():
+    def login_with_google() -> werkzeug.wrappers.Response:
         "this route is for the login button"
         session["original_destination"] = url_for(
             "homepage", _scheme="https", _external=True
@@ -293,7 +297,7 @@ if "login" in config:
 
     @app.route("/get_authorized")
     @is_public
-    def get_authorized():
+    def get_authorized() -> werkzeug.wrappers.Response:
         print("AUTH")
         "This route tries to be clever and handle lots of situations."
         if current_user.is_anonymous or not verify_membership(current_user.email):
@@ -309,7 +313,7 @@ if "login" in config:
 
     @app.route("/callback/google")
     @is_public
-    def oauth_callback_google():
+    def oauth_callback_google() -> werkzeug.wrappers.Response:
         if not current_user.is_anonymous and verify_membership(current_user.email):
             return redirect(url_for("homepage", _scheme="https", _external=True))
         try:

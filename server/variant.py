@@ -6,7 +6,7 @@ non_autosomes = set(["X", "Y", "XY", "MT"])
 
 
 class Variant(object):
-    def __init__(self, varstr):
+    def __init__(self, varstr: str) -> None:
         s = var_re.split(varstr)
         if len(s) != 4:
             raise ParseException(
@@ -42,7 +42,9 @@ class Variant(object):
             raise ParseException("only ACGT alleles are supported")
         self.varid = "{}-{}-{}-{}".format(self.chr, self.pos, self.ref, self.alt)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Variant):
+            return NotImplemented
         return (
             self.chr == other.chr
             and self.pos == other.pos
@@ -50,11 +52,11 @@ class Variant(object):
             and self.alt == other.alt
         )
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.varid)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.varid
 
-    def ot_repr(self):
+    def ot_repr(self) -> str:
         return "{}_{}_{}_{}".format(self.chr, self.pos, self.ref, self.alt)
