@@ -165,7 +165,6 @@ def results() -> Response | tuple[Response, int]:
                 notfound_variants.add(tpl[0])
                 continue
             rsid_map[tpl[0]] = [str(var) for var in vars]
-        found_input_variants.add(tpl[0])
         for var in vars:
             if str(var) in found_actual_variants:
                 continue
@@ -189,6 +188,7 @@ def results() -> Response | tuple[Response, int]:
                     "assoc": assoc["assoc"],
                 }
             )
+            found_input_variants.add(tpl[0])
             found_actual_variants.add(str(var))
             time["gnomad"] += gnomad["time"]
             time["finemapped"] += finemapped["time"]
