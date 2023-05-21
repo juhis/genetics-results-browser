@@ -18,10 +18,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
   const selectedPheno: Phenotype | undefined = useDataStore((state) => state.selectedPheno);
   const selectedPopulation: string | undefined = useDataStore((state) => state.selectedPopulation);
 
-  const { isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
+  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
 
   return (
     <Box

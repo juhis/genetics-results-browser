@@ -4,6 +4,8 @@ import { Phenotype, TableData, DataType } from "../types/types";
 import { filterRows } from "./munge";
 
 interface DataState {
+  message: string | undefined;
+  setMessage: (message: string | undefined) => void;
   variantInput: string | undefined;
   setVariantInput: (variantInput: string) => void;
   serverData: TableData | undefined;
@@ -27,13 +29,15 @@ interface DataState {
 
 export const useDataStore = create<DataState>()(
   subscribeWithSelector((set) => ({
+    message: undefined,
+    setMessage: (message) => set({ message }),
     variantInput: undefined,
     setVariantInput: (variantInput) => set({ variantInput }),
     serverData: undefined,
     setServerData: (data: TableData) =>
       set((state) => ({
         serverData: data,
-        // filter and group the data when it is set for the first time
+        // filter and group the data when server data changes
         clientData: filterRows(
           data,
           state.toggledDataTypes,
@@ -49,7 +53,7 @@ export const useDataStore = create<DataState>()(
       GWAS: true,
       eQTL: false,
       pQTL: false,
-      sQTL: false
+      sQTL: false,
     },
     toggleDataType: (dataType: string) => {
       set((state) => {
@@ -145,5 +149,3 @@ export const useDataStore = create<DataState>()(
     setActiveTab: (tab) => set({ activeTab: tab }),
   }))
 );
-
-const unsub1 = useDataStore.subscribe((state) => state.pThreshold, console.log);

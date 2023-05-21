@@ -1,4 +1,3 @@
-import { useTheme } from "@mui/material";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
@@ -11,7 +10,6 @@ import { summarize } from "../../../store/munge";
 import VariantMainTable from "./VariantMainTable";
 
 const PhenotypeSummaryTable = (props: {}) => {
-  const theme = useTheme();
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -20,8 +18,7 @@ const PhenotypeSummaryTable = (props: {}) => {
   const clientData: TableData = useDataStore((state) => state.clientData)!;
 
   const { isError, isFetching, isLoading } = useServerQuery(
-    useDataStore((state) => state.variantInput)!,
-    useDataStore((state) => state.setServerData)
+    useDataStore((state) => state.variantInput)!
   );
 
   const summaryData = useMemo(() => summarize(clientData), [clientData]);

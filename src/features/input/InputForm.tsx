@@ -1,14 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Link, TextField, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CreateIcon from "@mui/icons-material/Create";
 import { useDataStore } from "../../store/store";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const InputForm = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [formValues, setFormValues] = useState({ variantInput: "" });
-  // TODO is it necessary to keep both local and global state?
-  const [submittedValues, setSubmittedValues] = useState({ variantInput: "" });
   const setVariantInput = useDataStore((state) => state.setVariantInput);
+  const setMessage = useDataStore((state) => state.setMessage);
+  const navigate = useNavigate();
+
+  // form has been submitted or the url has been changed
+  useEffect(() => {
+    if (searchParams.get("q")) {
+      const input = decompressFromEncodedURIComponent(searchParams.get("q")!);
+      setFormValues({
+        variantInput: input,
+      });
+      setVariantInput(input);
+      setMessage(undefined);
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -18,10 +33,26 @@ const InputForm = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (input: string) => {
+    const lz = compressToEncodedURIComponent(input);
+    // 2000 is the limit for url length in many browsers, but we need some space for the rest of the url
+    if (lz.length > 1900) {
+      setFormValues({
+        variantInput: input,
+      });
+      setVariantInput(input);
+      setMessage(
+        "The input is too long to be stored in the url. If you want to share this result page, you cannot share a direct link and instead should share your variant list."
+      );
+      navigate("/");
+    } else {
+      navigate("/?q=" + lz);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmittedValues(formValues);
-    setVariantInput(formValues.variantInput);
+    handleSubmit(formValues.variantInput);
   };
 
   const setExampleData = (data: string) => {
@@ -194,19 +225,12 @@ const InputForm = () => {
         "1:4291704:A:G\n1:1689687:A:G\n1:12207359:TTTTGTTTG:T\n1:10303429:T:C\n1:11342692:T:C\n1:5799466:T:C\n1:7083961:C:CT\n1:6114016:G:A\n1:3356324:G:A\n1:1493406:T:C\n" +
         "1:12591658:C:T\n1:6485977:A:AC\n1:12588370:G:A\n1:6689838:A:G\n1:6904617:A:G\n1:4273235:T:A\n1:12204404:G:A\n1:1079720:G:A\n1:12336648:A:C\n1:4554774:C:A\n";
     }
-    setFormValues({
-      ...formValues,
-      variantInput: input,
-    });
-    setSubmittedValues({
-      variantInput: input,
-    });
-    setVariantInput(input);
+    handleSubmit(input);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <Box sx={{ display: "flex", flexDirection: "column", width: "260px" }}>
           <TextField
             sx={{ marginBottom: "10px", width: "260px" }}

@@ -8,12 +8,24 @@ import { TabContext } from "@mui/lab";
 import GlobalControls from "../controls/GlobalControls";
 import PhenotypeSummaryTable from "./tables/PhenotypeSummaryTable";
 import VariantSummaryStats from "./tables/PopulationSummaryTable";
+import { useServerQuery } from "../../store/serverQuery";
+import { useEffect } from "react";
 
 const TableContainer = () => {
   const activeTab = useDataStore((state) => state.activeTab);
   const setActiveTab = useDataStore((state) => state.setActiveTab);
+  const setServerData = useDataStore((state) => state.setServerData);
   const clientData = useDataStore((state) => state.clientData);
   const pThreshold = useDataStore((state) => state.pThreshold);
+  const variantInput = useDataStore((state) => state.variantInput);
+
+  // set data state when the result from the query or cache updates
+  const { data } = useServerQuery(variantInput);
+  useEffect(() => {
+    if (data) {
+      setServerData(data);
+    }
+  }, [data]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
@@ -30,7 +42,7 @@ const TableContainer = () => {
   return (
     <>
       <InputForm />
-      {useDataStore((state) => state.variantInput) !== undefined ? (
+      {variantInput !== undefined ? (
         <>
           <QueryVariantInfo />
           <GlobalControls />

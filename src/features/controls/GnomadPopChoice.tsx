@@ -6,13 +6,9 @@ import { useServerQuery } from "../../store/serverQuery";
 const GnomadPopChoice = () => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const clientData: TableData | undefined = useDataStore((state) => state.clientData);
-  const selectedPopulation: string | undefined = useDataStore((state) => state.selectedPopulation);
   const setSelectedPopulation = useDataStore((state) => state.setSelectedPopulation);
 
-  const { isError, isFetching, isLoading } = useServerQuery(
-    variantInput,
-    useDataStore((state) => state.setServerData)
-  );
+  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
   const isNotDone = isError || isFetching || isLoading;
 
   return (
