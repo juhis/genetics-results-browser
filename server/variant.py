@@ -1,5 +1,4 @@
 import re
-from typing import Generic, TypeVar
 from exceptions import ParseException
 
 var_re = re.compile("-|_|:|\\|")

@@ -20,10 +20,6 @@ class Csq_dict(TypedDict):
     consequence: str
 
 
-class Gnomad_dict(TypedDict):
-    consequences: list[Csq_dict]
-
-
 class GnomAD(object, metaclass=Singleton):
     def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
