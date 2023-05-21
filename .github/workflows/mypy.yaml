@@ -19,4 +19,4 @@ jobs:
     - name: mypy
       run: |
         cd server
-	mypy *.py --explicit-package-bases --strict
+        mypy *.py --explicit-package-bases --strict
