@@ -5,7 +5,7 @@ import { useDataStore } from "../../store/store";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import TabPanel from "@mui/lab/TabPanel";
 import { TabContext } from "@mui/lab";
-import GlobalControls from "../controls/GlobalControls";
+import GlobalControlContainer from "../controls/GlobalControlContainer";
 import PhenotypeSummaryTable from "./tables/PhenotypeSummaryTable";
 import VariantSummaryStats from "./tables/PopulationSummaryTable";
 import { useServerQuery } from "../../store/serverQuery";
@@ -45,7 +45,7 @@ const TableContainer = () => {
       {variantInput !== undefined ? (
         <>
           <QueryVariantInfo />
-          <GlobalControls />
+          <GlobalControlContainer />
           <TabContext value={activeTab}>
             <Tabs value={activeTab} onChange={handleTabChange} aria-label="table_selection_tabs">
               <Tab value="variants" label="variants" disabled={clientData === undefined} />

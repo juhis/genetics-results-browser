@@ -14,12 +14,13 @@ export const useServerQuery = (variantInput: string | undefined) => {
         if (typeof data === "string") {
           if (data.includes("Infinity")) {
             console.error("Possible Infinity value in data and it's not JSON");
+            throw Error("Invalid data received from the server, possible Infinity value in data");
           }
           if (data.includes("NaN")) {
             console.error("Possible NaN value in data and it's not JSON");
+            throw Error("Invalid data received from the server, possible NaN value in data");
           }
         }
-        throw Error("Invalid data received from the server");
       }
       console.info(data);
       return data;

@@ -59,6 +59,10 @@ export type Phenotype = {
   data_type: DataType;
   phenocode: string;
   phenostring: string;
+  chromosome?: string;
+  gene_start?: number;
+  gene_end?: number;
+  strand?: number;
   num_cases: number;
   num_samples: number;
   trait_type: string;
@@ -158,6 +162,11 @@ export enum DataType {
   EQTL = "eQTL",
   PQTL = "pQTL",
   SQTL = "sQTL",
+}
+
+export enum QTLType {
+  CIS = "CIS",
+  TRANS = "TRANS",
 }
 
 export type FineMappedResource = {
