@@ -26,7 +26,9 @@ class Metadata(object, metaclass=Singleton):
         c: sqlite3.Cursor = self.rsid_conn[threading.get_ident()].cursor()
         c.execute(
             """
-            SELECT resource, data_type, dataset_id, study_id, study_label, sample_group, tissue_id, tissue_label, condition_label, sample_size, quant_method
+            SELECT resource, data_type, dataset_id, study_id, study_label,
+                   sample_group, tissue_id, tissue_label, condition_label,
+                   sample_size, quant_method
             FROM dataset
             WHERE dataset_id = ?
             """,
@@ -45,7 +47,10 @@ class Metadata(object, metaclass=Singleton):
         c: sqlite3.Cursor = self.rsid_conn[threading.get_ident()].cursor()
         c.execute(
             """
-            SELECT resource, data_type, trait_type, phenocode, phenostring, category, num_samples, num_cases, num_controls, pub_author, pub_date
+            SELECT resource, data_type, trait_type, phenocode, phenostring, category,
+                   chromosome, gene_start, gene_end, strand,
+                   num_samples, num_cases, num_controls,
+                   pub_author, pub_date
             FROM trait
             WHERE resource = ? AND phenocode = ?
             """,
@@ -67,6 +72,10 @@ class Metadata(object, metaclass=Singleton):
                             ("phenocode", "NA"),
                             ("phenostring", "NA"),
                             ("category", None),
+                            ("chromosome", None),
+                            ("gene_start", None),
+                            ("gene_end", None),
+                            ("strand", None),
                             ("num_samples", 0),
                             ("num_cases", 0),
                             ("num_controls", 0),

@@ -10,7 +10,11 @@ import {
   GroupedFineMappedRecord,
   FineMappedResource,
   SummaryTableData,
+  DataType,
+  QTLType,
 } from "../types/types";
+
+const CIS_WINDOW_ONESIDED = 1500000;
 
 const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
   return Object.values(
@@ -238,10 +242,43 @@ const changePlaceholderPhenostring = (
   }
 };
 
+const isQTLInCis = (variant: string, p: Phenotype) => {
+  const chr = variant.split("-")[0];
+  if (
+    !p.data_type.endsWith("QTL") ||
+    p.chromosome !== chr ||
+    p.gene_start === undefined ||
+    p.gene_end === undefined ||
+    p.strand === undefined
+  ) {
+    return false;
+  }
+  const pos = Number(variant.split("-")[1]);
+  const start = p.strand === 1 ? p.gene_start : p.gene_end;
+  return pos - CIS_WINDOW_ONESIDED < start && pos + CIS_WINDOW_ONESIDED > start;
+};
+
+const isQTLInTrans = (variant: string, p: Phenotype) => {
+  const chr = variant.split("-")[0];
+  if (
+    !p.data_type.endsWith("QTL") ||
+    p.gene_start === undefined ||
+    p.gene_end === undefined ||
+    p.strand === undefined
+  ) {
+    return false;
+  }
+  if (p.chromosome !== chr) {
+    return true;
+  }
+  return !isQTLInCis(variant, p);
+};
+
 export const filterRows = (
   data: TableData,
-  assocTypes: Record<string, boolean>,
+  assocTypes: Record<DataType, boolean>,
   gwasTypes: Record<string, boolean>,
+  qtlTypes: Record<QTLType, boolean>,
   p: number,
   pip: number,
   pheno: Phenotype | undefined,
@@ -258,6 +295,8 @@ export const filterRows = (
         return (
           (assocTypes[assocPheno.data_type] &&
             (assocPheno.data_type !== "GWAS" || gwasTypes[assocPheno.trait_type]) &&
+            (!isQTLInCis(d.variant, assocPheno) || qtlTypes["CIS"]) &&
+            (!isQTLInTrans(d.variant, assocPheno) || qtlTypes["TRANS"]) &&
             a.mlogp > -Math.log10(p)) ||
           (keepPlaceholders && assocPheno.is_na)
         );
@@ -270,6 +309,8 @@ export const filterRows = (
         return (
           (assocTypes[assocPheno.data_type] &&
             (assocPheno.data_type !== "GWAS" || gwasTypes[assocPheno.trait_type]) &&
+            (!isQTLInCis(d.variant, assocPheno) || qtlTypes["CIS"]) &&
+            (!isQTLInTrans(d.variant, assocPheno) || qtlTypes["TRANS"]) &&
             a.mlogp > -Math.log10(p) &&
             a.resource == pheno.resource &&
             a.phenocode == pheno.phenocode) ||

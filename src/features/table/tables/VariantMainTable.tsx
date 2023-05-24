@@ -5,7 +5,7 @@ import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
 import VariantFinemappedTable from "./VariantFinemappedTable";
 import { Phenotype, TableData, VariantRecord } from "../../../types/types";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { getVariantMainTableColumns } from "./VariantMainTable.columns";
 import ExportButtons from "../ExportToolbar";
 import { useDataStore } from "../../../store/store";
@@ -29,6 +29,7 @@ const VariantMainTable = (props: {
   const toggledTraitTypes: Record<string, boolean> = useDataStore(
     (state) => state.toggledGWASTypes
   );
+  const toggledQTLTypes: Record<string, boolean> = useDataStore((state) => state.toggledQTLTypes);
   const pThreshold: number = useDataStore((state) => state.pThreshold);
   const pipThreshold: number = useDataStore((state) => state.pipThreshold);
   const selectedPheno: Phenotype | undefined =
@@ -51,6 +52,7 @@ const VariantMainTable = (props: {
           clientData!,
           toggledDataTypes,
           toggledTraitTypes,
+          toggledQTLTypes,
           pThreshold,
           pipThreshold,
           props.phenotype,

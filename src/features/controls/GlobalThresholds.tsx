@@ -1,20 +1,9 @@
-import {
-  Box,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  IconButton,
-  Radio,
-  RadioGroup,
-  Switch,
-  TextField,
-} from "@mui/material";
+import { Box, IconButton, TextField } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useState } from "react";
 import { useDataStore } from "../../store/store";
-import { useServerQuery } from "../../store/serverQuery";
 
-const GlobalThresholds = (props: {}) => {
+const GlobalThresholds = (props: { isNotReadyYet: boolean }) => {
   // keep track of the threshold string values in the text fields here
   // only update the store when necessary
   const [pThresholdStr, setPThresholdStr] = useState(useDataStore.getState().pThreshold.toString());
@@ -26,8 +15,6 @@ const GlobalThresholds = (props: {}) => {
   const setPipThreshold = useDataStore((state) => state.setPipThreshold);
 
   const variantInput: string = useDataStore((state) => state.variantInput)!;
-  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
-  const isNotDone = isError || isFetching || isLoading;
 
   const updatePThreshold = (value: string) => {
     setPThresholdStr(value);
@@ -67,7 +54,7 @@ const GlobalThresholds = (props: {}) => {
         label="p-value threshold"
         value={pThresholdStr}
         variant="standard"
-        disabled={isNotDone}
+        disabled={props.isNotReadyYet}
         onChange={(event) => {
           updatePThreshold(event.target.value);
         }}
@@ -75,7 +62,7 @@ const GlobalThresholds = (props: {}) => {
           endAdornment: (
             <IconButton
               sx={{ visibility: pThresholdStr !== "" ? "visible" : "hidden" }}
-              disabled={isNotDone}
+              disabled={props.isNotReadyYet}
               onClick={() => {
                 updatePThreshold("");
               }}>
@@ -89,7 +76,7 @@ const GlobalThresholds = (props: {}) => {
         label="PIP threshold"
         value={pipThresholdStr}
         variant="standard"
-        disabled={isNotDone}
+        disabled={props.isNotReadyYet}
         onChange={(event) => {
           updatePipThreshold(event.target.value);
         }}
@@ -97,7 +84,7 @@ const GlobalThresholds = (props: {}) => {
           endAdornment: (
             <IconButton
               sx={{ visibility: pipThresholdStr !== "" ? "visible" : "hidden" }}
-              disabled={isNotDone}
+              disabled={props.isNotReadyYet}
               onClick={() => {
                 updatePipThreshold("");
               }}>

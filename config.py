@@ -25,7 +25,7 @@ gnomad = {
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_public_20230503.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_public_20230522.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it won't be fetched and it will not be shown in the UI
     "resources": [
@@ -34,11 +34,11 @@ assoc = {
             "data_types": ["GWAS"],
             "pheno_urls": [
                 {
-                    "url": "https://r8.finngen.fi/pheno/[PHENOCODE]",
+                    "url": "https://r9.finngen.fi/pheno/[PHENOCODE]",
                     "label": "FinnGen Pheweb",
                 },
                 {
-                    "url": "https://r8.risteys.finngen.fi/endpoints/[PHENOCODE]",
+                    "url": "https://r9.risteys.finngen.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
@@ -64,7 +64,7 @@ assoc = {
                     "label": "eQTL Catalogue studies",
                 }
             ],
-            "p_thres": 1e-4,
+            "p_thres": 5e-3,
         },
         {
             "resource": "deCODE",
@@ -81,7 +81,7 @@ assoc = {
 }
 
 finemapped = {
-    "file": "/mnt/disks/data/finemapped_resources_public_20230503.tsv.gz",
+    "file": "/mnt/disks/data/finemapped_resources_public_20230522.tsv.gz",
     "resources": [
         {"resource": "eQTL_Catalogue_R6", "data_types": ["eQTL", "pQTL", "sQTL"]},
         {"resource": "FinnGen", "data_types": ["GWAS"]},
@@ -90,4 +90,4 @@ finemapped = {
     ],
 }
 
-max_query_variants = 1000
+max_query_variants = 2000

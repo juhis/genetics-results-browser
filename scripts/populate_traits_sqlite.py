@@ -8,7 +8,31 @@ import timeit
 import sqlite3
 import argparse
 
-INSERT_TEMPLATE = "INSERT INTO trait VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+# TODO pub_date should be a date, not a string
+CREATE_STMT = """
+CREATE TABLE IF NOT EXISTS trait (
+    resource TEXT NOT NULL,
+    data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL') ),
+    trait_type TEXT NOT NULL CHECK( trait_type IN ('continuous','case-control')),
+    phenocode TEXT NOT NULL,
+    phenostring TEXT NOT NULL,
+    category TEXT,
+    chromosome TEXT,
+    gene_start UNSIGNED INTEGER,
+    gene_end UNSIGNED INTEGER,
+    strand SMALLINT,
+    num_samples UNSIGNED INTEGER,
+    num_cases UNSIGNED INTEGER,
+    num_controls UNSIGNED INTEGER,
+    pub_author TEXT,
+    pub_date TEXT,
+    PRIMARY KEY (resource, phenocode)
+)
+"""
+
+INSERT_TEMPLATE = (
+    "INSERT INTO trait VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+)
 
 
 def main():
@@ -27,15 +51,6 @@ def generate_entries_eqtl_cat(resource, filename, data_type):
     """
     Generator for eQTL Catalogue entries to be inserted into the sqlite3 db.
     Reads the input gzipped tsv eQTL Catalogue metadata file and yields a tuple for each row.
-    Each tuple contains
-    resource (given argument),
-    trait_type ("continuous"),
-    phenocode (phenotype_id in the input file),
-    phenostring (gene_name in the input file),
-    category (None),
-    num_samples (None),
-    num_cases (None),
-    num_controls (None)
     """
     with gzip.open(filename, "rt") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
@@ -49,6 +64,10 @@ def generate_entries_eqtl_cat(resource, filename, data_type):
                     s[h["phenotype_id"]],
                     s[h["gene_name"]],
                     None,
+                    s[h["chromosome"]],
+                    s[h["gene_start"]],
+                    s[h["gene_end"]],
+                    s[h["strand"]],
                     None,
                     None,
                     None,
@@ -73,6 +92,10 @@ def generate_entries_eqtl_cat_with_dataset(
                     dataset + ":" + s[h["phenotype_id"]],
                     s[h["gene_name"]],
                     None,
+                    s[h["chromosome"]],
+                    s[h["gene_start"]],
+                    s[h["gene_end"]],
+                    s[h["strand"]],
                     None,
                     None,
                     None,
@@ -95,6 +118,10 @@ def generate_entries_ukbb_bbj(filename):
                     s[h["trait"]],
                     s[h["description"]],
                     None,
+                    None,
+                    None,
+                    None,
+                    None,
                     int(s[h["n_samples"]]),
                     int(s[h["n_cases"]]) if s[h["n_cases"]] != "NA" else None,
                     int(s[h["n_controls"]]) if s[h["n_controls"]] != "NA" else None,
@@ -116,6 +143,10 @@ def generate_entries_opentargets(resource, filename):
                 p["study_id"],
                 p["trait_reported"],
                 p["trait_category"],
+                None,
+                None,
+                None,
+                None,
                 int(p["n_initial"]),
                 int(p["n_cases"]) if p["n_cases"] != "None" else None,
                 int(p["n_initial"]) - int(p["n_cases"])
@@ -139,6 +170,10 @@ def generate_entries_finngen(resource, filename, date):
                 p["phenocode"],
                 p["phenostring"],
                 p["category"],
+                None,
+                None,
+                None,
+                None,
                 p["num_cases"]
                 if p["num_controls"] == 0
                 else p["num_cases"] + p["num_controls"],
@@ -150,6 +185,7 @@ def generate_entries_finngen(resource, filename, date):
         )
 
 
+# TODO deCODE gene strand, start, end
 def generate_entries_decode_pqtl(
     resource, filename_probemap, filename_probelist, num_samples, date
 ):
@@ -174,6 +210,10 @@ def generate_entries_decode_pqtl(
                     p[0],
                     phenostring,
                     None,
+                    None,
+                    None,
+                    None,
+                    None,
                     num_samples,
                     None,
                     None,
@@ -190,25 +230,9 @@ def populate_traits(args):
     if args.drop_table:
         print("Dropping trait table if it exists...")
         c.execute("DROP TABLE IF EXISTS trait")
-    c.execute(
-        # TODO pub_date should be a date, not a string
-        """
-        CREATE TABLE IF NOT EXISTS trait (
-          resource TEXT NOT NULL,
-          data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL') ),
-          trait_type TEXT NOT NULL CHECK( trait_type IN ('continuous','case-control')),
-          phenocode TEXT NOT NULL,
-          phenostring TEXT NOT NULL,
-          category TEXT,
-          num_samples INTEGER,
-          num_cases INTEGER,
-          num_controls INTEGER,
-          pub_author TEXT,
-          pub_date TEXT,
-          PRIMARY KEY (resource, phenocode)
-        )
-        """
-    )
+        print(str(timeit.default_timer() - start_time) + " seconds dropping table")
+        start_time = timeit.default_timer()
+    c.execute(CREATE_STMT)
     print("Populating trait table...")
     print("eQTL Catalogue")
     for file in [
@@ -272,7 +296,7 @@ def populate_traits(args):
     c.executemany(
         INSERT_TEMPLATE,
         generate_entries_finngen(
-            "FinnGen", "/mnt/disks/data/finngen-r8-pheno-list.json", "2021-11-15"
+            "FinnGen", "/mnt/disks/data/finngen-r9-pheno-list.json", "2022-04-04"
         ),
     )
 

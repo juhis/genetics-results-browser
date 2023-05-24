@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { Phenotype, TableData, DataType } from "../types/types";
+import { Phenotype, TableData, DataType, QTLType } from "../types/types";
 import { filterRows } from "./munge";
 
 interface DataState {
@@ -15,6 +15,8 @@ interface DataState {
   toggleDataType: (DataType: DataType) => void;
   toggledGWASTypes: Record<string, boolean>;
   toggleGWASType: (GWASType: string) => void;
+  toggledQTLTypes: Record<string, boolean>;
+  toggleQTLType: (QTLType: QTLType) => void;
   pThreshold: number;
   setPThreshold: (pThreshold: number) => void;
   pipThreshold: number;
@@ -42,6 +44,7 @@ export const useDataStore = create<DataState>()(
           data,
           state.toggledDataTypes,
           state.toggledGWASTypes,
+          state.toggledQTLTypes,
           state.pThreshold,
           state.pipThreshold,
           state.selectedPheno,
@@ -67,6 +70,32 @@ export const useDataStore = create<DataState>()(
             state.serverData!,
             newDataTypes,
             state.toggledGWASTypes,
+            state.toggledQTLTypes,
+            state.pThreshold,
+            state.pipThreshold,
+            state.selectedPheno,
+            true
+          ),
+        };
+      });
+    },
+    toggledQTLTypes: {
+      CIS: true,
+      TRANS: true,
+    },
+    toggleQTLType: (QTLType: string) => {
+      set((state) => {
+        const newQTLTypes = {
+          ...state.toggledQTLTypes,
+          [QTLType]: !state.toggledQTLTypes[QTLType],
+        } as Record<string, boolean>;
+        return {
+          toggledQTLTypes: newQTLTypes,
+          clientData: filterRows(
+            state.serverData!,
+            state.toggledDataTypes,
+            state.toggledGWASTypes,
+            newQTLTypes,
             state.pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -91,6 +120,7 @@ export const useDataStore = create<DataState>()(
             state.serverData!,
             state.toggledDataTypes,
             newGWASTypes,
+            state.toggledQTLTypes,
             state.pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -108,6 +138,7 @@ export const useDataStore = create<DataState>()(
             state.serverData!,
             state.toggledDataTypes,
             state.toggledGWASTypes,
+            state.toggledQTLTypes,
             pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -123,6 +154,7 @@ export const useDataStore = create<DataState>()(
           state.serverData!,
           state.toggledDataTypes,
           state.toggledGWASTypes,
+          state.toggledQTLTypes,
           state.pThreshold,
           pipThreshold,
           state.selectedPheno,
@@ -137,6 +169,7 @@ export const useDataStore = create<DataState>()(
           state.serverData!,
           state.toggledDataTypes,
           state.toggledGWASTypes,
+          state.toggledQTLTypes,
           state.pThreshold,
           state.pipThreshold,
           pheno,

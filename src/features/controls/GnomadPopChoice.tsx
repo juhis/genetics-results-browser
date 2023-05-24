@@ -1,21 +1,17 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { TableData } from "../../types/types";
 import { useDataStore } from "../../store/store";
-import { useServerQuery } from "../../store/serverQuery";
 
-const GnomadPopChoice = () => {
+const GnomadPopChoice = (props: { isNotReadyYet: boolean }) => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const clientData: TableData | undefined = useDataStore((state) => state.clientData);
   const setSelectedPopulation = useDataStore((state) => state.setSelectedPopulation);
-
-  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
-  const isNotDone = isError || isFetching || isLoading;
 
   return (
     <Autocomplete
       sx={{ width: 175, paddingLeft: "20px" }}
       //disablePortal
-      disabled={isNotDone}
+      disabled={props.isNotReadyYet}
       id="phenotype-select"
       options={clientData?.meta.gnomad.populations || []}
       getOptionLabel={(option) => option}

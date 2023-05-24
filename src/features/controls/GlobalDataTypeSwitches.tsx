@@ -2,9 +2,8 @@ import { Box, Divider, FormControl, FormControlLabel, Switch } from "@mui/materi
 import { DataType } from "../../types/types";
 import { useMemo, ReactElement } from "react";
 import { useDataStore } from "../../store/store";
-import { useServerQuery } from "../../store/serverQuery";
 
-const GlobalSwitches = (props: {}) => {
+const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const toggledDataTypes: Record<DataType, boolean> = useDataStore(
     (state) => state.toggledDataTypes
@@ -12,9 +11,6 @@ const GlobalSwitches = (props: {}) => {
   const toggleDataType = useDataStore((state) => state.toggleDataType);
   const toggledGWASTypes: Record<string, boolean> = useDataStore((state) => state.toggledGWASTypes);
   const toggleGWASType = useDataStore((state) => state.toggleGWASType);
-
-  const { isError, isFetching, isLoading } = useServerQuery(variantInput);
-  const isNotDone = isError || isFetching || isLoading;
 
   const dataTypeSwitches: ReactElement<"FormControlLabel">[] = useMemo(
     () =>
@@ -25,7 +21,7 @@ const GlobalSwitches = (props: {}) => {
             control={
               <Switch
                 checked={toggledDataTypes[dataType]}
-                disabled={isNotDone}
+                disabled={props.isNotReadyYet}
                 onChange={() => {
                   toggleDataType(dataType);
                 }}
@@ -35,7 +31,7 @@ const GlobalSwitches = (props: {}) => {
           />
         );
       }),
-    [toggledDataTypes, toggleDataType, isNotDone]
+    [toggledDataTypes, toggleDataType, props.isNotReadyYet]
   );
 
   const gwasTypeSwitches: ReactElement<"FormControl"> = useMemo(
@@ -48,7 +44,7 @@ const GlobalSwitches = (props: {}) => {
               control={
                 <Switch
                   checked={toggledGWASTypes[gwasType]}
-                  disabled={isNotDone || !toggledDataTypes["GWAS"]}
+                  disabled={props.isNotReadyYet || !toggledDataTypes["GWAS"]}
                   onChange={() => {
                     toggleGWASType(gwasType);
                   }}
@@ -60,7 +56,7 @@ const GlobalSwitches = (props: {}) => {
         })}
       </FormControl>
     ),
-    [toggledDataTypes, toggledGWASTypes, toggleGWASType, isNotDone]
+    [toggledDataTypes, toggledGWASTypes, toggleGWASType, props.isNotReadyYet]
   );
 
   return (
@@ -88,4 +84,4 @@ const GlobalSwitches = (props: {}) => {
   );
 };
 
-export default GlobalSwitches;
+export default GlobalDataTypeSwitches;
