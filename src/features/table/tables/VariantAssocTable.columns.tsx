@@ -3,8 +3,11 @@ import { DatasetMap, GroupedAssocRecord, PhenoMap, TableData } from "../../../ty
 import { filterAbsGreaterThanHTML, filterContainsWithTooltip, pValRepr } from "../utils/tableutil";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
+import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
 
 export const getAssociationTableColumns = (
+  variant: string | undefined,
+  cisWindow: number,
   phenoMap: PhenoMap,
   datasetMap: DatasetMap,
   meta: TableData["meta"]
@@ -36,6 +39,14 @@ export const getAssociationTableColumns = (
     accessorFn: (row) => {
       const phenos = row.phenocode.map((phenocode) => phenoMap[row.resource + ":" + phenocode]);
       const resource = meta.assoc.resources.find((r) => r.resource == phenos[0].resource)!;
+      const qtlNote =
+        variant === undefined
+          ? ""
+          : isQTLInCis(variant, phenos[0], cisWindow)
+          ? " [cis]"
+          : isQTLInTrans(variant, phenos[0], cisWindow)
+          ? " [trans]"
+          : "";
       return (
         <PhenoTooltip
           resource={resource}
@@ -43,6 +54,7 @@ export const getAssociationTableColumns = (
           row={row}
           content=<span>
             {row.count == 1 ? row.phenostring : row.phenostring + " (" + row.count + ")"}
+            {qtlNote}
           </span>
         />
       );

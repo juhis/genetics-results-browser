@@ -1,6 +1,6 @@
-import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
+import { Box, FormControlLabel, Switch, TextField } from "@mui/material";
 import { DataType, QTLType } from "../../types/types";
-import { useMemo, ReactElement } from "react";
+import { useMemo, ReactElement, useState } from "react";
 import { useDataStore } from "../../store/store";
 
 const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
@@ -9,6 +9,20 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
   const toggledDataTypes: Record<DataType, boolean> = useDataStore(
     (state) => state.toggledDataTypes
   );
+  const setCisWindow = useDataStore((state) => state.setCisWindow);
+
+  // keep track of the window string value in the text fields here
+  // only update the store when necessary
+  const [cisWindowStr, setCisWindowStr] = useState(useDataStore.getState().cisWindow.toString());
+
+  const updateCisWindow = (value: string) => {
+    setCisWindowStr(value);
+    let window = Number(value); // e.g. "5e" will become NaN
+    // only update if actual new number in the field
+    if (window != useDataStore.getState().cisWindow) {
+      setCisWindow(window);
+    }
+  };
 
   const qtlTypeSwitches: ReactElement<"FormControlLabel">[] = useMemo(
     () =>
@@ -43,11 +57,27 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
         sx={{
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           paddingLeft: "20px",
           paddingRight: "20px",
         }}>
-        <div>Only for eQTL Catalogue for now</div>
-        {qtlTypeSwitches}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}>
+          {qtlTypeSwitches}
+        </Box>
+        <TextField
+          id="cis_window"
+          label="cis window (Mb) one side"
+          value={cisWindowStr}
+          variant="standard"
+          disabled={props.isNotReadyYet}
+          onChange={(event) => {
+            updateCisWindow(event.target.value);
+          }}
+        />
       </Box>
     </>
   );

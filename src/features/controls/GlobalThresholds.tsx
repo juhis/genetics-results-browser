@@ -14,8 +14,6 @@ const GlobalThresholds = (props: { isNotReadyYet: boolean }) => {
   const setPThreshold = useDataStore((state) => state.setPThreshold);
   const setPipThreshold = useDataStore((state) => state.setPipThreshold);
 
-  const variantInput: string = useDataStore((state) => state.variantInput)!;
-
   const updatePThreshold = (value: string) => {
     setPThresholdStr(value);
     let p = Number(value); // e.g. "5e" will become NaN
