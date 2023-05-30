@@ -17,6 +17,8 @@ interface DataState {
   toggleGWASType: (GWASType: string) => void;
   toggledQTLTypes: Record<string, boolean>;
   toggleQTLType: (QTLType: QTLType) => void;
+  cisWindow: number;
+  setCisWindow: (cisWindow: number) => void;
   pThreshold: number;
   setPThreshold: (pThreshold: number) => void;
   pipThreshold: number;
@@ -45,6 +47,7 @@ export const useDataStore = create<DataState>()(
           state.toggledDataTypes,
           state.toggledGWASTypes,
           state.toggledQTLTypes,
+          state.cisWindow,
           state.pThreshold,
           state.pipThreshold,
           state.selectedPheno,
@@ -71,6 +74,7 @@ export const useDataStore = create<DataState>()(
             newDataTypes,
             state.toggledGWASTypes,
             state.toggledQTLTypes,
+            state.cisWindow,
             state.pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -96,6 +100,7 @@ export const useDataStore = create<DataState>()(
             state.toggledDataTypes,
             state.toggledGWASTypes,
             newQTLTypes,
+            state.cisWindow,
             state.pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -121,6 +126,7 @@ export const useDataStore = create<DataState>()(
             state.toggledDataTypes,
             newGWASTypes,
             state.toggledQTLTypes,
+            state.cisWindow,
             state.pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -129,6 +135,22 @@ export const useDataStore = create<DataState>()(
         };
       });
     },
+    cisWindow: 1.5,
+    setCisWindow: (cisWindow) =>
+      set((state) => ({
+        cisWindow: cisWindow,
+        clientData: filterRows(
+          state.serverData!,
+          state.toggledDataTypes,
+          state.toggledGWASTypes,
+          state.toggledQTLTypes,
+          cisWindow,
+          state.pThreshold,
+          state.pipThreshold,
+          state.selectedPheno,
+          true
+        ),
+      })),
     pThreshold: 5e-8,
     setPThreshold: (pThreshold) =>
       set((state) => {
@@ -139,6 +161,7 @@ export const useDataStore = create<DataState>()(
             state.toggledDataTypes,
             state.toggledGWASTypes,
             state.toggledQTLTypes,
+            state.cisWindow,
             pThreshold,
             state.pipThreshold,
             state.selectedPheno,
@@ -146,7 +169,7 @@ export const useDataStore = create<DataState>()(
           ),
         };
       }),
-    pipThreshold: 0.1,
+    pipThreshold: 0.01,
     setPipThreshold: (pipThreshold) =>
       set((state) => ({
         pipThreshold: pipThreshold,
@@ -155,6 +178,7 @@ export const useDataStore = create<DataState>()(
           state.toggledDataTypes,
           state.toggledGWASTypes,
           state.toggledQTLTypes,
+          state.cisWindow,
           state.pThreshold,
           pipThreshold,
           state.selectedPheno,
@@ -170,6 +194,7 @@ export const useDataStore = create<DataState>()(
           state.toggledDataTypes,
           state.toggledGWASTypes,
           state.toggledQTLTypes,
+          state.cisWindow,
           state.pThreshold,
           state.pipThreshold,
           pheno,

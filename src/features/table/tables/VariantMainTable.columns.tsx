@@ -10,9 +10,11 @@ import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { ConsequenceTooltip } from "../../tooltips/ConsequenceTooltip";
 import { VariantGnomadToolTip } from "../../tooltips/VariantGnomadTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
+import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
 
 export const getVariantMainTableColumns = (
   data: TableData,
+  cisWindow: number,
   selectedPheno: Phenotype | undefined,
   selectedPopulation: string | undefined,
   showTraitCounts: boolean
@@ -164,6 +166,14 @@ export const getVariantMainTableColumns = (
         );
         const resource =
           data.meta.assoc.resources.find((r) => r.resource == phenos[0].resource) || null;
+        const qtlNote =
+          row.variant === undefined
+            ? ""
+            : isQTLInCis(row.variant, phenos[0], cisWindow)
+            ? " [cis]"
+            : isQTLInTrans(row.variant, phenos[0], cisWindow)
+            ? " [trans]"
+            : "";
         return (
           <PhenoTooltip
             resource={resource}
@@ -176,6 +186,7 @@ export const getVariantMainTableColumns = (
                   " (" +
                   row.assoc.groupedData[0].count +
                   ")"}
+              {qtlNote}
             </span>
           />
         );

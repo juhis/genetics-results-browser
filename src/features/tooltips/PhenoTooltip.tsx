@@ -37,6 +37,12 @@ export const PhenoTooltip = (props: {
       <div key={pheno.phenocode}>
         <div>{pheno.phenostring}</div>
         <div>{pheno.phenocode}</div>
+        {pheno.chromosome ? (
+          <div>
+            chr{pheno.chromosome} {pheno.gene_start} - {pheno.gene_end}{" "}
+            {pheno.strand == 1 ? "forward" : pheno.strand == -1 ? "reverse" : "unknown"} strand
+          </div>
+        ) : null}
         <div>{info}</div>
         <div>
           {pheno.num_cases

@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS trait (
 )
 """
 
+DELETE_TEMPLATE = """
+DELETE FROM trait WHERE resource = ?
+"""
+
 INSERT_TEMPLATE = (
     "INSERT INTO trait VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 )
@@ -42,6 +46,11 @@ def main():
     parser.add_argument("db_name", help="sqlite3 db file to be created or overwritten")
     parser.add_argument(
         "--drop_table", help="drop existing db table", action="store_true"
+    )
+    parser.add_argument(
+        "--resources",
+        help="comma-separated list of resources to be included (default: all)",
+        default="all",
     )
     args = parser.parse_args()
     populate_traits(args)
@@ -185,23 +194,37 @@ def generate_entries_finngen(resource, filename, date):
         )
 
 
-# TODO deCODE gene strand, start, end
 def generate_entries_decode_pqtl(
     resource, filename_probemap, filename_probelist, num_samples, date
 ):
     with open(filename_probemap, "r") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
-        probe2gene = {
-            line.strip()
-            .split("\t")[h["AptName"]]: line.strip()
-            .split("\t")[h["geneName"]]
+        probe2meta = {
+            line.strip().split("\t")[h["AptName"]]: line.strip().split("\t")
             for line in f
         }
     with open(filename_probelist, "r") as f:
         for line in f:
             p = line.strip().split("\t")
             # for missing gene names keep probe name
-            phenostring = probe2gene[p[0]] if p[0] in probe2gene else p[0]
+            phenostring = (
+                probe2meta[p[0]][h["Gene name"]] if p[0] in probe2meta else p[0]
+            )
+            if phenostring == "NA":
+                phenostring = p[0]
+            organism = probe2meta[p[0]][h["Organism"]] if p[0] in probe2meta else None
+            chromosome = (
+                probe2meta[p[0]][h["Chromosome/scaffold name"]]
+                if p[0] in probe2meta
+                else None
+            )
+            gene_start = (
+                probe2meta[p[0]][h["Gene start (bp)"]] if p[0] in probe2meta else None
+            )
+            gene_end = (
+                probe2meta[p[0]][h["Gene end (bp)"]] if p[0] in probe2meta else None
+            )
+            strand = probe2meta[p[0]][h["Strand"]] if p[0] in probe2meta else None
             yield (
                 (
                     resource,
@@ -209,11 +232,11 @@ def generate_entries_decode_pqtl(
                     "continuous",
                     p[0],
                     phenostring,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
+                    None if organism == "NA" else organism,
+                    None if chromosome == "NA" else chromosome,
+                    None if gene_start == "NA" else gene_start,
+                    None if gene_end == "NA" else gene_end,
+                    None if strand == "NA" else strand,
                     num_samples,
                     None,
                     None,
@@ -227,99 +250,121 @@ def populate_traits(args):
     start_time = timeit.default_timer()
     conn = sqlite3.connect(args.db_name)
     c = conn.cursor()
+
     if args.drop_table:
         print("Dropping trait table if it exists...")
         c.execute("DROP TABLE IF EXISTS trait")
         print(str(timeit.default_timer() - start_time) + " seconds dropping table")
         start_time = timeit.default_timer()
     c.execute(CREATE_STMT)
+
     print("Populating trait table...")
-    print("eQTL Catalogue")
-    for file in [
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/Affy_Human_Gene_1_0_ST_Ensembl_96_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/HumanHT-12_V4_Ensembl_96_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/SomaLogic_Ensembl_96_phenotype_metadata.tsv.gz",
-            "pQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/exon_counts_Ensembl_105_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/gene_counts_Ensembl_105_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/transcript_usage_Ensembl_105_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-        (
-            "/mnt/disks/data/eqtl_catalogue_r6/metadata/txrevise_Ensembl_105_phenotype_metadata.tsv.gz",
-            "eQTL",
-        ),
-    ]:
-        c.executemany(
-            INSERT_TEMPLATE,
-            generate_entries_eqtl_cat("eQTL_Catalogue_R6", file[0], file[1]),
-        )
-    print("eQTL Catalogue - Leafcutter")
-    for line in open(
-        "/mnt/disks/data/eqtl_catalogue_r6/leafcutter_studies", "rt"
-    ).readlines():
-        c.executemany(
-            INSERT_TEMPLATE,
-            generate_entries_eqtl_cat_with_dataset(
-                "eQTL_Catalogue_R6",
-                line.strip(),
-                "/mnt/disks/data/eqtl_catalogue_r6/metadata/leafcutter_[STUDY]_Ensembl_105_phenotype_metadata.tsv.gz",
-                "sQTL",
-            ),
-        )
+    n_datasets = 0
 
-    print("Open Targets")
-    c.executemany(
-        INSERT_TEMPLATE,
-        generate_entries_opentargets(
-            "Open_Targets",
-            "/mnt/disks/data/opentargets/ot_studies_no_finngen_22.09.json",
-        ),
-    )
+    for resource in args.resources.split(","):
+        print(resource)
+        c.execute(DELETE_TEMPLATE, (resource,))
+        if resource == "eQTL_Catalogue_R6" or resource == "all":
+            for file in [
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/Affy_Human_Gene_1_0_ST_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/HumanHT-12_V4_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/SomaLogic_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "pQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/exon_counts_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/gene_counts_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/transcript_usage_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+                (
+                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/txrevise_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "eQTL",
+                ),
+            ]:
+                c.executemany(
+                    INSERT_TEMPLATE,
+                    generate_entries_eqtl_cat(resource, file[0], file[1]),
+                )
+            print("eQTL Catalogue - Leafcutter")
+            for line in open(
+                "/mnt/disks/data/eqtl_catalogue_r6/leafcutter_studies", "rt"
+            ).readlines():
+                c.executemany(
+                    INSERT_TEMPLATE,
+                    generate_entries_eqtl_cat_with_dataset(
+                        resource,
+                        line.strip(),
+                        "/mnt/disks/data/eqtl_catalogue_r6/metadata/leafcutter_[STUDY]_Ensembl_105_phenotype_metadata.tsv.gz",
+                        "sQTL",
+                    ),
+                )
+            n_datasets += 1
 
-    print("FinnGen")
-    c.executemany(
-        INSERT_TEMPLATE,
-        generate_entries_finngen(
-            "FinnGen", "/mnt/disks/data/finngen-r9-pheno-list.json", "2022-04-04"
-        ),
-    )
+        if resource == "Open_Targets" or resource == "all":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_opentargets(
+                    resource,
+                    "/mnt/disks/data/opentargets/ot_studies_no_finngen_22.09.json",
+                ),
+            )
+            n_datasets += 1
 
-    print("UK Biobank / BBJ")
-    c.executemany(
-        INSERT_TEMPLATE,
-        generate_entries_ukbb_bbj("/mnt/disks/data/ukb_bbj_traits.tsv"),
-    )
+        if resource == "deCODE" or resource == "all":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_decode_pqtl(
+                    resource,
+                    "/mnt/disks/data/Soma_info_all_ensembl.tsv",
+                    "/mnt/disks/data/decode_probes",
+                    35559,
+                    "2021-12-02",
+                ),
+            )
+            n_datasets += 1
 
-    print("deCODE")
-    c.executemany(
-        INSERT_TEMPLATE,
-        generate_entries_decode_pqtl(
-            "deCODE",
-            "/mnt/disks/data/SomaScan_probe_map.tsv",
-            "/mnt/disks/data/decode_probes",
-            35559,
-            "2021-12-02",
-        ),
-    )
+        if resource == "FinnGen" or resource == "all":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_finngen(
+                    resource,
+                    "/mnt/disks/data/finngen-r9-pheno-list.json",
+                    "2022-04-04",
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "UKBB_BBJ" or resource == "all":
+            c.execute(DELETE_TEMPLATE, ("UKBB_119",))
+            c.execute(DELETE_TEMPLATE, ("BBJ_79",))
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_ukbb_bbj("/mnt/disks/data/ukb_bbj_traits.tsv"),
+            )
+            n_datasets += 1
+
     conn.commit()
     conn.close()
-    print(str(timeit.default_timer() - start_time) + " seconds populating traits")
+    print(
+        str(timeit.default_timer() - start_time)
+        + " seconds populating traits ("
+        + str(n_datasets)
+        + " datasets)"
+    )
 
 
 if __name__ == "__main__":

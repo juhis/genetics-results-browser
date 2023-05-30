@@ -2,6 +2,7 @@ import { MRT_ColumnDef } from "material-react-table";
 import { ApiResponseMeta, DatasetMap, PhenoMap, SummaryTableRow } from "../../../types/types";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { filterContainsWithTooltip } from "../utils/tableutil";
+import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
 export const getVariantSummaryTableColumns = (
   phenoMap: PhenoMap,
   datasetMap: DatasetMap,

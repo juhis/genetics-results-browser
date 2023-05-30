@@ -158,7 +158,7 @@ export const handleAssocTableExport = (
   datasets: DatasetMap,
   meta: TableData["meta"]
 ) => {
-  const assocColumns = getAssociationTableColumns(phenos, datasets, meta);
+  const assocColumns = getAssociationTableColumns(undefined, 0, phenos, datasets, meta);
   const dataExport = table
     .getRowModel()
     .rows.map((row) => {

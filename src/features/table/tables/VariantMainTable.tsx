@@ -30,6 +30,7 @@ const VariantMainTable = (props: {
     (state) => state.toggledGWASTypes
   );
   const toggledQTLTypes: Record<string, boolean> = useDataStore((state) => state.toggledQTLTypes);
+  const cisWindow: number = useDataStore((state) => state.cisWindow);
   const pThreshold: number = useDataStore((state) => state.pThreshold);
   const pipThreshold: number = useDataStore((state) => state.pipThreshold);
   const selectedPheno: Phenotype | undefined =
@@ -40,6 +41,7 @@ const VariantMainTable = (props: {
 
   const columns = getVariantMainTableColumns(
     clientData!,
+    cisWindow,
     selectedPheno,
     selectedPopulation,
     props.showTraitCounts
@@ -53,6 +55,7 @@ const VariantMainTable = (props: {
           toggledDataTypes,
           toggledTraitTypes,
           toggledQTLTypes,
+          cisWindow,
           pThreshold,
           pipThreshold,
           props.phenotype,

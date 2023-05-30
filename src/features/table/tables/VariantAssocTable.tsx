@@ -18,10 +18,18 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
         return p;
       }, {} as Record<string, boolean>)
   );
+  const cisWindow: number = useDataStore((state) => state.cisWindow);
 
   const columns = useMemo<MRT_ColumnDef<GroupedAssocRecord>[]>(
-    () => getAssociationTableColumns(clientData.phenos, clientData.datasets, clientData.meta),
-    [clientData]
+    () =>
+      getAssociationTableColumns(
+        props.variantData.variant,
+        cisWindow,
+        clientData.phenos,
+        clientData.datasets,
+        clientData.meta
+      ),
+    [clientData, props.variantData.variant]
   );
 
   const switches: ReactElement<"table"> = useMemo(() => {
@@ -86,9 +94,6 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
       [key]: !toggled[key],
     });
   };
-
-  console.log(props.variantData.assoc.groupedData);
-  console.log(toggled);
 
   const filteredData = useMemo(() => {
     return props.variantData.assoc.groupedData!.filter(

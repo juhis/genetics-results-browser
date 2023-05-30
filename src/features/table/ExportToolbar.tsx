@@ -15,6 +15,7 @@ import { useServerQuery } from "../../store/serverQuery";
 const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const clientData: TableData = useDataStore((state) => state.clientData)!;
+  const cisWindow: number = useDataStore((state) => state.cisWindow);
   const selectedPheno: Phenotype | undefined = useDataStore((state) => state.selectedPheno);
   const selectedPopulation: string | undefined = useDataStore((state) => state.selectedPopulation);
 
@@ -43,7 +44,13 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           onClick={() => {
             handleMainTableExport(
               props.table,
-              getVariantMainTableColumns(clientData, selectedPheno, selectedPopulation, true)
+              getVariantMainTableColumns(
+                clientData,
+                cisWindow,
+                selectedPheno,
+                selectedPopulation,
+                true
+              )
             );
           }}
           startIcon={<FileDownloadIcon />}
@@ -56,7 +63,13 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           onClick={() => {
             handleFineMappingTableExport(
               props.table,
-              getVariantMainTableColumns(clientData, selectedPheno, selectedPopulation, true),
+              getVariantMainTableColumns(
+                clientData,
+                cisWindow,
+                selectedPheno,
+                selectedPopulation,
+                true
+              ),
               getFineMappingTableColumns(clientData.phenos, clientData.datasets)
             );
           }}
@@ -70,7 +83,13 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           onClick={() => {
             handleAssocTableExport(
               props.table,
-              getVariantMainTableColumns(clientData, selectedPheno, selectedPopulation, true),
+              getVariantMainTableColumns(
+                clientData,
+                cisWindow,
+                selectedPheno,
+                selectedPopulation,
+                true
+              ),
               clientData.phenos,
               clientData.datasets,
               clientData.meta

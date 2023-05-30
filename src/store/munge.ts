@@ -14,8 +14,6 @@ import {
   QTLType,
 } from "../types/types";
 
-const CIS_WINDOW_ONESIDED = 1500000;
-
 const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
   return Object.values(
     d.reduce((p, c) => {
@@ -242,7 +240,7 @@ const changePlaceholderPhenostring = (
   }
 };
 
-const isQTLInCis = (variant: string, p: Phenotype) => {
+export const isQTLInCis = (variant: string, p: Phenotype, cisWindow: number) => {
   const chr = variant.split("-")[0];
   if (
     !p.data_type.endsWith("QTL") ||
@@ -255,10 +253,10 @@ const isQTLInCis = (variant: string, p: Phenotype) => {
   }
   const pos = Number(variant.split("-")[1]);
   const start = p.strand === 1 ? p.gene_start : p.gene_end;
-  return pos - CIS_WINDOW_ONESIDED < start && pos + CIS_WINDOW_ONESIDED > start;
+  return pos - cisWindow * 1e6 < start && pos + cisWindow * 1e6 > start;
 };
 
-const isQTLInTrans = (variant: string, p: Phenotype) => {
+export const isQTLInTrans = (variant: string, p: Phenotype, cisWindow: number) => {
   const chr = variant.split("-")[0];
   if (
     !p.data_type.endsWith("QTL") ||
@@ -271,7 +269,7 @@ const isQTLInTrans = (variant: string, p: Phenotype) => {
   if (p.chromosome !== chr) {
     return true;
   }
-  return !isQTLInCis(variant, p);
+  return !isQTLInCis(variant, p, cisWindow);
 };
 
 export const filterRows = (
@@ -279,6 +277,7 @@ export const filterRows = (
   assocTypes: Record<DataType, boolean>,
   gwasTypes: Record<string, boolean>,
   qtlTypes: Record<QTLType, boolean>,
+  cisWindow: number,
   p: number,
   pip: number,
   pheno: Phenotype | undefined,
@@ -295,8 +294,8 @@ export const filterRows = (
         return (
           (assocTypes[assocPheno.data_type] &&
             (assocPheno.data_type !== "GWAS" || gwasTypes[assocPheno.trait_type]) &&
-            (!isQTLInCis(d.variant, assocPheno) || qtlTypes["CIS"]) &&
-            (!isQTLInTrans(d.variant, assocPheno) || qtlTypes["TRANS"]) &&
+            (!isQTLInCis(d.variant, assocPheno, cisWindow) || qtlTypes["CIS"]) &&
+            (!isQTLInTrans(d.variant, assocPheno, cisWindow) || qtlTypes["TRANS"]) &&
             a.mlogp > -Math.log10(p)) ||
           (keepPlaceholders && assocPheno.is_na)
         );
@@ -309,8 +308,8 @@ export const filterRows = (
         return (
           (assocTypes[assocPheno.data_type] &&
             (assocPheno.data_type !== "GWAS" || gwasTypes[assocPheno.trait_type]) &&
-            (!isQTLInCis(d.variant, assocPheno) || qtlTypes["CIS"]) &&
-            (!isQTLInTrans(d.variant, assocPheno) || qtlTypes["TRANS"]) &&
+            (!isQTLInCis(d.variant, assocPheno, cisWindow) || qtlTypes["CIS"]) &&
+            (!isQTLInTrans(d.variant, assocPheno, cisWindow) || qtlTypes["TRANS"]) &&
             a.mlogp > -Math.log10(p) &&
             a.resource == pheno.resource &&
             a.phenocode == pheno.phenocode) ||
