@@ -1,6 +1,9 @@
 name: dockerhub
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   push_to_registry:
