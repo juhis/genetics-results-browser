@@ -4,7 +4,8 @@
   "description": "genetics result browser",
   "main": "src/index.tsx",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx webpack --mode production"
   },
   "author": "jkarjala@broadinstitute.org",
   "license": "MIT",
