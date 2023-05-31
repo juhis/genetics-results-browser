@@ -2,6 +2,7 @@ import { Box, FormControlLabel, Switch, TextField } from "@mui/material";
 import { DataType, QTLType } from "../../types/types";
 import { useMemo, ReactElement, useState } from "react";
 import { useDataStore } from "../../store/store";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
   const toggledQTLTypes: Record<QTLType, boolean> = useDataStore((state) => state.toggledQTLTypes);
@@ -10,6 +11,9 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
     (state) => state.toggledDataTypes
   );
   const setCisWindow = useDataStore((state) => state.setCisWindow);
+
+  useHotkeys("c", () => toggleQTLType(QTLType.CIS));
+  useHotkeys("t", () => toggleQTLType(QTLType.TRANS));
 
   // keep track of the window string value in the text fields here
   // only update the store when necessary
@@ -44,7 +48,7 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
                 }}
               />
             }
-            label={`Include ${QTLType.toLowerCase()}-QTLs`}
+            label={`[${QTLType.slice(0, 1).toUpperCase()}] Include ${QTLType.toLowerCase()}-QTLs`}
           />
         );
       }),
