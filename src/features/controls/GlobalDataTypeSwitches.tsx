@@ -1,16 +1,24 @@
 import { Box, Divider, FormControl, FormControlLabel, Switch } from "@mui/material";
 import { DataType } from "../../types/types";
 import { useMemo, ReactElement } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useDataStore } from "../../store/store";
 
 const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
-  const variantInput: string = useDataStore((state) => state.variantInput)!;
   const toggledDataTypes: Record<DataType, boolean> = useDataStore(
     (state) => state.toggledDataTypes
   );
   const toggleDataType = useDataStore((state) => state.toggleDataType);
   const toggledGWASTypes: Record<string, boolean> = useDataStore((state) => state.toggledGWASTypes);
   const toggleGWASType = useDataStore((state) => state.toggleGWASType);
+
+  useHotkeys("g", () => toggleDataType(DataType.GWAS));
+  useHotkeys("e", () => toggleDataType(DataType.EQTL));
+  useHotkeys("p", () => toggleDataType(DataType.PQTL));
+  useHotkeys("s", () => toggleDataType(DataType.SQTL));
+
+  useHotkeys("b", () => toggleGWASType("case-control"));
+  useHotkeys("q", () => toggleGWASType("continuous"));
 
   const dataTypeSwitches: ReactElement<"FormControlLabel">[] = useMemo(
     () =>
@@ -27,7 +35,7 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
                 }}
               />
             }
-            label={`Include ${dataType}`}
+            label={`[${dataType.slice(0, 1).toUpperCase()}] Include ${dataType}`}
           />
         );
       }),
@@ -50,7 +58,7 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
                   }}
                 />
               }
-              label={`Include ${gwasType} GWAS`}
+              label={`[${gwasType == "case-control" ? "B" : "Q"}] Include ${gwasType} GWAS`}
             />
           );
         })}
