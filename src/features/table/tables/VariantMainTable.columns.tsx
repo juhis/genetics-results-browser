@@ -20,25 +20,29 @@ export const getVariantMainTableColumns = (
   showTraitCounts: boolean
 ): MRT_ColumnDef<VariantRecord>[] => {
   let cols: MRT_ColumnDef<VariantRecord>[] = [];
-  if (data?.is_grouped) {
-    cols = [
+  if (data?.has_betas) {
+    cols = cols.concat([
       {
-        accessorFn: (row) => row.group,
-        header: "group",
-        id: "group",
-        filterFn: "equals",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "group" },
-        size: 10,
+        accessorFn: (row) => row.beta,
+        header: "beta",
+        id: "beta",
+        filterFn: filterAbsGreaterThanHTML,
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
+        size: 50,
       },
+    ]);
+  }
+  if (data?.has_custom_values) {
+    cols = cols.concat([
       {
         accessorFn: (row) => row.value,
         header: "value",
         id: "value",
         filterFn: "greaterThan",
         muiTableHeadCellFilterTextFieldProps: { placeholder: "value" },
-        size: 100,
+        size: 50,
       },
-    ];
+    ]);
   }
   cols = cols.concat([
     {

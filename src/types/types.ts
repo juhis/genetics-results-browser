@@ -1,6 +1,7 @@
 export type TableData = {
   data: Array<VariantRecord>;
-  is_grouped: boolean;
+  has_betas: boolean;
+  has_custom_values: boolean;
   most_severe: Array<string>;
   phenos: PhenoMap;
   datasets: DatasetMap;
@@ -10,7 +11,7 @@ export type TableData = {
 
 export type VariantRecord = {
   variant: string;
-  group: string | undefined;
+  beta: number | undefined;
   value: string | undefined;
   anno: {
     rsid?: string;
@@ -107,6 +108,7 @@ export type AssocRecord = {
   mlogp: number;
   beta: number;
   sebeta: number;
+  beta_input?: number;
 };
 
 export type GroupedAssocRecord = {
@@ -195,6 +197,6 @@ export type SummaryTableRow = {
   pheno: Phenotype;
   dataset: string;
   total: number;
-  up: number;
-  down: number;
+  consistent: number;
+  opposite: number;
 };

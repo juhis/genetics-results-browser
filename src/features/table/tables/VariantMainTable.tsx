@@ -130,7 +130,7 @@ const VariantMainTable = (props: {
       muiTableBodyRowProps={({ row }) => ({
         sx: {
           backgroundColor:
-            Number(row.original.group) % 2 == 1 ? theme.palette.background.default : "inherit",
+            Number(row.original.value) % 2 == 1 ? theme.palette.background.default : "inherit",
         },
       })}
       sortingFns={{

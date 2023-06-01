@@ -23,7 +23,12 @@ const PhenotypeSummaryTable = (props: {}) => {
 
   const summaryData = useMemo(() => summarize(clientData), [clientData]);
   const columns = useMemo<MRT_ColumnDef<SummaryTableRow>[]>(() => {
-    return getVariantSummaryTableColumns(clientData.phenos, clientData.datasets, clientData.meta);
+    return getVariantSummaryTableColumns(
+      clientData.phenos,
+      clientData.datasets,
+      clientData.meta,
+      clientData.has_betas
+    );
   }, [summaryData]);
 
   return (

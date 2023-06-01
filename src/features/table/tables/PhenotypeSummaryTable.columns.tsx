@@ -2,11 +2,12 @@ import { MRT_ColumnDef } from "material-react-table";
 import { ApiResponseMeta, DatasetMap, PhenoMap, SummaryTableRow } from "../../../types/types";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { filterContainsWithTooltip } from "../utils/tableutil";
-import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
+
 export const getVariantSummaryTableColumns = (
   phenoMap: PhenoMap,
   datasetMap: DatasetMap,
-  meta: ApiResponseMeta
+  meta: ApiResponseMeta,
+  has_betas: boolean
 ): MRT_ColumnDef<SummaryTableRow>[] => {
   let cols: MRT_ColumnDef<SummaryTableRow>[] = [
     {
@@ -52,29 +53,32 @@ export const getVariantSummaryTableColumns = (
     },
     {
       accessorKey: "total",
-      header: "total variants",
-      id: "total",
+      header: "variants",
       filterFn: "greaterThan",
       sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "total" },
-      size: 50,
-    },
-    {
-      accessorKey: "up",
-      header: "risk variants",
-      filterFn: "greaterThan",
-      sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "risk" },
-      size: 50,
-    },
-    {
-      accessorKey: "down",
-      header: "protective variants",
-      filterFn: "greaterThan",
-      sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "protective" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "variants" },
       size: 50,
     },
   ];
+  if (has_betas) {
+    cols = cols.concat([
+      {
+        accessorKey: "consistent",
+        header: "consistent",
+        filterFn: "greaterThan",
+        sortingFn: "alphanumeric",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "consistent" },
+        size: 50,
+      },
+      {
+        accessorKey: "opposite",
+        header: "opposite",
+        filterFn: "greaterThan",
+        sortingFn: "alphanumeric",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "opposite" },
+        size: 50,
+      },
+    ]);
+  }
   return cols;
 };
