@@ -1,5 +1,5 @@
 import timeit
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Optional
 from flask import (
     Flask,
     Response,
@@ -63,7 +63,7 @@ rsid_db = RsidDB(config)
 
 def parse_query(
     query: str,
-) -> tuple[Literal["single", "group"], list[tuple[str, str | None, str | None]]]:
+) -> tuple[Literal["single", "group"], list[tuple[str, float, str | None]]]:
     items = sep_re_line.split(query)
     len_first = len(sep_re_delim.split(items[0]))
     if len_first > 1:
@@ -74,19 +74,26 @@ def parse_query(
                 input.append(
                     (
                         s[0],
-                        s[1],
+                        float(s[1]),
                         s[2] if len_first > 2 else None,
                     )
                 )
         except IndexError:
             raise ParseException(
-                "Oops, I cannot parse that. Try providing either one variant per line or all variants in one line separated by space or comma. Or variant, group, and value separated by space or comma on each line."
+                "Oops, I cannot parse that. Try providing either one variant per line or all variants in one line separated by space or comma. Or variant, beta, and optionally any custom value separated by space or comma on each line."
+            )
+        except ValueError as e:
+            raise ParseException(
+                "Oops, I cannot parse that. Looks like some beta value is not numeric in the input: "
+                + str(e)
             )
         return ("group", input)
     else:
         items = sep_re_line_and_delim.split(query)
         vars: list[str] = list(dict.fromkeys([item.strip() for item in items]))
-        input = [(var, None, None) for var in vars]
+        input = [
+            (var, 0, None) for var in vars
+        ]  # would like to use None instead of 0 but mypy complains and I don't know how to fix it
         return ("single", input)
 
 
@@ -183,7 +190,7 @@ def results() -> Any | tuple[Any, int]:
             data.append(
                 {
                     "variant": str(var),
-                    "group": tpl[1],
+                    "beta": tpl[1],
                     "value": tpl[2],
                     "gnomad": gnomad["gnomad"],
                     "finemapped": finemapped["finemapped"],
@@ -230,7 +237,8 @@ def results() -> Any | tuple[Any, int]:
             "most_severe": sorted(list(uniq_most_severe)),
             "phenos": phenos,
             "datasets": datasets,
-            "is_grouped": parsed[0] == "group",
+            "has_betas": parsed[0] == "group",
+            "has_custom_values": parsed[1][0][2] is not None,
             "input_variants": {
                 "found": sorted(list(found_input_variants)),
                 "not_found": sorted(list(notfound_variants)),

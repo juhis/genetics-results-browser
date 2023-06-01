@@ -20,9 +20,12 @@ export const pValRepr = (mlogp: number): string => {
 // or use the meta property of the columns
 export const filterAbsGreaterThanHTML = (row: Row<any>, id: string, filterValue: any): boolean => {
   const rowVal = row.getValue(id) as any;
-  console.log(rowVal);
   const val =
-    rowVal.props.value !== undefined
+    typeof rowVal === "number"
+      ? rowVal
+      : typeof rowVal === "string"
+      ? Number(rowVal)
+      : rowVal.props.value !== undefined
       ? rowVal.props.value
       : typeof rowVal.props.children == "string"
       ? Number(rowVal.props.children)

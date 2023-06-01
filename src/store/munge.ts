@@ -342,6 +342,11 @@ export const filterRows = (
 
 export const summarize = (data: TableData): SummaryTableData => {
   const startTime = performance.now();
+  data.data.forEach((d) => {
+    d.assoc.data.forEach((a) => {
+      a.beta_input = d.beta;
+    });
+  });
   const assocs: AssocRecord[] = data.data.flatMap((d) => d.assoc.data);
   // TODO keys of phenoCounts not used
   const phenoCounts = assocs.reduce((p, c) => {
@@ -350,8 +355,12 @@ export const summarize = (data: TableData): SummaryTableData => {
       resource: c.resource,
       dataset: c.dataset,
       phenocode: c.phenocode,
-      up: ((p[id]?.up as number) || 0) + (c.beta > 0 ? 1 : 0),
-      down: ((p[id]?.down as number) || 0) + (c.beta < 0 ? 1 : 0),
+      consistent:
+        ((p[id]?.consistent as number) || 0) +
+        (c.beta_input !== undefined && c.beta * c.beta_input > 0 ? 1 : 0),
+      opposite:
+        ((p[id]?.opposite as number) || 0) +
+        (c.beta_input !== undefined && c.beta * c.beta_input < 0 ? 1 : 0),
       total: ((p[id]?.total as number) || 0) + (c.beta != 0 ? 1 : 0),
     };
     return p;
@@ -362,8 +371,8 @@ export const summarize = (data: TableData): SummaryTableData => {
       pheno: data.phenos[d[1].resource + ":" + d[1].phenocode],
       dataset: d[1].dataset as string,
       total: d[1].total as number,
-      up: d[1].up as number,
-      down: d[1].down as number,
+      consistent: d[1].consistent as number,
+      opposite: d[1].opposite as number,
     }))
     .filter((d) => !d.pheno.is_na);
   console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over phenotypes`);
