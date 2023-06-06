@@ -16,6 +16,7 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
   useHotkeys("e", () => toggleDataType(DataType.EQTL));
   useHotkeys("p", () => toggleDataType(DataType.PQTL));
   useHotkeys("s", () => toggleDataType(DataType.SQTL));
+  useHotkeys("d", () => toggleDataType(DataType.EDQTL));
 
   useHotkeys("b", () => toggleGWASType("case-control"));
   useHotkeys("q", () => toggleGWASType("continuous"));
@@ -35,7 +36,9 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
                 }}
               />
             }
-            label={`[${dataType.slice(0, 1).toUpperCase()}] Include ${dataType}`}
+            label={`[${
+              dataType == DataType.EDQTL ? "D" : dataType.slice(0, 1).toUpperCase()
+            }] Include ${dataType}`}
           />
         );
       }),

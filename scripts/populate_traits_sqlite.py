@@ -12,7 +12,7 @@ import argparse
 CREATE_STMT = """
 CREATE TABLE IF NOT EXISTS trait (
     resource TEXT NOT NULL,
-    data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL') ),
+    data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL','edQTL') ),
     trait_type TEXT NOT NULL CHECK( trait_type IN ('continuous','case-control')),
     phenocode TEXT NOT NULL,
     phenostring TEXT NOT NULL,
@@ -49,8 +49,7 @@ def main():
     )
     parser.add_argument(
         "--resources",
-        help="comma-separated list of resources to be included (default: all)",
-        default="all",
+        help="comma-separated list of resources to be included",
     )
     args = parser.parse_args()
     populate_traits(args)
@@ -246,6 +245,32 @@ def generate_entries_decode_pqtl(
             )
 
 
+# zcat GTEx_v8_edQTL.tsv.gz | cut -f4 | tail -n+2  | sort -u > GTEx_v8_edQTL.traits
+def generate_entries_edqtl(resource, filename, date):
+    with open(filename, "r") as f:
+        for line in f:
+            p = line.strip().split("\t")
+            yield (
+                (
+                    resource,
+                    "edQTL",
+                    "continuous",
+                    p[0],
+                    p[0],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    "GTEx",
+                    date,
+                )
+            )
+
+
 def populate_traits(args):
     start_time = timeit.default_timer()
     conn = sqlite3.connect(args.db_name)
@@ -264,7 +289,7 @@ def populate_traits(args):
     for resource in args.resources.split(","):
         print(resource)
         c.execute(DELETE_TEMPLATE, (resource,))
-        if resource == "eQTL_Catalogue_R6" or resource == "all":
+        if resource == "eQTL_Catalogue_R6":
             for file in [
                 (
                     "/mnt/disks/data/eqtl_catalogue_r6/metadata/Affy_Human_Gene_1_0_ST_Ensembl_96_phenotype_metadata.tsv.gz",
@@ -314,7 +339,7 @@ def populate_traits(args):
                 )
             n_datasets += 1
 
-        if resource == "Open_Targets" or resource == "all":
+        if resource == "Open_Targets":
             c.executemany(
                 INSERT_TEMPLATE,
                 generate_entries_opentargets(
@@ -324,7 +349,7 @@ def populate_traits(args):
             )
             n_datasets += 1
 
-        if resource == "deCODE" or resource == "all":
+        if resource == "deCODE":
             c.executemany(
                 INSERT_TEMPLATE,
                 generate_entries_decode_pqtl(
@@ -337,7 +362,7 @@ def populate_traits(args):
             )
             n_datasets += 1
 
-        if resource == "FinnGen" or resource == "all":
+        if resource == "FinnGen":
             c.executemany(
                 INSERT_TEMPLATE,
                 generate_entries_finngen(
@@ -348,12 +373,21 @@ def populate_traits(args):
             )
             n_datasets += 1
 
-        if resource == "UKBB_BBJ" or resource == "all":
+        if resource == "UKBB_BBJ":
             c.execute(DELETE_TEMPLATE, ("UKBB_119",))
             c.execute(DELETE_TEMPLATE, ("BBJ_79",))
             c.executemany(
                 INSERT_TEMPLATE,
                 generate_entries_ukbb_bbj("/mnt/disks/data/ukb_bbj_traits.tsv"),
+            )
+            n_datasets += 1
+
+        if resource == "GTEx_v8_edQTL":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_edqtl(
+                    resource, "/mnt/disks/data/GTEx_v8_edQTL.traits", "2022-08-03"
+                ),
             )
             n_datasets += 1
 

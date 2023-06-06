@@ -60,6 +60,7 @@ export const useDataStore = create<DataState>()(
       eQTL: false,
       pQTL: false,
       sQTL: false,
+      edQTL: false,
     },
     toggleDataType: (dataType: string) => {
       set((state) => {

@@ -25,7 +25,7 @@ gnomad = {
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_public_20230522.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_public_20230601.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it won't be fetched and it will not be shown in the UI
     "resources": [
@@ -76,6 +76,17 @@ assoc = {
                 }
             ],
             "p_thres": 5e-3,
+        },
+        {
+            "resource": "GTEx_v8_edQTL",
+            "data_types": ["edQTL"],
+            "pheno_urls": [
+                {
+                    "url": "https://doi.org/10.1038/s41586-022-05052-x",
+                    "label": "Nature 2022",
+                }
+            ],
+            "p_thres": 1e-6,
         },
     ],
 }

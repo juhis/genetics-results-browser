@@ -20,30 +20,6 @@ export const getVariantMainTableColumns = (
   showTraitCounts: boolean
 ): MRT_ColumnDef<VariantRecord>[] => {
   let cols: MRT_ColumnDef<VariantRecord>[] = [];
-  if (data?.has_betas) {
-    cols = cols.concat([
-      {
-        accessorFn: (row) => row.beta,
-        header: "beta",
-        id: "beta",
-        filterFn: filterAbsGreaterThanHTML,
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
-        size: 50,
-      },
-    ]);
-  }
-  if (data?.has_custom_values) {
-    cols = cols.concat([
-      {
-        accessorFn: (row) => row.value,
-        header: "value",
-        id: "value",
-        filterFn: "greaterThan",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "value" },
-        size: 50,
-      },
-    ]);
-  }
   cols = cols.concat([
     {
       accessorKey: "variant",
@@ -65,12 +41,12 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) => <VariantGnomadToolTip variant={row.variant} gnomadData={row.gnomad} />,
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
-      header: `gnomAD ${selectedPopulation || ""} AF`,
+      header: `${selectedPopulation || ""} AF`,
       filterFn: filterLessThanHTML,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "AF" },
       sortingFn: "naInfSort",
       sortDescFirst: false,
-      size: 80,
+      size: 60,
     },
     {
       accessorFn: (row) =>
@@ -124,32 +100,22 @@ export const getVariantMainTableColumns = (
       {
         accessorKey: "assoc.counts.total.up",
         header: "traits_up",
-        Header: ({ column }) => (
-          <>
-            <UpOrDownIcon value={1} />
-            traits
-          </>
-        ),
+        Header: ({ column }) => <UpOrDownIcon value={1} />,
         // need dot notation for naInfSort
         id: "assoc.counts.total.up",
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 60,
+        size: 30,
       },
       {
         accessorKey: "assoc.counts.total.down",
         header: "traits_down",
-        Header: ({ column }) => (
-          <>
-            <UpOrDownIcon value={-1} />
-            traits
-          </>
-        ),
+        Header: ({ column }) => <UpOrDownIcon value={-1} />,
         // need dot notation for naInfSort
         id: "assoc.counts.total.down",
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 60,
+        size: 30,
       },
     ]);
   }
@@ -216,15 +182,14 @@ export const getVariantMainTableColumns = (
       muiTableHeadCellFilterTextFieldProps: { placeholder: "p-value" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
-      size: 70,
+      size: 60,
     },
     {
       accessorFn: (row) => {
         const assoc = row.assoc.groupedData[0];
-        const arrow = <UpOrDownIcon value={assoc.beta[0]} />;
         return (
           <div>
-            {arrow}
+            <UpOrDownIcon value={assoc.beta[0]} />
             <span style={assoc.mlogp[0] <= 0 ? { color: "gray" } : {}}>
               {assoc.beta[0].toFixed(2)}
             </span>
@@ -238,8 +203,39 @@ export const getVariantMainTableColumns = (
       muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
-      size: 70,
+      size: 50,
     },
   ]);
+  if (data?.has_betas) {
+    cols = cols.concat([
+      {
+        accessorFn: (row) => {
+          return (
+            <div>
+              <UpOrDownIcon value={row.beta!} />
+              <span>{row.beta!.toFixed(2)}</span>
+            </div>
+          );
+        },
+        header: "my beta",
+        id: "beta",
+        filterFn: filterAbsGreaterThanHTML,
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "my beta" },
+        size: 50,
+      },
+    ]);
+  }
+  if (data?.has_custom_values) {
+    cols = cols.concat([
+      {
+        accessorFn: (row) => row.value,
+        header: "my value",
+        id: "value",
+        filterFn: "greaterThan",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "my value" },
+        size: 50,
+      },
+    ]);
+  }
   return cols;
 };
