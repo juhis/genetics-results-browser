@@ -41,6 +41,7 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
                   props.isNotReadyYet ||
                   (!toggledDataTypes["eQTL"] &&
                     !toggledDataTypes["sQTL"] &&
+                    !toggledDataTypes["edQTL"] &&
                     !toggledDataTypes["pQTL"])
                 }
                 onChange={() => {

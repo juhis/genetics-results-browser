@@ -37,6 +37,7 @@ export type VariantRecord = {
       eqtl: { up: number; down: number; total: number };
       pqtl: { up: number; down: number; total: number };
       sqtl: { up: number; down: number; total: number };
+      edqtl: { up: number; down: number; total: number };
       qtl: { up: number; down: number; total: number };
       gwas: { up: number; down: number; total: number };
       total: { up: number; down: number; total: number };
@@ -164,6 +165,7 @@ export enum DataType {
   EQTL = "eQTL",
   PQTL = "pQTL",
   SQTL = "sQTL",
+  EDQTL = "edQTL",
 }
 
 export enum QTLType {

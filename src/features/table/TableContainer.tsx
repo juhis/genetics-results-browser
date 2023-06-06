@@ -56,7 +56,7 @@ const TableContainer = () => {
             </TabPanel>
             <TabPanel value="summary" sx={{ padding: 0 }}>
               <Box display="flex" flexDirection="row">
-                <Box flex="2" display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
+                <Box flex="5" display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
                   <Typography sx={{ marginBottom: "10px", fontWeight: "bold" }}>
                     Phenotype association counts
                   </Typography>

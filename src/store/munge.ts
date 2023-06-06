@@ -206,13 +206,19 @@ const countFineMappedTraits = (
     down: dsqtl.filter((d) => d.beta[0] < 0).length,
     total: dsqtl.length,
   };
+  const dedqtl = dqtl.filter((d) => d.data_type === "edQTL");
+  const edqtl = {
+    up: dedqtl.filter((d) => d.beta[0] > 0).length,
+    down: dedqtl.filter((d) => d.beta[0] < 0).length,
+    total: dedqtl.length,
+  };
   const dgwas = d.filter((d) => d.data_type === "GWAS");
   const gwas = {
     up: dgwas.filter((d) => d.beta[0] > 0).length,
     down: dgwas.filter((d) => d.beta[0] < 0).length,
     total: dgwas.length,
   };
-  return { total, resource, eqtl, pqtl, sqtl, qtl, gwas };
+  return { total, resource, eqtl, pqtl, sqtl, edqtl, qtl, gwas };
 };
 
 // change placeholder text according to p-value threshold

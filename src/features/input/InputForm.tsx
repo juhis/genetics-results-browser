@@ -42,7 +42,7 @@ const InputForm = () => {
       });
       setVariantInput(input);
       setMessage(
-        "The input is too long to be stored in the url. If you want to share this result page, you cannot share a direct link and instead should share your variant list."
+        "The input is too long to be stored in the url. If you want to share these results, you should share your variant list instead of a direct link."
       );
       navigate("/");
     } else {
