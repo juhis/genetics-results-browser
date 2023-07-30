@@ -193,6 +193,58 @@ def generate_entries_finngen(resource, filename, date):
         )
 
 
+def generate_entries_soma(resource, filename, n_samples, date):
+    with open(filename, "r") as f:
+        h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
+        for line in f:
+            s = line.strip().split("\t")
+            yield (
+                (
+                    resource,
+                    "pQTL",
+                    "continuous",
+                    s[h["AptName"]],
+                    s[h["Gene name"]],
+                    None,
+                    s[h["Chromosome/scaffold name"]],
+                    s[h["Gene start (bp)"]],
+                    s[h["Gene end (bp)"]],
+                    s[h["Strand"]],
+                    n_samples,
+                    None,
+                    None,
+                    "FinnGen",
+                    date,
+                )
+            )
+
+
+def generate_entries_olink(resource, filename, n_samples, date):
+    with open(filename, "r") as f:
+        h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
+        for line in f:
+            s = line.strip().split("\t")
+            yield (
+                (
+                    resource,
+                    "pQTL",
+                    "continuous",
+                    s[h["geneName"]],
+                    s[h["geneName"]],
+                    None,
+                    s[h["Chromosome/scaffold name"]],
+                    s[h["Gene start (bp)"]],
+                    s[h["Gene end (bp)"]],
+                    s[h["Strand"]],
+                    n_samples,
+                    None,
+                    None,
+                    "FinnGen",
+                    date,
+                )
+            )
+
+
 def generate_entries_decode_pqtl(
     resource, filename_probemap, filename_probelist, num_samples, date
 ):
@@ -367,8 +419,31 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_finngen(
                     resource,
-                    "/mnt/disks/data/finngen-r9-pheno-list.json",
-                    "2022-04-04",
+                    "/mnt/disks/data/finngen-r11-pheno-list.json",
+                    "2023-04-25",
+                    # "/mnt/disks/data/finngen-r9-pheno-list.json",
+                    # "2022-04-04",
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "FinnGen_pQTL":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_soma(
+                    "FinnGen_pQTL",
+                    "/mnt/disks/data/Soma_info_all_ensembl.tsv",
+                    828,
+                    "2023-03-02",
+                ),
+            )
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_olink(
+                    "FinnGen_pQTL",
+                    "/mnt/disks/data/olink_probe_map_ensembl.tsv",
+                    619,
+                    "2023-03-02",
                 ),
             )
             n_datasets += 1
