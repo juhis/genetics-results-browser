@@ -71,13 +71,14 @@ def parse_query(
         try:
             for line in items:
                 s = sep_re_delim.split(line)
-                input.append(
-                    (
-                        s[0],
-                        float(s[1]),
-                        s[2] if len_first > 2 else None,
+                if s[0] != "":
+                    input.append(
+                        (
+                            s[0],
+                            float(s[1]),
+                            s[2] if len_first > 2 else None,
+                        )
                     )
-                )
         except IndexError:
             raise ParseException(
                 "Oops, I cannot parse that. Try providing either one variant per line or all variants in one line separated by space or comma. Or variant, beta, and optionally any custom value separated by space or comma on each line."
@@ -92,7 +93,7 @@ def parse_query(
         items = sep_re_line_and_delim.split(query)
         vars: list[str] = list(dict.fromkeys([item.strip() for item in items]))
         input = [
-            (var, 0, None) for var in vars
+            (var, 0, None) for var in vars if var != ""
         ]  # would like to use None instead of 0 but mypy complains and I don't know how to fix it
         return ("single", input)
 
