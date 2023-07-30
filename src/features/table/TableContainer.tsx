@@ -61,8 +61,8 @@ const TableContainer = () => {
                     Phenotype association counts
                   </Typography>
                   <Typography sx={{ marginBottom: "10px" }}>
-                    This table shows the number of variants associated with each phenotype with
-                    p-value less than {renderPThreshold(pThreshold)}.
+                    This table shows the number of input variants associated with each phenotype
+                    with p-value less than {renderPThreshold(pThreshold)}.
                   </Typography>
                   <PhenotypeSummaryTable />
                 </Box>
@@ -75,8 +75,8 @@ const TableContainer = () => {
                     Population allele frequencies
                   </Typography>
                   <Typography sx={{ marginBottom: "10px" }}>
-                    This table shows the number of variants with maximum or minimum allele frequency
-                    in each population.
+                    This table shows the number of input variants with maximum or minimum allele
+                    frequency in each population.
                   </Typography>
                   <VariantSummaryStats />
                 </Box>

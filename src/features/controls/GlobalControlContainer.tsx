@@ -23,8 +23,9 @@ const GlobalControlContainer = () => {
           flexDirection: "row",
         }}>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
+          {/* TODO - add back in and implement when we have more finemapping data
           <GlobalAssocFinemapSwitches isNotReadyYet={isNotReadyYet} />
-          <Divider sx={{ margin: "auto" }} orientation="vertical" />
+          <Divider sx={{ margin: "auto" }} orientation="vertical" /> */}
           <GlobalDataTypeSwitches isNotReadyYet={isNotReadyYet} />
           <Divider sx={{ margin: "auto" }} orientation="vertical" />
           <GlobalQTLSwitches isNotReadyYet={isNotReadyYet} />

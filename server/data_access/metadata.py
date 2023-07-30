@@ -88,7 +88,7 @@ class Metadata(object, metaclass=Singleton):
             else:
                 print(resource, data_type, dataset, phenocode)
                 raise DataException(
-                    "No trait name found for resource {} phenocode: {}".format(
+                    "No trait found in metadata db for resource {} phenocode: {}".format(
                         resource, phenocode
                     )
                 )

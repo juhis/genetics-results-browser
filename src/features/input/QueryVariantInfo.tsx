@@ -61,8 +61,8 @@ const QueryVariantInfo = (props: {}) => {
               {input.not_found.length} variants
             </span>
           </HtmlTooltip>{" "}
-          were not found. Please check they are in chr-pos-ref-alt format in genome build GRCh38. If
-          they are in this format, they don't exist in gnomAD {gnomadVersion!}.
+          were not found. Please check they are either in chr-pos-ref-alt format in genome build GRCh38 or rsids. If
+          they are in this format or rsids, they don't exist in gnomAD {gnomadVersion!}.
         </Typography>
       );
     } else {
