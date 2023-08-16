@@ -17,8 +17,8 @@
   </head>
   <body>
     {% if current_user and current_user.is_authenticated %}
-    <div style="padding-left: 10px; padding-top: 10px;">
-      <a href="{{ url_for('logout') }}" style="color: #333; font-weight: bold;"
+    <div style="float: right; padding-right: 10px; padding-top: 10px;">
+      <a href="{{ url_for('logout') }}" style="color: #fff; font-weight: bold;"
         >logout ({{ current_user.email }})</a
       >
     </div>
