@@ -442,8 +442,8 @@ def populate_traits(args):
                 generate_entries_olink(
                     "FinnGen_pQTL",
                     "/mnt/disks/data/olink_probe_map_ensembl.tsv",
-                    619,
-                    "2023-03-02",
+                    1225,
+                    "2023-08-08",
                 ),
             )
             n_datasets += 1
