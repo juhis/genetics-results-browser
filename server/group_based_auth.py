@@ -25,9 +25,11 @@ config = {
 }
 
 if config["authentication"]:
-    group_names = config["group_auth"]["GROUPS"]
-    service_account_file = config["group_auth"]["SERVICE_ACCOUNT_FILE"]
-    delegated_account = config["group_auth"]["DELEGATED_ACCOUNT"]
+    with open(config["authentication_file"]) as f:
+        auth_json = json.load(f)
+    group_names = auth_json["group_auth"]["GROUPS"]
+    service_account_file = auth_json["group_auth"]["SERVICE_ACCOUNT_FILE"]
+    delegated_account = auth_json["group_auth"]["DELEGATED_ACCOUNT"]
 
     service_account_scopes = [
         "https://www.googleapis.com/auth/admin.directory.group.readonly",
@@ -45,7 +47,9 @@ if config["authentication"]:
     )
 
     whitelist = (
-        config["login"]["whitelist"] if "whitelist" in config["login"].keys() else []
+        auth_json["login"]["whitelist"]
+        if "whitelist" in auth_json["login"].keys()
+        else []
     )
 
 
@@ -112,8 +116,8 @@ class GoogleSignIn(object):
         google_params = self._get_google_info()
         self.service = OAuth2Service(
             name="google",
-            client_id=config["login"]["GOOGLE_LOGIN_CLIENT_ID"],
-            client_secret=config["login"]["GOOGLE_LOGIN_CLIENT_SECRET"],
+            client_id=auth_json["login"]["GOOGLE_LOGIN_CLIENT_ID"],
+            client_secret=auth_json["login"]["GOOGLE_LOGIN_CLIENT_SECRET"],
             authorize_url=google_params.get("authorization_endpoint"),
             base_url=google_params.get("userinfo_endpoint"),
             access_token_url=google_params.get("token_endpoint"),
