@@ -27,7 +27,7 @@ export const PhenoTooltip = (props: {
             <Link
               color="inherit"
               target="_blank"
-              href={url.url.replace("[PHENOCODE]", pheno.phenocode)}>
+              href={url.url.replace("[PHENOCODE]", pheno.phenocode).replace("[GENE]", pheno.phenostring)}>
               {url.label}
             </Link>
           </div>

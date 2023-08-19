@@ -1,3 +1,4 @@
+import json
 import timeit
 from typing import Any, Callable, Literal, Optional
 from flask import (
@@ -71,13 +72,14 @@ def parse_query(
         try:
             for line in items:
                 s = sep_re_delim.split(line)
-                input.append(
-                    (
-                        s[0],
-                        float(s[1]),
-                        s[2] if len_first > 2 else None,
+                if s[0] != "":
+                    input.append(
+                        (
+                            s[0],
+                            float(s[1]),
+                            s[2] if len_first > 2 else None,
+                        )
                     )
-                )
         except IndexError:
             raise ParseException(
                 "Oops, I cannot parse that. Try providing either one variant per line or all variants in one line separated by space or comma. Or variant, beta, and optionally any custom value separated by space or comma on each line."
@@ -92,7 +94,7 @@ def parse_query(
         items = sep_re_line_and_delim.split(query)
         vars: list[str] = list(dict.fromkeys([item.strip() for item in items]))
         input = [
-            (var, 0, None) for var in vars
+            (var, 0, None) for var in vars if var != ""
         ]  # would like to use None instead of 0 but mypy complains and I don't know how to fix it
         return ("single", input)
 
@@ -127,6 +129,17 @@ def auth() -> str:
 @app.route("/<path:path>")
 def homepage(path: str) -> str:
     return render_template("index.html")
+
+
+@app.route("/api/v1/config", methods=["GET"])
+def get_config() -> Any:
+    return jsonify(
+        {
+            "gnomad": config["gnomad"],
+            "assoc": config["assoc"],
+            "finemapped": config["finemapped"],
+        }
+    )
 
 
 @app.route("/api/v1/results", methods=["POST"])
@@ -256,7 +269,9 @@ def results() -> Any | tuple[Any, int]:
 
 
 # OAUTH2
-if "login" in config:
+if config["authentication"]:
+    with open(config["authentication_file"]) as f:
+        auth_json = json.load(f)
     google_sign_in = GoogleSignIn()
 
     lm = LoginManager(app)
@@ -280,8 +295,8 @@ if "login" in config:
     @lm.user_loader  # type: ignore
     def load_user(id: str) -> User | None:
         if id.endswith("@finngen.fi") or id in (
-            config["login"]["whitelist"]
-            if "whitelist" in config["login"].keys()
+            auth_json["login"]["whitelist"]
+            if "whitelist" in auth_json["login"].keys()
             else []
         ):
             return User(email=id)

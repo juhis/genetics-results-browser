@@ -1,4 +1,5 @@
 import { Row } from "@tanstack/react-table";
+import { TableData } from "../../../types/types";
 
 export const pValRepr = (mlogp: number): string => {
   if (mlogp <= 0) {
@@ -13,6 +14,14 @@ export const pValRepr = (mlogp: number): string => {
     repr = `${digits}e-${exp}`;
   }
   return repr;
+};
+
+// TODO if the threshold is the same across resources, just show the number
+export const renderPThreshold = (clientData: TableData, thres: number): string => {
+  if (thres === 1) {
+    return clientData!.meta.assoc.resources.map((r) => `${r.p_thres} (${r.resource})`).join(", ");
+  }
+  return `the chosen threshold of ${thres}`;
 };
 
 // TODO should use the raw data instead of the HTML in these functions
@@ -60,6 +69,11 @@ export const filterContainsWithTooltip = (row: Row<any>, id: string, filterValue
             )
           : true;
       } else {
+        if (val.props.phenos !== undefined) {
+          return (
+            val.props.phenos[0].phenostring.toLowerCase().indexOf(filterValue.toLowerCase()) > -1
+          );
+        }
         // text
         // no tooltip - blank field
         if (val.props.content.props.children === null) {

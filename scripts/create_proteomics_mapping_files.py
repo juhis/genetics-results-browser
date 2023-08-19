@@ -12,6 +12,11 @@
 import pandas as pd
 import numpy as np
 
+soma_info_file = "/mnt/disks/data/Soma_info_all.csv"
+entrez_file = "/mnt/disks/data/mart_export_entrez.tsv"
+olink_probe_file = "/mnt/disks/data/fg_olink_probes"
+gene_name_file = "/mnt/disks/data/mart_export_gene_name.tsv"
+
 chr_set = set(
     [
         "1",
@@ -44,11 +49,11 @@ chr_set = set(
 
 # SomaScan
 
-a = pd.read_csv("Soma_info_all.csv")
+a = pd.read_csv(soma_info_file)
 a.to_csv("Soma_info_all.tsv", sep="\t", index=False, na_rep="NA")
 a["EntrezGeneID"] = a["EntrezGeneID"].astype(str)
 
-b = pd.read_csv("mart_export_entrez.tsv", sep="\t").rename(
+b = pd.read_csv(entrez_file, sep="\t").rename(
     columns={"NCBI gene (formerly Entrezgene) ID": "EntrezGeneID"}
 )
 b = b[~np.isnan(b["EntrezGeneID"])]
@@ -56,15 +61,15 @@ b["EntrezGeneID"] = b["EntrezGeneID"].astype(int)
 b["EntrezGeneID"] = b["EntrezGeneID"].astype(str)
 a.merge(b, how="left", on="EntrezGeneID").astype(
     {"Gene start (bp)": "Int64", "Gene end (bp)": "Int64", "Strand": "Int64"}
-).to_csv("Soma_info_all_ensembl.tsv", sep="\t", index=False, na_rep="NA")
+).drop_duplicates("AptName").to_csv(
+    "Soma_info_all_ensembl.tsv", sep="\t", index=False, na_rep="NA"
+)
 
 # Olink
 
-a = pd.read_csv("fg_olink_probes", names=["geneName"])
+a = pd.read_csv(olink_probe_file, names=["geneName"])
 
-b = pd.read_csv("mart_export_gene_name.tsv", sep="\t").rename(
-    columns={"Gene name": "geneName"}
-)
+b = pd.read_csv(gene_name_file, sep="\t").rename(columns={"Gene name": "geneName"})
 b = b[b["Chromosome/scaffold name"].isin(chr_set)]
 b["Gene start (bp)"] = b.groupby("geneName")["Gene start (bp)"].transform("min")
 b["Gene end (bp)"] = b.groupby("geneName")["Gene end (bp)"].transform("max")

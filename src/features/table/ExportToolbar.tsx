@@ -55,7 +55,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           }}
           startIcon={<FileDownloadIcon />}
           variant="contained">
-          export main table
+          export Variants table
         </Button>
         <Button
           disabled={isError || isFetching || isLoading}

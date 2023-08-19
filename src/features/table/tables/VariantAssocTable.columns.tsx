@@ -28,7 +28,7 @@ export const getAssociationTableColumns = (
       const datasetName = dataset
         ? `${dataset.study_label}:${dataset.sample_group}:${dataset.quant_method}`
         : row.dataset;
-      return datasetName;
+      return datasetName.replace(/_/g, " ");
     },
     header: "dataset",
     filterFn: "contains",
@@ -59,9 +59,9 @@ export const getAssociationTableColumns = (
         />
       );
     },
-    header: "phenotype or gene",
+    header: "trait",
     filterFn: filterContainsWithTooltip,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "phenotype or gene" },
+    muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
   },
   {
     accessorFn: (row) => pValRepr(row.mlogp[0]),

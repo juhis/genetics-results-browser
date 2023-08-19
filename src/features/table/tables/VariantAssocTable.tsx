@@ -7,9 +7,11 @@ import { naInfSort } from "../utils/sorting";
 import { getAssociationTableColumns } from "./VariantAssocTable.columns";
 import { UpDownIcons } from "../UpDownIcons";
 import { useDataStore } from "../../../store/store";
+import { renderPThreshold } from "../utils/tableutil";
 
 const VariantAssocTable = (props: { variantData: VariantRecord }) => {
   const clientData: TableData = useDataStore((state) => state.clientData)!;
+  const pThreshold = useDataStore((state) => state.pThreshold);
   const [toggled, setToggled] = useState(
     clientData.meta.assoc.resources
       .map((r) => r.resource)
@@ -104,6 +106,11 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Typography sx={{ marginBottom: "10px", fontWeight: "bold" }}>Association results</Typography>
+      <Typography sx={{ marginBottom: "10px" }}>
+        This table shows association results for the selected variant.
+        <br />
+        Associations with p-value less than {renderPThreshold(clientData, pThreshold)} are shown.
+      </Typography>
       <FormGroup sx={{ display: "flex", flexDirection: "row" }}>{switches} </FormGroup>
       <MaterialReactTable
         columns={columns}

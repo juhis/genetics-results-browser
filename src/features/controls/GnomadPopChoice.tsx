@@ -9,14 +9,14 @@ const GnomadPopChoice = (props: { isNotReadyYet: boolean }) => {
 
   return (
     <Autocomplete
-      sx={{ width: 175, paddingLeft: "20px" }}
+      sx={{ width: 200, paddingLeft: "20px" }}
       //disablePortal
       disabled={props.isNotReadyYet}
       id="phenotype-select"
       options={clientData?.meta.gnomad.populations || []}
       getOptionLabel={(option) => option}
       renderOption={(prps, pop) => <span {...prps}>{pop}</span>}
-      renderInput={(params) => <TextField {...params} label="AF population" />}
+      renderInput={(params) => <TextField {...params} label="AF gnomAD population" />}
       onChange={(event, newValue: string | null) => {
         setSelectedPopulation(newValue !== null ? newValue : undefined);
       }}

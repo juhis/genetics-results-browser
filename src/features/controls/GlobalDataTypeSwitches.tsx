@@ -76,7 +76,6 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          paddingLeft: "20px",
           paddingRight: "20px",
         }}>
         {dataTypeSwitches}

@@ -45,11 +45,11 @@ export const getVariantSummaryTableColumns = (
           />
         );
       },
-      header: "phenotype",
-      id: "phenotype",
+      header: "trait",
+      id: "trait",
       filterFn: filterContainsWithTooltip,
       sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "phenotype" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
     },
     {
       accessorKey: "total",
