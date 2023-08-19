@@ -2,6 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TableData } from "../types/types";
 
+export const useConfigQuery = () => {
+  return useQuery({
+    queryKey: ["config"],
+    queryFn: async () => {
+      let { data } = await axios.get("/api/v1/config");
+      return data;
+    },
+  });
+};
+
 export const useServerQuery = (variantInput: string | undefined) => {
   return useQuery<TableData>({
     queryKey: ["table-data", variantInput],

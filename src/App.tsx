@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { indigo, pink } from "@mui/material/colors";
 import Header from "./features/page/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TableContainer from "./features/table/TableContainer";
+import About from "./features/page/About";
 
 export const App = () => {
   //TODO dark/light mode
@@ -15,10 +17,15 @@ export const App = () => {
     () =>
       createTheme({
         palette: {
-          mode: "prefersDarkMode" ? "dark" : "light",
+          primary: indigo,
+          secondary: pink,
+          mode: prefersDarkMode ? "dark" : "light",
         },
         typography: {
-          fontSize: 10,
+          body1: {
+            fontSize: 12,
+          },
+          fontSize: 12,
         },
       }),
     [prefersDarkMode]
@@ -44,6 +51,7 @@ export const App = () => {
             <Header />
             <Routes>
               <Route path="/" element={<TableContainer />} />
+              <Route path="/about" element={<About />} />
             </Routes>
           </div>
         </ThemeProvider>
