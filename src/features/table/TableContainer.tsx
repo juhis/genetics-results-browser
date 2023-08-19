@@ -2,7 +2,7 @@ import VariantMainTable from "./tables/VariantMainTable";
 import QueryVariantInfo from "../input/QueryVariantInfo";
 import InputForm from "../input/InputForm";
 import { useDataStore } from "../../store/store";
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Link, Tab, Tabs, Typography } from "@mui/material";
 import TabPanel from "@mui/lab/TabPanel";
 import { TabContext } from "@mui/lab";
 import GlobalControlContainer from "../controls/GlobalControlContainer";
@@ -10,6 +10,7 @@ import PhenotypeSummaryTable from "./tables/PhenotypeSummaryTable";
 import VariantSummaryStats from "./tables/PopulationSummaryTable";
 import { useServerQuery } from "../../store/serverQuery";
 import { useEffect } from "react";
+import { renderPThreshold } from "./utils/tableutil";
 
 const TableContainer = () => {
   const activeTab = useDataStore((state) => state.activeTab);
@@ -31,14 +32,6 @@ const TableContainer = () => {
     setActiveTab(newValue);
   };
 
-  // TODO if the threshold is the same across resources, just show the number
-  const renderPThreshold = (thres: number): string => {
-    if (thres === 1) {
-      return clientData!.meta.assoc.resources.map((r) => `${r.p_thres} (${r.resource})`).join(", ");
-    }
-    return `the chosen threshold of ${thres}`;
-  };
-
   return (
     <>
       <InputForm />
@@ -52,17 +45,51 @@ const TableContainer = () => {
               <Tab value="summary" label="summary" disabled={clientData === undefined} />
             </Tabs>
             <TabPanel value="variants" sx={{ padding: 0 }}>
-              <VariantMainTable enableTopToolbar={true} showTraitCounts={true} />
+              <Box display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
+                <Typography sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
+                  Variants
+                </Typography>
+                <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
+                  This table shows annotations, number of trait associations with p-value less than{" "}
+                  {renderPThreshold(clientData!, pThreshold)}, and top association statistics for
+                  each of your input variants.
+                  <br />
+                  You can toggle GWAS, eQTL etc. associations with the switches above.
+                  <br />
+                  Use the arrows on the left of each variant to expand that variant and see all of
+                  its associations and fine-mapping results.
+                </Typography>
+                <VariantMainTable enableTopToolbar={true} showTraitCounts={true} />
+              </Box>
             </TabPanel>
             <TabPanel value="summary" sx={{ padding: 0 }}>
               <Box display="flex" flexDirection="row">
                 <Box flex="5" display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
-                  <Typography sx={{ marginBottom: "10px", fontWeight: "bold" }}>
-                    Phenotype association counts
+                  <Typography
+                    sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
+                    Summary
                   </Typography>
-                  <Typography sx={{ marginBottom: "10px" }}>
-                    This table shows the number of input variants associated with each phenotype
-                    with p-value less than {renderPThreshold(pThreshold)}.
+                  <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
+                    This table shows the number of your input variants associated with each trait
+                    with a p-value less than {renderPThreshold(clientData!, pThreshold)}.
+                    <br />
+                    You can toggle GWAS, eQTL etc. associations with the switches above.
+                    <br />
+                    Use the arrows on the left of each trait to expand that trait and see all your
+                    input variants that are associated with it.
+                    {clientData?.has_betas ? null : (
+                      <>
+                        <br />
+                        If you paste effect size betas with your input variants, the table will also
+                        show the number of variants with
+                        <br />
+                        consistent and opposite effect direction (try the "
+                        <Link href="/?q=MwWgLArAHAjLEE4QHEQEECQB2AdAJgQFEQAGGDAZwFMA3AKD1BggDYS88YsQAVEAYQwgWOCCWJlKAVwoBjOkk54SLNiwEoMYHGBYTy1ejCQwSwCHjBg8KARmA4oefZVp11YZspZgStzA7A4qQGblzgCFAswHhsGph4OAgwLoZ0xuBYXKp+aJqJvqluoJBYCMAIeBD+GIlmqTLyMCDMFuzlYLx2LUkQRfScIMAxwFjRSHnIGDCOUP0MzcMdUFY1M2Xz6jFZVhxdgj2q8zDNMJwIF82oPEIz0cfqUMkILJZIqJgzYsdMZ1Cw1m4-F40xwwDmIVc9C2JycLGg6E0PTg8xsbDAUBIkFAk1uOBgekhaU6pg4LCwEAsGhuMxgYAacjonSqwDOoxsuNpwGO3Eg0TEkRqyOcRLcJggZWg5lsNPxKVFRkWVkxYAQ1WBNx6JCICqZLRI0AQWCe6g+ePYxz8ZSNWBUV3QGAQoh17AwADsmsynggSOwoIipiAnZAJHhpIyzi0YqwIODuHwDk6OKGoQoo9twTBQBqhE6CSmKI06NUs5ZPHgKftHTgVAWwjYTgQOBT-QmMFAkoTXWkMhjbXh-v7UAcO1h6aQw4WI8JVWAdtxrkJR-Lu2EkGJRuVXlWO-C6wNmp456YWPbMCAO4h9+4QAQEHPVc0cxedC7J25uBTXs31Pw8oIOwqFMPT1KorDGMwhUArt33obhTF9bYMhzDss2vf02AgLNyxqXACGvJBhmsLCohQHg0DQYEpjwmD3XkbgOCgCAMRYVtulwM5r2aLAxygYAwHBXCa1onskEgKIjWSdAeD4TBcCxa8mDIHxjWYoUREpAsiy2IIAX46kMAgHBT2Apo-EbI0wP9YFzyM0ZrxsWJT1YsQZS0HAxi48BWIQwU23AYy31TcIKguP0kCo9ySAhV0QIyf4XjVTozUSH0tOnVoCQIIIhUSJ5TLoJg1R46KsBsNtEj3Uhw1kPA6CAA">
+                          COVID-19 all lead variants
+                        </Link>
+                        " input example).
+                      </>
+                    )}
                   </Typography>
                   <PhenotypeSummaryTable />
                 </Box>
@@ -75,8 +102,17 @@ const TableContainer = () => {
                     Population allele frequencies
                   </Typography>
                   <Typography sx={{ marginBottom: "10px" }}>
-                    This table shows the number of input variants with maximum or minimum allele
-                    frequency in each population.
+                    This table shows the number of input variants with maximum or minimum
+                    <br />
+                    allele frequency in each gnomAD population.
+                    <br />
+                    {clientData?.has_betas ? null : (
+                      <>
+                        <br />
+                        <br />
+                      </>
+                    )}
+                    &nbsp;
                   </Typography>
                   <VariantSummaryStats />
                 </Box>

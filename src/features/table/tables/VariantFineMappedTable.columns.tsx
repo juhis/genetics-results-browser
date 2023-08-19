@@ -22,7 +22,9 @@ export const getFineMappingTableColumns = (
       const datasetName = dataset
         ? `${dataset.study_label}:${dataset.sample_group}:${dataset.quant_method}`
         : row.dataset;
-      return row.count == 1 ? datasetName : datasetName + " (" + row.count + ")";
+      return row.count == 1
+        ? datasetName.replace(/_/g, " ")
+        : datasetName.replace(/_/g, " ") + " (" + row.count + ")";
     },
     id: "dataset",
     header: "dataset",
@@ -56,9 +58,9 @@ export const getFineMappingTableColumns = (
     //     />
     //   );
     // },
-    header: "phenotype or gene",
+    header: "trait",
     filterFn: "contains",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "gene or phenotype" },
+    muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
   },
   {
     accessorFn: (row) => pValRepr(row.mlog10p[0]),

@@ -130,7 +130,7 @@ export const handleFineMappingTableExport = (
       return row.original.finemapped.data.map((fm) => {
         const fmCols = columns.reduce((p, c) => {
           const hdr = c.header;
-          if (hdr == "phenotype or gene") {
+          if (hdr == "trait") {
             // TODO phenostring
             p[hdr] = fm.phenocode;
           } else {
@@ -207,7 +207,7 @@ export const handleAssocTableExport = (
             p[hdr] = assoc.dataset;
           } else if (hdr == "type") {
             p[hdr] = assoc.data_type;
-          } else if (hdr === "phenotype or gene") {
+          } else if (hdr === "trait") {
             // TODO we want the phenostring here
             p[hdr] = assoc.phenocode;
           } else if (hdr == "p-value") {

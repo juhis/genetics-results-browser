@@ -17,6 +17,7 @@ const VariantFinemappedTable = (props: { data: VariantRecord }) => {
     }, {} as Record<string, boolean>)
   );
 
+  const pipThreshold = useDataStore((state) => state.pipThreshold);
   const clientData: TableData = useDataStore((state) => state.clientData)!;
 
   const columns = useMemo<MRT_ColumnDef<GroupedFineMappedRecord>[]>(
@@ -95,6 +96,16 @@ const VariantFinemappedTable = (props: { data: VariantRecord }) => {
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Typography sx={{ marginBottom: "10px", fontWeight: "bold" }}>
         Fine-mapping results
+      </Typography>
+      <Typography sx={{ marginBottom: "10px" }}>
+        This table shows fine-mapping results for the selected variant.
+        <br />
+        The variant must be in a credible set of a trait{" "}
+        {pipThreshold > 0
+          ? `with PIP greater than the chosen threshold of
+        ${pipThreshold}`
+          : ""}{" "}
+        for the trait to be included here.
       </Typography>
       <FormGroup sx={{ display: "flex", flexDirection: "row" }}>{switches}</FormGroup>
       <MaterialReactTable

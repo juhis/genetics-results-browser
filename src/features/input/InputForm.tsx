@@ -120,7 +120,7 @@ const InputForm = () => {
         "17-39990289-C-G\t4.08E-02\tnc\n" +
         "19-8896954-G-A\t2.90E-02\tsusc\n" +
         "1-155162930-G-A\t-2.89E-02\tnc\n" +
-        "3-195770872-T-C\t2.65E-0\tsusc2\n";
+        "3-195770872-T-C\t2.65E-0\tsusc\n";
     }
     if (data == "FinnGen_priority") {
       input =
