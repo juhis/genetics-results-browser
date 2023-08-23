@@ -43,7 +43,7 @@ export const getVariantMainTableColumns = (
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
       header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "AF" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: false,
       size: 60,
@@ -93,6 +93,7 @@ export const getVariantMainTableColumns = (
         header: "traits",
         // need dot notation for naInfSort
         id: "assoc.counts.total.total",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 60,
@@ -103,6 +104,7 @@ export const getVariantMainTableColumns = (
         Header: ({ column }) => <UpOrDownIcon value={1} />,
         // need dot notation for naInfSort
         id: "assoc.counts.total.up",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 30,
@@ -113,6 +115,7 @@ export const getVariantMainTableColumns = (
         Header: ({ column }) => <UpOrDownIcon value={-1} />,
         // need dot notation for naInfSort
         id: "assoc.counts.total.down",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 30,
@@ -179,7 +182,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.mlogp.0",
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "p-value" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -200,7 +203,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.beta.0",
       filterFn: filterAbsGreaterThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 50,
