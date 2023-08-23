@@ -13,17 +13,6 @@ import { ExportToCsv } from "export-to-csv";
 import { getAssociationTableColumns } from "../tables/VariantAssocTable.columns";
 import { pValRepr } from "./tableutil";
 
-const csvExporter = new ExportToCsv({
-  fieldSeparator: "\t",
-  filename: "variant_annotation",
-  quoteStrings: "",
-  decimalSeparator: ".",
-  showLabels: true,
-  useBom: false, //never
-  useKeysAsHeaders: true,
-  useTextFile: true,
-});
-
 // TODO these functions are complicated and error prone if the tables are changed and should be refactored
 // perhaps munging the data to a more direct export format helps
 // or make all HTML columns use the same format, e.g. give a value prop
@@ -57,7 +46,6 @@ export const handleMainTableExport = (
           p[c.header] = `${val.props.children[1]}/${val.props.children[3]}`;
         } else if (val.props.children && typeof val.props.children === "object") {
           // two values expected
-          console.log(val);
           p[c.header] = val.props.children[1].props.children || "NA";
         } else if (val.props.children && val.props.children !== undefined) {
           if (val.props.children.props !== undefined) {
@@ -78,7 +66,16 @@ export const handleMainTableExport = (
       return p;
     }, {} as Record<string, string>);
   });
-  csvExporter.generateCsv(dataExport);
+  new ExportToCsv({
+    fieldSeparator: "\t",
+    filename: `variant_annotation_${table.getExpandedRowModel().rows.length}_variants`,
+    quoteStrings: "",
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: false, //never
+    useKeysAsHeaders: true,
+    useTextFile: true,
+  }).generateCsv(dataExport);
 };
 
 export const handleFineMappingTableExport = (
@@ -97,7 +94,6 @@ export const handleFineMappingTableExport = (
       const mainTableColsExport = mainTableMainCols.reduce((p, c) => {
         const val = (row.getValue(c[1]) || "NA") as any;
         if (typeof val === "object") {
-          console.log(val);
           if (val.props.gnomadData) {
             //@ts-ignore
             p[c[0]] = val.props.gnomadData.AF || "NA";
@@ -148,7 +144,16 @@ export const handleFineMappingTableExport = (
       });
     })
     .flat();
-  csvExporter.generateCsv(dataExport);
+  new ExportToCsv({
+    fieldSeparator: "\t",
+    filename: `variant_annotation_${table.getExpandedRowModel().rows.length}_variants_finemapping`,
+    quoteStrings: "",
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: false, //never
+    useKeysAsHeaders: true,
+    useTextFile: true,
+  }).generateCsv(dataExport);
 };
 
 export const handleAssocTableExport = (
@@ -227,5 +232,14 @@ export const handleAssocTableExport = (
       return assocData.filter((v) => Number(v["p-value"]) < 1);
     })
     .flat();
-  csvExporter.generateCsv(dataExport);
+  new ExportToCsv({
+    fieldSeparator: "\t",
+    filename: `variant_annotation_${table.getExpandedRowModel().rows.length}_variants_associations`,
+    quoteStrings: "",
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: false, //never
+    useKeysAsHeaders: true,
+    useTextFile: true,
+  }).generateCsv(dataExport);
 };
