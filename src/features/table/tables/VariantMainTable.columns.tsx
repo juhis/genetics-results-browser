@@ -41,7 +41,7 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) => <VariantGnomadToolTip variant={row.variant} gnomadData={row.gnomad} />,
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
-      header: `${selectedPopulation || ""} AF`,
+      header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "AF" },
       sortingFn: "naInfSort",
@@ -65,7 +65,7 @@ export const getVariantMainTableColumns = (
       filterFn: filterContainsWithTooltip,
       filterVariant: "multi-select",
       filterSelectOptions: data ? data["most_severe"].map((ms) => ({ text: ms, value: ms })) : [],
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "most severe" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "consequence" },
       enableSorting: false,
       size: 100,
     },
@@ -79,7 +79,7 @@ export const getVariantMainTableColumns = (
         />
       ),
       id: "gene_most_severe",
-      header: "gene",
+      header: "most severe gene",
       filterFn: filterContainsWithTooltip,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "gene" },
       enableSorting: false,

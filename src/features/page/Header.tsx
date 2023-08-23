@@ -38,7 +38,7 @@ const Header = () => {
         </Typography>
       </Box>
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-        A tool for variant annotation and interpretation based on global genomics results
+        A tool for variant annotation and interpretation based on global human genomics results
       </Typography>
     </>
   );
