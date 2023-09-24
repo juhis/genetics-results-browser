@@ -101,24 +101,34 @@ export const getVariantMainTableColumns = (
       {
         accessorKey: "assoc.counts.total.up",
         header: "traits_up",
-        Header: ({ column }) => <UpOrDownIcon value={1} />,
+        Header: ({ column }) => (
+          <>
+            <span>traits</span>
+            <UpOrDownIcon value={1} />
+          </>
+        ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.up",
         muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 30,
+        size: 60,
       },
       {
         accessorKey: "assoc.counts.total.down",
         header: "traits_down",
-        Header: ({ column }) => <UpOrDownIcon value={-1} />,
+        Header: ({ column }) => (
+          <>
+            <span>traits</span>
+            <UpOrDownIcon value={-1} />
+          </>
+        ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.down",
         muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 30,
+        size: 60,
       },
     ]);
   }
