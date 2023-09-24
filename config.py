@@ -19,7 +19,7 @@ gnomad = {
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_finngen_version_20230810.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_finngen_version_20230909.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it won't be fetched and it will not be shown in the UI
     "resources": [
@@ -35,7 +35,7 @@ assoc = {
                     "label": "FinnGen Pheweb",
                 },
                 {
-                    "url": "https://r11.risteys.finngen.fi/endpoints/[PHENOCODE]",
+                    "url": "https://risteys.finregistry.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
@@ -45,12 +45,27 @@ assoc = {
             "resource": "FinnGen_pQTL",
             "version": "SomaScan 2023-03-02, Olink 2023-08-08",
             "data_types": ["pQTL"],
-            "n_traits": "SomaScan 7,596, Olink 2,902",
+            "n_traits": "SomaScan 7,596, Olink 2,942",
             "url": "https://www.finngen.fi/en/for_researchers",
             "pheno_urls": [
                 {
                     "url": "https://r11.finngen.fi/gene/[GENE]",
                     "label": "FinnGen Pheweb",
+                }
+            ],
+            "p_thres": 5e-3,
+        },
+        {
+            "resource": "UKBB_pQTL",
+            "version": "2023-08-15",
+            "data_types": ["pQTL"],
+            "n_traits": "Olink 1,459",
+            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
+            "url": None,
+            "pheno_urls": [
+                {
+                    "url": "https://www.finngen.fi/en/for_researchers",
+                    "label": "FinnGen analysis",
                 }
             ],
             "p_thres": 5e-3,
@@ -115,7 +130,7 @@ assoc = {
 }
 
 finemapped = {
-    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20230810.tsv.gz",
+    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20230906.tsv.gz",
     "resources": [
         {
             "resource": "eQTL_Catalogue_R6",
@@ -137,6 +152,21 @@ finemapped = {
             "data_types": ["pQTL"],
             "n_traits": "SomaScan 7,596, Olink 2,902",
             "url": "https://www.finngen.fi/en/for_researchers",
+        },
+        {
+            "resource": "UKBB_pQTL",
+            "version": "2023-08-15",
+            "data_types": ["pQTL"],
+            "n_traits": "Olink 1,459",
+            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
+            "url": None,
+            "pheno_urls": [
+                {
+                    "url": "https://www.finngen.fi/en/for_researchers",
+                    "label": "FinnGen analysis",
+                }
+            ],
+            "p_thres": 5e-3,
         },
         {
             "resource": "UKBB_119",

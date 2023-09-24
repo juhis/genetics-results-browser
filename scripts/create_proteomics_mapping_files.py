@@ -1,5 +1,5 @@
 # gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_03_02/data/Olink/pQTL/*.gz | \
-# xargs -I{} basename {} .txt.gz | sed 's/Olink_Batch1_//' > fg_olink_probes
+# xargs -I{} basename {} .txt.gz | sed 's/Olink_Batch1_//' > fg_olink_probes # UKBB probes are all here
 
 # gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_03_02/data/Somascan/pQTL/*.gz | \
 # xargs -I{} basename {} .txt.gz | sed 's/SomaScan_Batch2_//' > fg_soma_probes
