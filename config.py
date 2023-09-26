@@ -35,7 +35,7 @@ assoc = {
                     "label": "FinnGen Pheweb",
                 },
                 {
-                    "url": "https://risteys.finregistry.fi/endpoints/[PHENOCODE]",
+                    "url": "https://r11.risteys.finregistry.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
