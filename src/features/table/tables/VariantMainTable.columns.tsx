@@ -11,6 +11,7 @@ import { ConsequenceTooltip } from "../../tooltips/ConsequenceTooltip";
 import { VariantGnomadToolTip } from "../../tooltips/VariantGnomadTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
 import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
+import GeneTooltip from "../../tooltips/GeneToolTip";
 
 export const getVariantMainTableColumns = (
   data: TableData,
@@ -71,11 +72,9 @@ export const getVariantMainTableColumns = (
     },
     {
       accessorFn: (row) => (
-        <ConsequenceTooltip
-          row={row}
-          content=<span>
-            {row.gnomad.gene_most_severe === "NA" ? "" : row.gnomad.gene_most_severe}
-          </span>
+        <GeneTooltip
+          geneName={row.gnomad.gene_most_severe}
+          content=<span>{row.gnomad.gene_most_severe}</span>
         />
       ),
       id: "gene_most_severe",

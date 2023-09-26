@@ -2,8 +2,8 @@ import { MRT_ColumnDef } from "material-react-table";
 import { VariantRecord, TableData, DataType } from "../../../types/types";
 import { filterContainsWithTooltip } from "../utils/tableutil";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
-import { ConsequenceTooltip } from "../../tooltips/ConsequenceTooltip";
 import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
+import GeneTooltip from "../../tooltips/GeneToolTip";
 
 // TODO loop out the data types
 export const getDataTypeTableColumns = (
@@ -22,11 +22,9 @@ export const getDataTypeTableColumns = (
     },
     {
       accessorFn: (row) => (
-        <ConsequenceTooltip
-          row={row}
-          content=<span>
-            {row.gnomad.gene_most_severe === "NA" ? "" : row.gnomad.gene_most_severe}
-          </span>
+        <GeneTooltip
+          geneName={row.gnomad.gene_most_severe}
+          content=<span>{row.gnomad.gene_most_severe}</span>
         />
       ),
       id: "gene_most_severe",
