@@ -36,9 +36,15 @@ const Header = () => {
             About
           </Link>
         </Typography>
+        <Typography variant="h6" sx={{ paddingLeft: "20px", marginBottom: "10px" }}>
+          <Link href="/changelog" underline="hover">
+            Changelog
+          </Link>
+        </Typography>
       </Box>
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-        A tool for variant annotation and interpretation based on global human genomics results
+        anno.finngen.fi / variant annotation and interpretation based on global human genomics
+        results
       </Typography>
     </>
   );

@@ -82,7 +82,9 @@ const About = () => {
         This variant annotation and interpretation tool came out of a need to interpret lists of
         genetic variants.
         <br />
-        Suppose you've run a GWAS and have 100 hits. How many of them are novel?
+        Suppose you've run a GWAS and have N hits.
+        <br />
+        How many of them are novel?
         <br />
         What other disease or molecular traits do some of those variants affect and are the effect
         directions consistent?
@@ -96,6 +98,14 @@ const About = () => {
         <br />
         The tool was devised by Juha Karjalainen and Mark Daly with significant input from Mary Pat
         Reeve and Masahiro Kanai.
+      </Typography>
+      <Typography>
+        <br />
+        Thank you to all beta testers who also provided valuable suggestions: Mikko Arvas, A. Mesut
+        Erzurumluoglu,
+        <br />
+        Jarkko Toivonen, Yanfei Zhang, Mari Niemi, Andrew Stiemke, Bin Guo, Ivy Aneas Swanson and
+        Bridget Riley-Gillis.
       </Typography>
       <Typography>
         <br />
