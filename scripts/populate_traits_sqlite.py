@@ -219,7 +219,7 @@ def generate_entries_soma(resource, filename, n_samples, date):
             )
 
 
-def generate_entries_olink(resource, filename, n_samples, date):
+def generate_entries_olink(resource, source_name, filename, n_samples, date):
     with open(filename, "r") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
         for line in f:
@@ -239,7 +239,7 @@ def generate_entries_olink(resource, filename, n_samples, date):
                     n_samples,
                     None,
                     None,
-                    "FinnGen",
+                    source_name,
                     date,
                 )
             )
@@ -441,9 +441,23 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_olink(
                     "FinnGen_pQTL",
+                    "FinnGen",
                     "/mnt/disks/data/olink_probe_map_ensembl.tsv",
                     1225,
                     "2023-08-08",
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "UKBB_pQTL":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_olink(
+                    "UKBB_pQTL",
+                    "UKBB",
+                    "/mnt/disks/data/olink_probe_map_ensembl.tsv",
+                    44755,
+                    "2023-08-15",
                 ),
             )
             n_datasets += 1

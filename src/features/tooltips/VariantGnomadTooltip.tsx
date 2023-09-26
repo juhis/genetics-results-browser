@@ -158,7 +158,6 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
       }>
       <span
         style={{
-          textDecoration: "underline #fff dotted",
           color: props.gnomadData.filters ? theme.palette.error.main : "inherit",
         }}>
         {selectedPopulation === undefined

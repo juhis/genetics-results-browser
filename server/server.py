@@ -118,6 +118,10 @@ def check_auth() -> werkzeug.wrappers.Response | None:
         result = before_request()
     return result
 
+@app.route("/healthz")
+@is_public
+def healthz() -> Any:
+    return jsonify({"status": "ok!"})
 
 @app.route("/auth")
 @is_public

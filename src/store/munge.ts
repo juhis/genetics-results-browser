@@ -31,6 +31,7 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
           id: groupId,
           resource: pheno.resource,
           dataset: c.dataset,
+          data_type: c.data_type,
           phenostring: pheno.phenostring,
           phenocode: [pheno.phenocode],
           mlogp: [c.mlogp],
@@ -77,9 +78,44 @@ const countAssocPhenos = (d: GroupedAssocRecord[], resources: Array<AssocResourc
     }
     return p;
   }, datasetsInitial);
-  return { total, resource };
+  const dqtl = d.filter((d) => d.data_type.endsWith("QTL"));
+  const qtl = {
+    up: dqtl.filter((d) => d.beta[0] > 0).length,
+    down: dqtl.filter((d) => d.beta[0] < 0).length,
+    total: dqtl.length,
+  };
+  const deqtl = dqtl.filter((d) => d.data_type === "eQTL");
+  const eqtl = {
+    up: deqtl.filter((d) => d.beta[0] > 0).length,
+    down: deqtl.filter((d) => d.beta[0] < 0).length,
+    total: deqtl.length,
+  };
+  const dpqtl = dqtl.filter((d) => d.data_type === "pQTL");
+  const pqtl = {
+    up: dpqtl.filter((d) => d.beta[0] > 0).length,
+    down: dpqtl.filter((d) => d.beta[0] < 0).length,
+    total: dpqtl.length,
+  };
+  const dsqtl = dqtl.filter((d) => d.data_type === "sQTL");
+  const sqtl = {
+    up: dsqtl.filter((d) => d.beta[0] > 0).length,
+    down: dsqtl.filter((d) => d.beta[0] < 0).length,
+    total: dsqtl.length,
+  };
+  const dedqtl = dqtl.filter((d) => d.data_type === "edQTL");
+  const edqtl = {
+    up: dedqtl.filter((d) => d.beta[0] > 0).length,
+    down: dedqtl.filter((d) => d.beta[0] < 0).length,
+    total: dedqtl.length,
+  };
+  const dgwas = d.filter((d) => d.data_type === "GWAS");
+  const gwas = {
+    up: dgwas.filter((d) => d.beta[0] > 0).length,
+    down: dgwas.filter((d) => d.beta[0] < 0).length,
+    total: dgwas.length,
+  };
+  return { total, resource, eqtl, pqtl, sqtl, edqtl, qtl, gwas };
 };
-
 // convert array to a deduped array:
 // only one item per dataset/trait/direction, with possibly multiple molecular_trait_ids
 // otherwise e.g. GTEx exons could be too many crowding out other datasets

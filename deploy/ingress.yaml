@@ -1,0 +1,63 @@
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: http-hc-config
+spec:
+  healthCheck:
+    checkIntervalSec: 60
+    port: 8080
+    type: HTTP
+    requestPath: /healthz
+---
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: frontend-config
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: "308"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: genetics-results-browser
+  annotations:
+    networking.gke.io/v1beta1.FrontendConfig: "frontend-config"
+    networking.gke.io/v1beta1.FrontendConfig: "frontend-config"
+    kubernetes.io/ingress.global-static-ip-name: anno-ip
+    networking.gke.io/managed-certificates: certificate-anno-finngen-fi
+    kubernetes.io/ingress.allow-http: "true"
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app: genetics-results-browser
+spec:
+  rules:
+  - host: anno.finngen.fi
+    http:
+      paths:
+      - backend:
+          service:
+            name: genetics-results-browser
+            port:
+              number: 80
+        pathType: Prefix
+        path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/backend-config: '{"default": "http-hc-config"}'
+  name: genetics-results-browser
+  labels:
+    app: genetics-results-browser
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: genetics-results-browser
+    tier: web

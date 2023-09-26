@@ -11,6 +11,7 @@ import VariantSummaryStats from "./tables/PopulationSummaryTable";
 import { useServerQuery } from "../../store/serverQuery";
 import { useEffect } from "react";
 import { renderPThreshold } from "./utils/tableutil";
+import DataTypeTable from "./tables/DataTypeTable";
 
 const TableContainer = () => {
   const activeTab = useDataStore((state) => state.activeTab);
@@ -41,13 +42,18 @@ const TableContainer = () => {
           <GlobalControlContainer />
           <TabContext value={activeTab}>
             <Tabs value={activeTab} onChange={handleTabChange} aria-label="table_selection_tabs">
-              <Tab value="variants" label="variants" disabled={clientData === undefined} />
-              <Tab value="summary" label="summary" disabled={clientData === undefined} />
+              <Tab value="variants" label="variant results" disabled={clientData === undefined} />
+              <Tab
+                value="datatypes"
+                label="data type comparison"
+                disabled={clientData === undefined}
+              />
+              <Tab value="summary" label="phenotype summary" disabled={clientData === undefined} />
             </Tabs>
             <TabPanel value="variants" sx={{ padding: 0 }}>
               <Box display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
                 <Typography sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
-                  Variants
+                  Variant results
                 </Typography>
                 <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
                   This table shows annotations, number of trait associations with p-value less than{" "}
@@ -62,12 +68,28 @@ const TableContainer = () => {
                 <VariantMainTable enableTopToolbar={true} showTraitCounts={true} />
               </Box>
             </TabPanel>
+            <TabPanel value="datatypes" sx={{ padding: 0 }}>
+              <Box display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
+                <Typography sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
+                  Data type comparison
+                </Typography>
+                <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
+                  This table shows numbers of trait associations with p-value less than{" "}
+                  {renderPThreshold(clientData!, pThreshold)}, and top association for each of your
+                  input variants for each of GWAS, eQTL and pQTL data types.
+                  <br />
+                  Use the arrows on the left of each variant to expand that variant and see all of
+                  its associations and fine-mapping results.
+                </Typography>
+                <DataTypeTable enableTopToolbar={true} showTraitCounts={true} />
+              </Box>
+            </TabPanel>
             <TabPanel value="summary" sx={{ padding: 0 }}>
               <Box display="flex" flexDirection="row">
                 <Box flex="5" display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
                   <Typography
                     sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
-                    Summary
+                    Phenotype summary
                   </Typography>
                   <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
                     This table shows the number of your input variants associated with each trait

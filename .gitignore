@@ -162,3 +162,4 @@ cython_debug/
 *.private
 bundle.js*
 node_modules
+config.py.bak

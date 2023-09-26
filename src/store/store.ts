@@ -11,6 +11,7 @@ interface DataState {
   serverData: TableData | undefined;
   setServerData: (serverData: TableData) => void;
   clientData: TableData | undefined;
+  toggledDataTypesTurnedOn: Record<string, boolean>;
   toggledDataTypes: Record<string, boolean>;
   toggleDataType: (DataType: DataType) => void;
   toggledGWASTypes: Record<string, boolean>;
@@ -55,6 +56,13 @@ export const useDataStore = create<DataState>()(
         ),
       })),
     clientData: undefined,
+    toggledDataTypesTurnedOn: {
+      GWAS: true,
+      eQTL: true,
+      pQTL: true,
+      sQTL: true,
+      edQTL: true,
+    },
     toggledDataTypes: {
       GWAS: true,
       eQTL: false,

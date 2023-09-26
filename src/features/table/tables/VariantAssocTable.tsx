@@ -38,11 +38,31 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
     const gwasResources = clientData.meta.assoc.resources
       .filter((resource) => resource.data_types.includes(DataType.GWAS))
       .map((resource) => resource.resource);
+    // show first pQTL resources and then other QTL resources
     const qtlResources = clientData.meta.assoc.resources
       .filter((resource) => resource.data_types.some((data_type) => data_type.includes("QTL")))
+      .sort((a, b) => {
+        if (a.data_types.length == 1 && a.data_types[0].includes("pQTL")) {
+          return -1;
+        } else if (
+          a.data_types.some((data_type) => data_type.includes("pQTL")) &&
+          !b.data_types.some((data_type) => data_type.includes("pQTL"))
+        ) {
+          return -1;
+        } else if (b.data_types.length == 1 && b.data_types[0].includes("pQTL")) {
+          return 1;
+        } else if (
+          b.data_types.some((data_type) => data_type.includes("pQTL")) &&
+          !a.data_types.some((data_type) => data_type.includes("pQTL"))
+        ) {
+          return 1;
+        } else {
+          return 0;
+        }
+      })
       .map((resource) => resource.resource);
     const ctrls = [gwasResources, qtlResources].map((resources) =>
-      resources.map((resource) => {
+      resources.map((resource, i) => {
         return (
           <FormControlLabel
             key={resource}
@@ -74,7 +94,9 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
               <Typography sx={{ fontWeight: "bold" }}>GWAS</Typography>
             </td>
             <td>
-              <div>{ctrls[0]}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+                {ctrls[0]}
+              </div>
             </td>
           </tr>
           <tr>
@@ -82,7 +104,9 @@ const VariantAssocTable = (props: { variantData: VariantRecord }) => {
               <Typography sx={{ fontWeight: "bold" }}>QTL</Typography>
             </td>
             <td>
-              <div>{ctrls[1]}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+                {ctrls[1]}
+              </div>
             </td>
           </tr>
         </tbody>

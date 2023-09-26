@@ -43,6 +43,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           color="primary"
           onClick={() => {
             handleMainTableExport(
+              variantInput,
               props.table,
               getVariantMainTableColumns(
                 clientData,
@@ -62,6 +63,9 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           color="primary"
           onClick={() => {
             handleFineMappingTableExport(
+              variantInput,
+              clientData.phenos,
+              clientData.data.length,
               props.table,
               getVariantMainTableColumns(
                 clientData,
@@ -82,6 +86,9 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           color="primary"
           onClick={() => {
             handleAssocTableExport(
+              variantInput,
+              clientData.phenos,
+              clientData.data.length,
               props.table,
               getVariantMainTableColumns(
                 clientData,
