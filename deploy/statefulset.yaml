@@ -29,7 +29,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: genetics-results-browser-container
-        image: eu.gcr.io/phewas-development/genetics-results-browser:20230923.2
+        image: eu.gcr.io/phewas-development/genetics-results-browser:20231106.1
         ports:
         - containerPort: 8080
         volumeMounts:

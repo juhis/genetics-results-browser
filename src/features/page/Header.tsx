@@ -41,6 +41,9 @@ const Header = () => {
             Changelog
           </Link>
         </Typography>
+        <Typography sx={{ paddingLeft: "20px", marginBottom: "10px", alignSelf: "center" }}>
+          Last updated Nov 6th 2023
+        </Typography>
       </Box>
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
         anno.finngen.fi / variant annotation and interpretation based on global human genomics
