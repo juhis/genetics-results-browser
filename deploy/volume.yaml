@@ -4,14 +4,14 @@ metadata:
   name: genetics-results-browser-pv-0
 spec:
   capacity:
-      storage: 200Gi
+      storage: 500Gi
   accessModes:
     - ReadOnlyMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: premium-rox
   gcePersistentDisk:
     fsType: ext4
-    pdName: genetics-results-browser-20231106
+    pdName: genetics-results-20231219
   mountOptions:
     - noatime
     - nodiratime
@@ -27,4 +27,4 @@ spec:
     - ReadOnlyMany
   resources:
     requests:
-      storage: 200Gi
+      storage: 500Gi
