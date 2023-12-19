@@ -119,6 +119,12 @@ def check_auth() -> werkzeug.wrappers.Response | None:
     return result
 
 
+@app.route("/healthz")
+@is_public
+def healthz() -> Any:
+    return jsonify({"status": "ok!"})
+
+
 @app.route("/auth")
 @is_public
 def auth() -> str:
@@ -225,7 +231,9 @@ def results() -> Any | tuple[Any, int]:
                 a["dataset"]
                 for a in assoc["assoc"]["data"] + finemapped["finemapped"]["data"]
             )
-            uniq_most_severe.add(gnomad["gnomad"]["most_severe"])
+            for type in ["exomes", "genomes"]:
+                if type in gnomad["gnomad"] and gnomad["gnomad"][type] is not None:
+                    uniq_most_severe.add(gnomad["gnomad"][type]["most_severe"])
     try:
         # use resource:phenocode as key
         # note that for eQTL Catalogue leafcutter, phenocode is dataset:phenocode

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: genetics-results-browser
+  labels:
+    app: genetics-results-browser
+spec:
+  serviceName: genetics-results-browser
+  selector:
+    matchLabels:
+      app: genetics-results-browser
+      tier: web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: genetics-results-browser
+        tier: web
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - genetics-results-browser
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: genetics-results-browser-container
+        image: eu.gcr.io/phewas-development/genetics-results-browser:20231219.1
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /mnt/disks/data
+          name: genetics-results-browser-pv
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+  volumeClaimTemplates:
+  - metadata:
+      name: genetics-results-browser-pv
+    spec:
+      storageClassName: premium-rox
+      accessModes: [ ReadOnlyMany ]
+      resources:
+        requests:
+          storage: 500Gi

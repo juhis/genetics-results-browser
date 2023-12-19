@@ -69,7 +69,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: "lessThan",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "p-value" },
+    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
   {
@@ -79,7 +79,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
+    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
   {
@@ -119,7 +119,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "alphanumeric",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "PIP" },
+    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
     size: 75,
   },
 ];

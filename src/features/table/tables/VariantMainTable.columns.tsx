@@ -11,6 +11,7 @@ import { ConsequenceTooltip } from "../../tooltips/ConsequenceTooltip";
 import { VariantGnomadToolTip } from "../../tooltips/VariantGnomadTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
 import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
+import GeneTooltip from "../../tooltips/GeneToolTip";
 
 export const getVariantMainTableColumns = (
   data: TableData,
@@ -31,7 +32,7 @@ export const getVariantMainTableColumns = (
       size: 100,
     },
     {
-      accessorFn: (row) => row.gnomad.rsids,
+      accessorFn: (row) => row.gnomad.genomes.rsids,
       id: "rsid",
       header: "rsid",
       filterFn: "contains",
@@ -41,9 +42,9 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) => <VariantGnomadToolTip variant={row.variant} gnomadData={row.gnomad} />,
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
-      header: `${selectedPopulation || ""} AF`,
+      header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "AF" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: false,
       size: 60,
@@ -51,35 +52,37 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) =>
         selectedPopulation === undefined
-          ? row.gnomad.AF
-          : row.gnomad[`AF_${selectedPopulation}` as keyof typeof row.gnomad],
+          ? row.gnomad.exomes
+            ? row.gnomad.exomes.AF
+            : row.gnomad.genomes.AF
+          : row.gnomad.exomes
+          ? row.gnomad.exomes[`AF_${selectedPopulation}` as keyof typeof row.gnomad.exomes]
+          : row.gnomad.genomes[`AF_${selectedPopulation}` as keyof typeof row.gnomad.genomes],
       id: "af_hidden",
       header: "AF",
     },
     {
       accessorFn: (row) => (
-        <ConsequenceTooltip row={row} content=<span>{row.gnomad.most_severe}</span> />
+        <ConsequenceTooltip row={row} content=<span>{row.gnomad.genomes.most_severe}</span> />
       ),
       id: "most_severe",
       header: "most severe",
       filterFn: filterContainsWithTooltip,
       filterVariant: "multi-select",
       filterSelectOptions: data ? data["most_severe"].map((ms) => ({ text: ms, value: ms })) : [],
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "most severe" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "consequence" },
       enableSorting: false,
       size: 100,
     },
     {
       accessorFn: (row) => (
-        <ConsequenceTooltip
-          row={row}
-          content=<span>
-            {row.gnomad.gene_most_severe === "NA" ? "" : row.gnomad.gene_most_severe}
-          </span>
+        <GeneTooltip
+          geneName={row.gnomad.genomes.gene_most_severe}
+          content=<span>{row.gnomad.genomes.gene_most_severe}</span>
         />
       ),
       id: "gene_most_severe",
-      header: "gene",
+      header: "most severe gene",
       filterFn: filterContainsWithTooltip,
       muiTableHeadCellFilterTextFieldProps: { placeholder: "gene" },
       enableSorting: false,
@@ -93,6 +96,7 @@ export const getVariantMainTableColumns = (
         header: "traits",
         // need dot notation for naInfSort
         id: "assoc.counts.total.total",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 60,
@@ -100,22 +104,34 @@ export const getVariantMainTableColumns = (
       {
         accessorKey: "assoc.counts.total.up",
         header: "traits_up",
-        Header: ({ column }) => <UpOrDownIcon value={1} />,
+        Header: ({ column }) => (
+          <>
+            <span>traits</span>
+            <UpOrDownIcon value={1} />
+          </>
+        ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.up",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 30,
+        size: 60,
       },
       {
         accessorKey: "assoc.counts.total.down",
         header: "traits_down",
-        Header: ({ column }) => <UpOrDownIcon value={-1} />,
+        Header: ({ column }) => (
+          <>
+            <span>traits</span>
+            <UpOrDownIcon value={-1} />
+          </>
+        ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.down",
+        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
-        size: 30,
+        size: 60,
       },
     ]);
   }
@@ -179,7 +195,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.mlogp.0",
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "p-value" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -200,7 +216,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.beta.0",
       filterFn: filterAbsGreaterThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "beta" },
+      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 50,

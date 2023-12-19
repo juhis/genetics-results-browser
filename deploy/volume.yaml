@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: genetics-results-browser-pv-0
+spec:
+  capacity:
+      storage: 500Gi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: premium-rox
+  gcePersistentDisk:
+    fsType: ext4
+    pdName: genetics-results-20231219
+  mountOptions:
+    - noatime
+    - nodiratime
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: genetics-results-browser-pv-genetics-results-browser-0
+spec:
+  storageClassName: premium-rox
+  volumeName: genetics-results-browser-pv-0
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 500Gi

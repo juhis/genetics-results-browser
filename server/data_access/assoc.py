@@ -55,6 +55,8 @@ class Datafetch(object, metaclass=Singleton):
                 and alt == variant.alt
                 and resource
                 in self.assoc_resource_ids  # skip results for resources not in the config
+                and d[self.assoc_headers["beta"]]
+                != "NA"  # TODO check when munging data in that there is no NA or allow and report it
             ):
                 dataset = d[self.assoc_headers["dataset"]]
                 data_type = d[self.assoc_headers["data_type"]]

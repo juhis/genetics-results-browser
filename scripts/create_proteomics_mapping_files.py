@@ -1,5 +1,5 @@
-# gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_03_02/data/Olink/pQTL/*.gz | \
-# xargs -I{} basename {} .txt.gz | sed 's/Olink_Batch1_//' > fg_olink_probes
+# gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_10_11/data/Olink/pQTL/*.gz | \
+# xargs -I{} basename {} .txt.gz > /mnt/disks/data/fg_olink_probes
 
 # gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_03_02/data/Somascan/pQTL/*.gz | \
 # xargs -I{} basename {} .txt.gz | sed 's/SomaScan_Batch2_//' > fg_soma_probes
@@ -50,7 +50,7 @@ chr_set = set(
 # SomaScan
 
 a = pd.read_csv(soma_info_file)
-a.to_csv("Soma_info_all.tsv", sep="\t", index=False, na_rep="NA")
+a.to_csv("/mnt/disks/data/Soma_info_all.tsv", sep="\t", index=False, na_rep="NA")
 a["EntrezGeneID"] = a["EntrezGeneID"].astype(str)
 
 b = pd.read_csv(entrez_file, sep="\t").rename(
@@ -62,7 +62,7 @@ b["EntrezGeneID"] = b["EntrezGeneID"].astype(str)
 a.merge(b, how="left", on="EntrezGeneID").astype(
     {"Gene start (bp)": "Int64", "Gene end (bp)": "Int64", "Strand": "Int64"}
 ).drop_duplicates("AptName").to_csv(
-    "Soma_info_all_ensembl.tsv", sep="\t", index=False, na_rep="NA"
+    "/mnt/disks/data/Soma_info_all_ensembl.tsv", sep="\t", index=False, na_rep="NA"
 )
 
 # Olink
@@ -77,4 +77,6 @@ b.drop_duplicates("geneName", inplace=True)
 
 a.merge(b, how="left", on="geneName").astype(
     {"Gene start (bp)": "Int64", "Gene end (bp)": "Int64", "Strand": "Int64"}
-).to_csv("olink_probe_map_ensembl.tsv", sep="\t", index=False, na_rep="NA")
+).to_csv(
+    "/mnt/disks/data/olink_probe_map_ensembl.tsv", sep="\t", index=False, na_rep="NA"
+)

@@ -12,5 +12,5 @@ RUN npx webpack --mode production
 
 EXPOSE 8080
 
-WORKDIR /config
+WORKDIR /mnt/disks/data
 CMD /opt/browser/server/run.py

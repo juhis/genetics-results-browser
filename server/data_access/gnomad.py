@@ -33,16 +33,23 @@ class GnomAD(object, metaclass=Singleton):
             )
         except ValueError:
             raise VariantNotFoundException("chromosome not found")
-        gnomad = None
+        gnomad = {"exomes": None, "genomes": None}
         for row in tabix_iter:
             data = row.split("\t")
             if (
                 data[self.gnomad_headers["ref"]] == variant.ref
                 and data[self.gnomad_headers["alt"]] == variant.alt
             ):
-                gnomad = self._get_gnomad_fields(data)
-                break
-        if gnomad is None:
+                data = self._get_gnomad_fields(data)
+                if data["genome_or_exome"] == "e" and (
+                    data["filters"] is None or "AC0" not in data["filters"]
+                ):
+                    gnomad["exomes"] = data
+                elif data["genome_or_exome"] == "g" and (
+                    data["filters"] is None or "AC0" not in data["filters"]
+                ):
+                    gnomad["genomes"] = data
+        if gnomad["exomes"] is None and gnomad["genomes"] is None:
             raise VariantNotFoundException("variant not found")
         # gnomad["consequences"] = self._group_gnomad_consequences(gnomad["consequences"])
         end_time: float = timeit.default_timer() - start_time

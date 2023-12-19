@@ -8,6 +8,7 @@ import Header from "./features/page/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TableContainer from "./features/table/TableContainer";
 import About from "./features/page/About";
+import ChangeLog from "./features/page/ChangeLog";
 
 export const App = () => {
   //TODO dark/light mode
@@ -52,6 +53,7 @@ export const App = () => {
             <Routes>
               <Route path="/" element={<TableContainer />} />
               <Route path="/about" element={<About />} />
+              <Route path="/changelog" element={<ChangeLog />} />
             </Routes>
           </div>
         </ThemeProvider>

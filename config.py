@@ -5,37 +5,37 @@ log_level = logging.INFO
 authentication = True
 authentication_file = "/mnt/disks/data/finngen_auth.json"
 
-metadata_db = "/mnt/disks/data/meta_finngen_version_20230728.db"
+metadata_db = "/mnt/disks/data/meta_finngen_version_20231105.db"
 
 rsid_db = {
     "file": "/mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.rsid.db",
 }
 
 gnomad = {
-    "file": "/mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.sites.all.vep95.gencode29.tsv.bgz",
+    "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.sites.tsv.bgz",
     "populations": ["afr", "amr", "asj", "eas", "fin", "mid", "nfe", "oth", "sas"],
-    "url": "https://gnomad.broadinstitute.org/variant/[VARIANT]?dataset=gnomad_r3",
-    "version": "3.1.2",
+    "url": "https://gnomad.broadinstitute.org/variant/[VARIANT]?dataset=gnomad_r4",
+    "version": "4.0",
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_finngen_version_20230810.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_finngen_version_20231105.tsv.gz",
     # not all resources in the data file need to be listed here
-    # if a resource is not listed here, data for it won't be fetched and it will not be shown in the UI
+    # if a resource is not listed here, data for it will not be shown in the UI
     "resources": [
         {
             "resource": "FinnGen",
-            "version": "R11",
+            "version": "R12",
             "data_types": ["GWAS"],
-            "n_traits": "2,444",
+            "n_traits": "2,469",
             "url": "https://www.finngen.fi/en/for_researchers",
             "pheno_urls": [
                 {
-                    "url": "https://r11.finngen.fi/pheno/[PHENOCODE]",
+                    "url": "https://r12.finngen.fi/pheno/[PHENOCODE]",
                     "label": "FinnGen Pheweb",
                 },
                 {
-                    "url": "https://r11.risteys.finngen.fi/endpoints/[PHENOCODE]",
+                    "url": "https://r12.risteys.finregistry.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
@@ -43,14 +43,43 @@ assoc = {
         },
         {
             "resource": "FinnGen_pQTL",
-            "version": "SomaScan 2023-03-02, Olink 2023-08-08",
+            "version": "SomaScan 2023-03-02, Olink 2023-10-11",
             "data_types": ["pQTL"],
-            "n_traits": "SomaScan 7,596, Olink 2,902",
+            "n_traits": "SomaScan 7,596, Olink 2,925",
             "url": "https://www.finngen.fi/en/for_researchers",
             "pheno_urls": [
                 {
-                    "url": "https://r11.finngen.fi/gene/[GENE]",
+                    "url": "https://r12.finngen.fi/gene/[GENE]",
                     "label": "FinnGen Pheweb",
+                }
+            ],
+            "p_thres": 5e-3,
+        },
+        {
+            "resource": "FinnGen_eQTL",
+            "version": "2023-10-05",
+            "data_types": ["eQTL"],
+            "n_traits": "26,624 genes, 35 predicted cell types",
+            "url": "https://www.finngen.fi/en/for_researchers",
+            "pheno_urls": [
+                {
+                    "url": "https://r12.finngen.fi/gene/[GENE]",
+                    "label": "FinnGen Pheweb",
+                }
+            ],
+            "p_thres": 5e-3,
+        },
+        {
+            "resource": "UKBB_pQTL",
+            "version": "2023-08-15",
+            "data_types": ["pQTL"],
+            "n_traits": "Olink 1,459",
+            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
+            "url": None,
+            "pheno_urls": [
+                {
+                    "url": "https://www.finngen.fi/en/for_researchers",
+                    "label": "FinnGen analysis",
                 }
             ],
             "p_thres": 5e-3,
@@ -115,7 +144,7 @@ assoc = {
 }
 
 finemapped = {
-    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20230810.tsv.gz",
+    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20231105.tsv.gz",
     "resources": [
         {
             "resource": "eQTL_Catalogue_R6",
@@ -126,17 +155,39 @@ finemapped = {
         },
         {
             "resource": "FinnGen",
-            "version": "R11",
+            "version": "R12",
             "data_types": ["GWAS"],
-            "n_traits": "2,444",
+            "n_traits": "2,469",
             "url": "https://www.finngen.fi/en/for_researchers",
         },
         {
             "resource": "FinnGen_pQTL",
-            "version": "SomaScan 2023-03-02, Olink 2023-08-08",
+            "version": "SomaScan 2023-03-02, Olink 2023-10-11",
             "data_types": ["pQTL"],
-            "n_traits": "SomaScan 7,596, Olink 2,902",
+            "n_traits": "SomaScan 7,596, Olink 2,925",
             "url": "https://www.finngen.fi/en/for_researchers",
+        },
+        {
+            "resource": "FinnGen_eQTL",
+            "version": "2023-10-05",
+            "data_types": ["eQTL"],
+            "n_traits": "26,624 genes, 35 predicted cell types",
+            "url": "https://www.finngen.fi/en/for_researchers",
+        },
+        {
+            "resource": "UKBB_pQTL",
+            "version": "2023-08-15",
+            "data_types": ["pQTL"],
+            "n_traits": "Olink 1,459",
+            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
+            "url": None,
+            "pheno_urls": [
+                {
+                    "url": "https://www.finngen.fi/en/for_researchers",
+                    "label": "FinnGen analysis",
+                }
+            ],
+            "p_thres": 5e-3,
         },
         {
             "resource": "UKBB_119",

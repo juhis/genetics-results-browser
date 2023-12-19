@@ -2,7 +2,7 @@ import { Link, Typography, useTheme } from "@mui/material";
 //TODO using plotly increases the bundle size by 8MB uncompressed!
 import Plot from "react-plotly.js";
 import { useDataStore } from "../../store/store";
-import { GnomadRecord } from "../../types/types";
+import { GnomadRecord, GnomadVariantRecord } from "../../types/types";
 import { HtmlTooltip } from "./HtmlTooltip";
 
 export const VariantGnomadToolTip = (props: { variant: string; gnomadData: GnomadRecord }) => {
@@ -11,24 +11,27 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
   const gnomadVersion = useDataStore((state) => state.clientData!.meta.gnomad.version);
   const gnomadUrl = useDataStore((state) => state.clientData!.meta.gnomad.url);
   const selectedPopulation = useDataStore((state) => state.selectedPopulation);
+  const gnomadData = props.gnomadData.exomes || props.gnomadData.genomes;
+  const dataType = props.gnomadData.exomes ? "exomes" : "genomes";
 
-  const af_pops = Object.keys(props.gnomadData).filter((k) => k.startsWith("AF_"));
+  const af_pops = Object.keys(gnomadData).filter((k) => k.startsWith("AF_"));
 
   const trace: Plotly.Data[] = [
     {
       x: af_pops.map((pop) => pop.replace("AF_", "")),
       // take log and then reverse the scale with 1e-5 as minimum frequency
       y: af_pops.map(
-        (pop) => 5 + Math.max(-5, Math.log10(props.gnomadData[pop as keyof GnomadRecord] as number))
+        (pop) =>
+          5 + Math.max(-5, Math.log10(gnomadData[pop as keyof GnomadVariantRecord] as number))
       ),
       text: af_pops.map((pop) =>
-        props.gnomadData[pop as keyof GnomadRecord] == null
+        gnomadData[pop as keyof GnomadVariantRecord] == null
           ? "NA"
-          : props.gnomadData[pop as keyof GnomadRecord] == 0
+          : gnomadData[pop as keyof GnomadVariantRecord] == 0
           ? "0"
-          : (props.gnomadData[pop as keyof GnomadRecord]! as number) < 0.01
-          ? (props.gnomadData[pop as keyof GnomadRecord] as number).toExponential(1)
-          : (props.gnomadData[pop as keyof GnomadRecord] as number).toPrecision(2)
+          : (gnomadData[pop as keyof GnomadVariantRecord]! as number) < 0.01
+          ? (gnomadData[pop as keyof GnomadVariantRecord] as number).toExponential(1)
+          : (gnomadData[pop as keyof GnomadVariantRecord] as number).toPrecision(2)
       ),
       textposition: "auto",
       type: "bar",
@@ -64,16 +67,16 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
     },
   };
   const filterDisplay =
-    props.gnomadData.filters != null ? (
+    gnomadData.filters != null ? (
       <>
         <span style={{ color: theme.palette.error.main }}>
           This variant hasn't passed gnomAD QC.{" "}
-          {props.gnomadData.filters.indexOf("AC0") > -1
+          {gnomadData.filters.indexOf("AC0") > -1
             ? "No sample had a high quality genotype at this variant site."
             : "Allele frequencies may not be reliable."}
           <br />
-          gnomAD QC filter{props.gnomadData.filters.split(",").length > 1 ? "s" : ""}:{" "}
-          {props.gnomadData.filters.split(",").join(", ")}
+          gnomAD QC filter{gnomadData.filters.split(",").length > 1 ? "s" : ""}:{" "}
+          {gnomadData.filters.split(",").join(", ")}
         </span>
         <br />
       </>
@@ -84,32 +87,32 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
   // plenty of casting because populations are not typed
   let popmax = af_pops.reduce(
     (p, c) =>
-      (props.gnomadData[p.pop as keyof GnomadRecord] as number) >
-      (props.gnomadData[c as keyof GnomadRecord]! as number)
+      (gnomadData[p.pop as keyof GnomadVariantRecord] as number) >
+      (gnomadData[c as keyof GnomadVariantRecord]! as number)
         ? p
-        : { pop: c, af: props.gnomadData[c as keyof GnomadRecord] as number },
+        : { pop: c, af: gnomadData[c as keyof GnomadVariantRecord] as number },
     {
       pop: af_pops[0],
-      af: props.gnomadData[af_pops[0] as keyof GnomadRecord] as number,
+      af: gnomadData[af_pops[0] as keyof GnomadVariantRecord] as number,
     }
   );
   let popmin = af_pops.reduce(
     (p, c) =>
-      (((props.gnomadData[p.pop as keyof GnomadRecord] as number) <
-        (props.gnomadData[c as keyof GnomadRecord] == null
+      (((gnomadData[p.pop as keyof GnomadVariantRecord] as number) <
+        (gnomadData[c as keyof GnomadVariantRecord] == null
           ? Number.MAX_SAFE_INTEGER
-          : (props.gnomadData[c as keyof GnomadRecord] as number))) as unknown as number)
+          : (gnomadData[c as keyof GnomadVariantRecord] as number))) as unknown as number)
         ? p
-        : { pop: c, af: props.gnomadData[c as keyof GnomadRecord] as number },
+        : { pop: c, af: gnomadData[c as keyof GnomadVariantRecord] as number },
     {
       pop: af_pops[0],
-      af: props.gnomadData[af_pops[0] as keyof GnomadRecord] as number,
+      af: gnomadData[af_pops[0] as keyof GnomadVariantRecord] as number,
     }
   );
   const popmaxAfDispl = popmax.af < 0.001 ? popmax.af.toExponential(1) : popmax.af.toPrecision(2);
   const popminAfDispl = popmin.af < 0.001 ? popmin.af.toExponential(1) : popmin.af.toPrecision(2);
   const popsNotAvailable = af_pops
-    .filter((pop) => props.gnomadData[pop as keyof GnomadRecord] == null)
+    .filter((pop) => gnomadData[pop as keyof GnomadVariantRecord] == null)
     .map((pop) => pop.replace("AF_", ""));
   const popsNotAvailableDispl =
     popsNotAvailable.length > 1 ? (
@@ -142,7 +145,7 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
       title={
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Typography variant="h6" sx={{ paddingBottom: "10px" }}>
-            gnomAD {gnomadVersion} genomes allele frequency
+            gnomAD {gnomadVersion} {dataType} allele frequency
           </Typography>
           {filterDisplay}
           {afRangeDispl}
@@ -158,13 +161,12 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
       }>
       <span
         style={{
-          textDecoration: "underline #fff dotted",
-          color: props.gnomadData.filters ? theme.palette.error.main : "inherit",
+          color: gnomadData.filters ? theme.palette.error.main : "inherit",
         }}>
         {selectedPopulation === undefined
-          ? props.gnomadData.AF.toPrecision(2)
+          ? gnomadData.AF.toPrecision(2)
           : (
-              props.gnomadData[`AF_${selectedPopulation}` as keyof GnomadRecord] as number
+              gnomadData[`AF_${selectedPopulation}` as keyof GnomadVariantRecord] as number
             ).toPrecision(2)}
       </span>
     </HtmlTooltip>

@@ -1,3 +1,10 @@
+export type GeneInfo = {
+  _id: string;
+  symbol: string;
+  name: string;
+  summary: string;
+};
+
 export type TableData = {
   data: Array<VariantRecord>;
   has_betas: boolean;
@@ -26,6 +33,12 @@ export type VariantRecord = {
     counts: {
       resource: Record<string, { up: number; down: number; total: number }>;
       total: { up: number; down: number; total: number };
+      eqtl: { up: number; down: number; total: number };
+      pqtl: { up: number; down: number; total: number };
+      sqtl: { up: number; down: number; total: number };
+      edqtl: { up: number; down: number; total: number };
+      qtl: { up: number; down: number; total: number };
+      gwas: { up: number; down: number; total: number };
     };
     resources: Array<string>;
   };
@@ -116,6 +129,7 @@ export type GroupedAssocRecord = {
   id: string;
   resource: string;
   dataset: string;
+  data_type: DataType;
   phenostring: string;
   phenocode: string[];
   mlogp: number[];
@@ -166,6 +180,7 @@ export enum DataType {
   PQTL = "pQTL",
   SQTL = "sQTL",
   EDQTL = "edQTL",
+  NA = "NA",
 }
 
 export enum QTLType {
@@ -179,6 +194,11 @@ export type FineMappedResource = {
 };
 
 export type GnomadRecord = {
+  exomes?: GnomadVariantRecord;
+  genomes: GnomadVariantRecord;
+};
+
+export type GnomadVariantRecord = {
   AF: number;
   rsids: string;
   most_severe: string;
