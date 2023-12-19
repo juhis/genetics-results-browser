@@ -42,7 +42,7 @@ const Header = () => {
           </Link>
         </Typography>
         <Typography sx={{ paddingLeft: "20px", marginBottom: "10px", alignSelf: "center" }}>
-          Last updated Nov 6th 2023
+          Last updated Dec 19th 2023
         </Typography>
       </Box>
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>

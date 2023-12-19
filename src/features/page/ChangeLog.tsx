@@ -1,6 +1,15 @@
 const ChangeLog = () => {
   return (
     <>
+      <span>Dec 19th 2023:</span>
+      <ul>
+        <li>
+          Updated allele frequencies to gnomAD 4.0 - exome data is used instead of genome data when
+          available
+        </li>
+        <li>Updated FinnGen EA5 priority variant list</li>
+        <li>Fixed extra "gene symbol" text sometimes appearing in the gene column</li>
+      </ul>
       <span>Nov 6th 2023:</span>
       <ul>
         <li>Added FinnGen snRNA-seq eQTL results from the first 3 batches</li>
