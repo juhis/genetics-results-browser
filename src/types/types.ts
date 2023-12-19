@@ -194,6 +194,11 @@ export type FineMappedResource = {
 };
 
 export type GnomadRecord = {
+  exomes?: GnomadVariantRecord;
+  genomes: GnomadVariantRecord;
+};
+
+export type GnomadVariantRecord = {
   AF: number;
   rsids: string;
   most_severe: string;

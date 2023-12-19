@@ -23,8 +23,8 @@ export const getDataTypeTableColumns = (
     {
       accessorFn: (row) => (
         <GeneTooltip
-          geneName={row.gnomad.gene_most_severe}
-          content=<span>{row.gnomad.gene_most_severe}</span>
+          geneName={row.gnomad.genomes.gene_most_severe}
+          content=<span>{row.gnomad.genomes.gene_most_severe}</span>
         />
       ),
       id: "gene_most_severe",

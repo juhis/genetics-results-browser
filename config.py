@@ -12,16 +12,16 @@ rsid_db = {
 }
 
 gnomad = {
-    "file": "/mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.sites.all.vep95.gencode29.tsv.bgz",
+    "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.sites.tsv.bgz",
     "populations": ["afr", "amr", "asj", "eas", "fin", "mid", "nfe", "oth", "sas"],
-    "url": "https://gnomad.broadinstitute.org/variant/[VARIANT]?dataset=gnomad_r3",
-    "version": "3.1.2",
+    "url": "https://gnomad.broadinstitute.org/variant/[VARIANT]?dataset=gnomad_r4",
+    "version": "4.0",
 }
 
 assoc = {
     "file": "/mnt/disks/data/assoc_resources_finngen_version_20231105.tsv.gz",
     # not all resources in the data file need to be listed here
-    # if a resource is not listed here, data for it won't be fetched and it will not be shown in the UI
+    # if a resource is not listed here, data for it will not be shown in the UI
     "resources": [
         {
             "resource": "FinnGen",

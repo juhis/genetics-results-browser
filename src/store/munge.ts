@@ -427,12 +427,13 @@ export const summarizeFreq = (data: TableData) => {
   const gn = data.data.map((d) => d.gnomad);
 
   const maxFreqs = gn.reduce((p, c) => {
-    const maxFreq = Object.entries(c)
+    const maxFreq = Object.entries(c.exomes || c.genomes)
       .filter((d) => d[0].startsWith("AF_"))
       .reduce(
         // @ts-ignore
         (p1, c1) => {
           const pop = c1[0].split("_")[1];
+          // @ts-ignore
           return c1[1] != null && c1[1] > p1.af ? { pop: pop, af: c1[1] } : p1;
         },
         { pop: "", af: 0 }
@@ -443,12 +444,13 @@ export const summarizeFreq = (data: TableData) => {
   }, {} as Record<string, number>);
 
   const minFreqs = gn.reduce((p, c) => {
-    const minFreq = Object.entries(c)
+    const minFreq = Object.entries(c.exomes || c.genomes)
       .filter((d) => d[0].startsWith("AF_"))
       .reduce(
         // @ts-ignore
         (p1, c1) => {
           const pop = c1[0].split("_")[1];
+          // @ts-ignore
           return c1[1] != null && c1[1] < p1.af ? { pop: pop, af: c1[1] } : p1;
         },
         { pop: "", af: 1 }

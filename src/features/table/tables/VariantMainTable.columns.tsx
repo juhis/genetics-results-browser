@@ -32,7 +32,7 @@ export const getVariantMainTableColumns = (
       size: 100,
     },
     {
-      accessorFn: (row) => row.gnomad.rsids,
+      accessorFn: (row) => row.gnomad.genomes.rsids,
       id: "rsid",
       header: "rsid",
       filterFn: "contains",
@@ -52,14 +52,18 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) =>
         selectedPopulation === undefined
-          ? row.gnomad.AF
-          : row.gnomad[`AF_${selectedPopulation}` as keyof typeof row.gnomad],
+          ? row.gnomad.exomes
+            ? row.gnomad.exomes.AF
+            : row.gnomad.genomes.AF
+          : row.gnomad.exomes
+          ? row.gnomad.exomes[`AF_${selectedPopulation}` as keyof typeof row.gnomad.exomes]
+          : row.gnomad.genomes[`AF_${selectedPopulation}` as keyof typeof row.gnomad.genomes],
       id: "af_hidden",
       header: "AF",
     },
     {
       accessorFn: (row) => (
-        <ConsequenceTooltip row={row} content=<span>{row.gnomad.most_severe}</span> />
+        <ConsequenceTooltip row={row} content=<span>{row.gnomad.genomes.most_severe}</span> />
       ),
       id: "most_severe",
       header: "most severe",
@@ -73,8 +77,8 @@ export const getVariantMainTableColumns = (
     {
       accessorFn: (row) => (
         <GeneTooltip
-          geneName={row.gnomad.gene_most_severe}
-          content=<span>{row.gnomad.gene_most_severe}</span>
+          geneName={row.gnomad.genomes.gene_most_severe}
+          content=<span>{row.gnomad.genomes.gene_most_severe}</span>
         />
       ),
       id: "gene_most_severe",

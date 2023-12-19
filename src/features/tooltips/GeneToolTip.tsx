@@ -14,7 +14,7 @@ const GeneTooltip = (props: { geneName: string; content: JSX.Element }) => {
       .then((data) => {
         const geneId = data.hits[0]?._id;
         if (!geneId) {
-          throw new Error(`gene symbol ${props.geneName} not found from mygene.info`);
+          throw new Error(`${props.geneName}`);
         }
         return fetch(`https://mygene.info/v3/gene/${geneId}`);
       })

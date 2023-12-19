@@ -39,7 +39,10 @@ export const handleMainTableExport = (
           p[colname] = val || "NA";
         } else if (val.props.gnomadData !== undefined) {
           // gnomad AF
-          p[colname] = val.props.gnomadData.AF || "NA";
+          p[colname] =
+            (val.props.gnomadData.exomes
+              ? val.props.gnomadData.exomes.AF
+              : val.props.gnomadData.genomes.AF) || "NA";
         } else if (
           val.props.children &&
           typeof val.props.children === "object" &&
@@ -103,8 +106,10 @@ export const handleFineMappingTableExport = (
         const colname = c[0].replace(/ /g, "_").toLocaleLowerCase();
         if (typeof val === "object") {
           if (val.props.gnomadData) {
-            //@ts-ignore
-            p[colname] = val.props.gnomadData.AF || "NA";
+            p[colname] =
+              (val.props.gnomadData.exomes
+                ? val.props.gnomadData.exomes.AF
+                : val.props.gnomadData.genomes.AF) || "NA";
           } else if (val.props.children && val.props.children.length === 4) {
             // up/down arrows expected
             p[colname] = `${val.props.children[1]}/${val.props.children[3]}`;
@@ -192,8 +197,10 @@ export const handleAssocTableExport = (
         const colname = c[0].replace(/ /g, "_").toLocaleLowerCase();
         if (typeof val === "object") {
           if (val.props.gnomadData) {
-            //@ts-ignore
-            p[colname] = val.props.gnomadData.AF || "NA";
+            p[colname] =
+              (val.props.gnomadData.exomes
+                ? val.props.gnomadData.exomes.AF
+                : val.props.gnomadData.genomes.AF) || "NA";
           } else if (val.props.children && val.props.children.length === 4) {
             // up/down arrows expected
             p[colname] = `${val.props.children[1]}/${val.props.children[3]}`;
