@@ -1,9 +1,9 @@
 import json
+import sys
 import timeit
-from typing import Any, Callable, Literal, Optional
+from typing import Any, Callable, Literal
 from flask import (
     Flask,
-    Response,
     flash,
     jsonify,
     render_template,
@@ -19,7 +19,12 @@ import logging
 import re
 
 import werkzeug
-from exceptions import DataException, ParseException, VariantNotFoundException
+from exceptions import (
+    ACZeroException,
+    DataException,
+    ParseException,
+    VariantNotFoundException,
+)
 from data_access.assoc import Datafetch
 from data_access.gnomad import GnomAD
 from data_access.rsid_db import RsidDB
@@ -28,6 +33,7 @@ from data_access.metadata import Metadata
 from datatypes import ResponseTime
 from variant import Variant
 from group_based_auth import verify_membership, GoogleSignIn, before_request
+from collections import defaultdict as dd
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 Compress(app)
@@ -35,8 +41,8 @@ Compress(app)
 try:
     _conf_module = imp.load_source("config", "config.py")
 except Exception:
-    print("Could not load config.py from the current directory")
-    quit()
+    app.logger.error("Could not load config.py from the current directory")
+    sys.exit(1)
 config = {
     key: getattr(_conf_module, key)
     for key in dir(_conf_module)
@@ -158,7 +164,7 @@ def results() -> Any | tuple[Any, int]:
         return jsonify({"message": str(e)}), 400
 
     if len(parsed[1]) > config["max_query_variants"]:
-        print(str(len(parsed[1])) + " variants given, too much")
+        app.logger.warn(str(len(parsed[1])) + " variants given, too much")
         return (
             jsonify(
                 {
@@ -179,7 +185,8 @@ def results() -> Any | tuple[Any, int]:
     found_actual_variants = set()
     unparsed_variants = set()
     notfound_variants = set()
-    rsid_map = {}
+    ac0_variants = set()
+    rsid_map = dd(list)
     for tpl in parsed[1]:
         try:
             vars = [Variant(tpl[0])]
@@ -192,7 +199,6 @@ def results() -> Any | tuple[Any, int]:
             if len(vars) == 0:
                 notfound_variants.add(tpl[0])
                 continue
-            rsid_map[tpl[0]] = [str(var) for var in vars]
         for var in vars:
             if str(var) in found_actual_variants:
                 continue
@@ -200,6 +206,9 @@ def results() -> Any | tuple[Any, int]:
                 gnomad = gnomad_fetch.get_gnomad(var)
             except VariantNotFoundException as e:
                 notfound_variants.add(str(var))
+                continue
+            except ACZeroException as e:
+                ac0_variants.add(str(var))
                 continue
             try:
                 finemapped = fetch_finemapped.get_finemapped(var)
@@ -218,6 +227,7 @@ def results() -> Any | tuple[Any, int]:
             )
             found_input_variants.add(tpl[0])
             found_actual_variants.add(str(var))
+            rsid_map[tpl[0]].append(str(var))
             time["gnomad"] += gnomad["time"]
             time["finemapped"] += finemapped["time"]
             time["assoc"] += assoc["time"]
@@ -234,6 +244,7 @@ def results() -> Any | tuple[Any, int]:
             for type in ["exomes", "genomes"]:
                 if type in gnomad["gnomad"] and gnomad["gnomad"][type] is not None:
                     uniq_most_severe.add(gnomad["gnomad"][type]["most_severe"])
+    freq_summary = gnomad_fetch.summarize_freq(data)
     try:
         # use resource:phenocode as key
         # note that for eQTL Catalogue leafcutter, phenocode is dataset:phenocode
@@ -244,7 +255,7 @@ def results() -> Any | tuple[Any, int]:
             for pheno in uniq_phenos
         }
     except DataException as e:
-        print(e)
+        app.logger.error(e)
         return jsonify({"message": str(e)}), 500
     datasets = {
         ds["dataset_id"]: ds
@@ -258,11 +269,13 @@ def results() -> Any | tuple[Any, int]:
             "most_severe": sorted(list(uniq_most_severe)),
             "phenos": phenos,
             "datasets": datasets,
+            "freq_summary": freq_summary,
             "has_betas": parsed[0] == "group",
             "has_custom_values": parsed[1][0][2] is not None,
             "input_variants": {
                 "found": sorted(list(found_input_variants)),
                 "not_found": sorted(list(notfound_variants)),
+                "ac0": sorted(list(ac0_variants)),
                 "unparsed": sorted(list(unparsed_variants)),
                 "rsid_map": rsid_map,
             },
@@ -313,7 +326,7 @@ if config["authentication"]:
     @app.route("/logout")
     @is_public
     def logout() -> werkzeug.wrappers.Response:
-        print(current_user.email, "logged out")
+        app.logger.info(current_user.email, "logged out")
         logout_user()
         return redirect(url_for("homepage", _scheme="https", _external=True))
 
@@ -329,7 +342,7 @@ if config["authentication"]:
     @app.route("/get_authorized")
     @is_public
     def get_authorized() -> werkzeug.wrappers.Response:
-        print("AUTH")
+        app.logger.debug("AUTH")
         "This route tries to be clever and handle lots of situations."
         if current_user.is_anonymous or not verify_membership(current_user.email):
             return google_sign_in.authorize()
@@ -351,8 +364,8 @@ if config["authentication"]:
             # oauth.callback reads request.args.
             username, email = google_sign_in.callback()
         except Exception as exc:
-            print("Error in google_sign_in.callback():")
-            print(exc)
+            app.logger.error("Error in google_sign_in.callback():")
+            app.logger.error(exc)
             flash(
                 "Something is wrong with authentication. Please contact humgen-servicedesk@helsinki.fi"
             )
@@ -374,7 +387,7 @@ if config["authentication"]:
         user = User(username, email)
         login_user(user, remember=True)
 
-        print(user.email, "logged in")
+        app.logger.info(user.email, "logged in")
         return redirect(url_for("get_authorized", _scheme="https", _external=True))
 
 

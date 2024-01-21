@@ -11,8 +11,9 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
   const gnomadVersion = useDataStore((state) => state.clientData!.meta.gnomad.version);
   const gnomadUrl = useDataStore((state) => state.clientData!.meta.gnomad.url);
   const selectedPopulation = useDataStore((state) => state.selectedPopulation);
-  const gnomadData = props.gnomadData.exomes || props.gnomadData.genomes;
-  const dataType = props.gnomadData.exomes ? "exomes" : "genomes";
+  const gnomadData = props.gnomadData[
+    props.gnomadData.preferred as keyof GnomadRecord
+  ]! as GnomadVariantRecord;
 
   const af_pops = Object.keys(gnomadData).filter((k) => k.startsWith("AF_"));
 
@@ -83,34 +84,14 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
     ) : (
       <></>
     );
-  //TODO server-side calculation?
-  // plenty of casting because populations are not typed
-  let popmax = af_pops.reduce(
-    (p, c) =>
-      (gnomadData[p.pop as keyof GnomadVariantRecord] as number) >
-      (gnomadData[c as keyof GnomadVariantRecord]! as number)
-        ? p
-        : { pop: c, af: gnomadData[c as keyof GnomadVariantRecord] as number },
-    {
-      pop: af_pops[0],
-      af: gnomadData[af_pops[0] as keyof GnomadVariantRecord] as number,
-    }
-  );
-  let popmin = af_pops.reduce(
-    (p, c) =>
-      (((gnomadData[p.pop as keyof GnomadVariantRecord] as number) <
-        (gnomadData[c as keyof GnomadVariantRecord] == null
-          ? Number.MAX_SAFE_INTEGER
-          : (gnomadData[c as keyof GnomadVariantRecord] as number))) as unknown as number)
-        ? p
-        : { pop: c, af: gnomadData[c as keyof GnomadVariantRecord] as number },
-    {
-      pop: af_pops[0],
-      af: gnomadData[af_pops[0] as keyof GnomadVariantRecord] as number,
-    }
-  );
-  const popmaxAfDispl = popmax.af < 0.001 ? popmax.af.toExponential(1) : popmax.af.toPrecision(2);
-  const popminAfDispl = popmin.af < 0.001 ? popmin.af.toExponential(1) : popmin.af.toPrecision(2);
+  const popmaxAfDispl =
+    gnomadData.popmax.af < 0.001
+      ? gnomadData.popmax.af.toExponential(1)
+      : gnomadData.popmax.af.toPrecision(2);
+  const popminAfDispl =
+    gnomadData.popmin.af < 0.001
+      ? gnomadData.popmin.af.toExponential(1)
+      : gnomadData.popmin.af.toPrecision(2);
   const popsNotAvailable = af_pops
     .filter((pop) => gnomadData[pop as keyof GnomadVariantRecord] == null)
     .map((pop) => pop.replace("AF_", ""));
@@ -123,18 +104,18 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
       <></>
     );
   const afRangeDispl =
-    popmax.af === 0 ? (
+    gnomadData.popmax.af === 0 ? (
       <></>
     ) : (
       <span>
         AF ranges between populations from{" "}
-        {popmin.af == 0
-          ? "0 to " + popmax.pop.replace("AF_", "") + " " + popmaxAfDispl
-          : popmin.pop.replace("AF_", "") +
+        {gnomadData.popmin.af == 0
+          ? "0 to " + gnomadData.popmax.pop.replace("AF_", "") + " " + popmaxAfDispl
+          : gnomadData.popmin.pop.replace("AF_", "") +
             " " +
             popminAfDispl +
             " to " +
-            popmax.pop.replace("AF_", "") +
+            gnomadData.popmax.pop.replace("AF_", "") +
             " " +
             popmaxAfDispl}
       </span>
@@ -145,7 +126,7 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
       title={
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Typography variant="h6" sx={{ paddingBottom: "10px" }}>
-            gnomAD {gnomadVersion} {dataType} allele frequency
+            gnomAD {gnomadVersion} {props.gnomadData.preferred} allele frequency
           </Typography>
           {filterDisplay}
           {afRangeDispl}

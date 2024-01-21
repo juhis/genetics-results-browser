@@ -14,6 +14,15 @@ export type TableData = {
   datasets: DatasetMap;
   input_variants: InputVariants;
   meta: ApiResponseMeta;
+  freq_summary: Array<PopFreqSummary>;
+};
+
+export type PopFreqSummary = {
+  pop: string;
+  max: number;
+  maxPerc: number;
+  min: number;
+  minPerc: number;
 };
 
 export type VariantRecord = {
@@ -66,6 +75,7 @@ export type InputVariants = {
   found: Array<string>;
   not_found: Array<string>;
   unparsed: Array<string>;
+  ac0: Array<string>;
   rsid_map: Record<string, Array<string>>;
 };
 
@@ -195,7 +205,8 @@ export type FineMappedResource = {
 
 export type GnomadRecord = {
   exomes?: GnomadVariantRecord;
-  genomes: GnomadVariantRecord;
+  genomes?: GnomadVariantRecord;
+  preferred: "genomes" | "exomes";
 };
 
 export type GnomadVariantRecord = {
@@ -205,6 +216,8 @@ export type GnomadVariantRecord = {
   gene_most_severe: string;
   filters: string | null;
   consequences: Array<{ gene_symbol: string; consequence: string }>;
+  popmax: { pop: string; af: number };
+  popmin: { pop: string; af: number };
   // population AF_pop fields omitted here for maintainability
 };
 
