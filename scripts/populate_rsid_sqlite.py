@@ -4,8 +4,8 @@
 
 # ran with:
 # ./populate_rsid_sqlite.py \
-# /mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.sites.all.vep95.gencode29.tsv.bgz \
-# /mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.rsid.db \
+# /mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.sites.tsv.bgz \
+# /mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.rsid.db \
 # --chr \#chr --pos pos --ref ref --alt alt --rs rsids
 
 import gzip
@@ -52,26 +52,28 @@ def generate_entries(args):
     """
     with gzip.open(args.input_file, "rt") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
+        last_entry = None
         for line in f:
             s = line.strip().split("\t")
             rsids = s[h[args.rs]].split(",")
             for rsid in rsids:
                 if not rsids[0].startswith("rs"):
                     continue
-                yield (
-                    (
-                        s[h[args.chr]]
-                        .replace("chr", "")
-                        .replace("23", "X")
-                        .replace("24", "Y")
-                        .replace("25", "XY")
-                        .replace("26", "MT"),
-                        int(s[h[args.pos]]),
-                        s[h[args.ref]],
-                        s[h[args.alt]],
-                        rsid.strip(),
-                    )
+                current_entry = (
+                    s[h[args.chr]]
+                    .replace("chr", "")
+                    .replace("23", "X")
+                    .replace("24", "Y")
+                    .replace("25", "XY")
+                    .replace("26", "MT"),
+                    int(s[h[args.pos]]),
+                    s[h[args.ref]],
+                    s[h[args.alt]],
+                    rsid.strip(),
                 )
+                if current_entry != last_entry:
+                    yield current_entry
+                    last_entry = current_entry
 
 
 def populate_rsids(args):

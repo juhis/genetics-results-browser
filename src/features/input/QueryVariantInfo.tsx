@@ -111,6 +111,39 @@ const QueryVariantInfo = (props: {}) => {
       );
     }
   }
+  let ac0Elem = <></>;
+  if (input.ac0.length > 0) {
+    if (input.ac0.length > 1) {
+      const tooltipTableRows = input.ac0.map((nf, i) => (
+        <tr key={nf}>
+          <td>{nf}</td>
+        </tr>
+      ));
+      notFoundElem = (
+        <Typography variant="h6" gutterBottom>
+          <HtmlTooltip
+            title={
+              <table>
+                <tbody>{tooltipTableRows}</tbody>
+              </table>
+            }>
+            <span style={{ textDecoration: "underline #fff dotted" }}>
+              {input.ac0.length} variants
+            </span>
+          </HtmlTooltip>{" "}
+          exist in gnomAD {gnomadVersion!} but do not have any alleles called.
+        </Typography>
+      );
+    } else {
+      notFoundElem = (
+        <Typography variant="h6" gutterBottom>
+          Variant {input.ac0[0]} exists in gnomAD {gnomadVersion!} but does not have any alleles
+          called.
+        </Typography>
+      );
+    }
+  }
+
   let rsidElem = <></>;
   const multipleVariantsPerRsid = Object.keys(input.rsid_map).filter(
     (rsid) => input!.rsid_map[rsid].length > 1
@@ -148,6 +181,7 @@ const QueryVariantInfo = (props: {}) => {
       {foundElem}
       {notFoundElem}
       {unparsedElem}
+      {ac0Elem}
       {rsidElem}
     </>
   );

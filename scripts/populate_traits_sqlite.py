@@ -193,6 +193,40 @@ def generate_entries_finngen(resource, filename, date):
         )
 
 
+def generate_entries_finngen_ukbb_meta(resource, filename, date):
+    with open(filename, "r") as f:
+        phenos = json.load(f)
+    for p in phenos:
+        yield (
+            (
+                resource,
+                "GWAS",
+                "continuous" if p["fg_n_controls"] == 0 else "case-control",
+                p["phenocode"],
+                p["phenostring"],
+                p["category"],
+                None,
+                None,
+                None,
+                None,
+                p["fg_n_cases"] + p["ukbb_n_cases"]
+                if p["fg_n_controls"] == 0
+                else p["fg_n_cases"]
+                + p["ukbb_n_cases"]
+                + p["fg_n_controls"]
+                + p["ukbb_n_controls"],
+                None
+                if p["fg_n_controls"] == 0
+                else p["fg_n_cases"] + p["ukbb_n_cases"],
+                None
+                if p["fg_n_controls"] == 0
+                else p["fg_n_controls"] + p["ukbb_n_controls"],
+                "FinnGen",
+                date,
+            )
+        )
+
+
 def generate_entries_soma(resource, source_name, filename, n_samples, date):
     with open(filename, "r") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
@@ -447,6 +481,17 @@ def populate_traits(args):
                     resource,
                     "/mnt/disks/data/R12_pheno.json",
                     "2023-10-25",
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "FinnGen_UKBB_meta":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_finngen_ukbb_meta(
+                    resource,
+                    "/mnt/disks/data/fg-ukb-meta-2024-01-pheno-list.json",
+                    "2023-10-31",
                 ),
             )
             n_datasets += 1

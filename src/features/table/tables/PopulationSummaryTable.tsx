@@ -1,12 +1,10 @@
 import { TableData } from "../../../types/types";
 import { useMemo } from "react";
 import { useDataStore } from "../../../store/store";
-import { summarizeFreq } from "../../../store/munge";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 
 const VariantSummaryStats = (props: {}) => {
   const clientData: TableData = useDataStore((state) => state.clientData)!;
-  const freqSummary = useMemo(() => summarizeFreq(clientData), [clientData]);
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
@@ -33,7 +31,7 @@ const VariantSummaryStats = (props: {}) => {
   return (
     <MaterialReactTable
       columns={columns}
-      data={freqSummary}
+      data={clientData.freq_summary}
       enableColumnActions={true}
       enableColumnFilters={true}
       enablePagination={false}
