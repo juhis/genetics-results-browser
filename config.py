@@ -5,10 +5,10 @@ log_level = logging.INFO
 authentication = True
 authentication_file = "/mnt/disks/data/finngen_auth.json"
 
-metadata_db = "/mnt/disks/data/meta_finngen_version_20231105.db"
+metadata_db = "/mnt/disks/data/meta_finngen_version_20240121.db"
 
 rsid_db = {
-    "file": "/mnt/disks/data/gnomad/gnomad.genomes.v3.1.2.rsid.db",
+    "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.rsid.db",
 }
 
 gnomad = {
@@ -19,10 +19,28 @@ gnomad = {
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_finngen_version_20231105.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_finngen_version_20240121.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it will not be shown in the UI
     "resources": [
+        {
+            "resource": "FinnGen_UKBB_meta",
+            "version": "R12",
+            "data_types": ["GWAS"],
+            "n_traits": "873",
+            "url": "https://www.finngen.fi/en/for_researchers",
+            "pheno_urls": [
+                {
+                    "url": "https://metaresults-ukbb.finngen.fi/pheno/[PHENOCODE]",
+                    "label": "FinnGen/UKBB meta Pheweb",
+                },
+                {
+                    "url": "https://r12.risteys.finregistry.fi/endpoints/[PHENOCODE]",
+                    "label": "FinnGen Risteys",
+                },
+            ],
+            "p_thres": 5e-3,
+        },
         {
             "resource": "FinnGen",
             "version": "R12",

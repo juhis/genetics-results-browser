@@ -1,6 +1,17 @@
 const ChangeLog = () => {
   return (
     <>
+      <span>Jan 21st 2024:</span>
+      <ul>
+        <li>Added FinnGen R12 + UKBB meta-analysis association results</li>
+        <li>
+          Show gnomAD exomes allele frequency only when exomes allele number is higher than genomes
+          allele number
+        </li>
+        <li>Give a note when a variant is in gnomAD but has allele count zero</li>
+        <li>Updated rsids to gnomAD 4.0</li>
+        <li>Fixed population AF summary table</li>
+      </ul>
       <span>Dec 19th 2023:</span>
       <ul>
         <li>
