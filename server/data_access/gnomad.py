@@ -113,7 +113,7 @@ class GnomAD(object, metaclass=Singleton):
 
     def summarize_freq(self, data: list[Any]) -> list[dict[str, str | int | float]]:
         gn = [d["gnomad"] for d in data]
-        max_freqs = {}
+        max_freqs: dict[str, float] = {}
         for c in gn:
             max_freq = max(
                 (
@@ -126,7 +126,7 @@ class GnomAD(object, metaclass=Singleton):
             )
             max_freqs[max_freq[0]] = max_freqs.get(max_freq[0], 0) + 1
 
-        min_freqs = {}
+        min_freqs: dict[str, float] = {}
         for c in gn:
             min_freq = min(
                 (
