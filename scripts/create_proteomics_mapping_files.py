@@ -1,5 +1,8 @@
 # gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_10_11/data/Olink/pQTL/*.gz | \
 # xargs -I{} basename {} .txt.gz > /mnt/disks/data/fg_olink_probes
+# gsutil ls gs://zz-red/Omics/Proteomics/UKB-PPP/pQTL2/*.txt.gz | \
+# xargs -I{} basename {} .txt.gz > /mnt/disks/data/ukb_olink_probes
+# cat /mnt/disks/data/fg_olink_probes /mnt/disks/data/ukb_olink_probes | sort -u > /mnt/disks/data/all_olink_probes
 
 # gsutil ls gs://finngen-production-library-green/omics/proteomics/release_2023_03_02/data/Somascan/pQTL/*.gz | \
 # xargs -I{} basename {} .txt.gz | sed 's/SomaScan_Batch2_//' > fg_soma_probes
@@ -14,7 +17,7 @@ import numpy as np
 
 soma_info_file = "/mnt/disks/data/Soma_info_all.csv"
 entrez_file = "/mnt/disks/data/mart_export_entrez.tsv"
-olink_probe_file = "/mnt/disks/data/fg_olink_probes"
+olink_probe_file = "/mnt/disks/data/all_olink_probes"
 gene_name_file = "/mnt/disks/data/mart_export_gene_name.tsv"
 
 chr_set = set(

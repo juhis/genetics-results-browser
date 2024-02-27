@@ -12,14 +12,14 @@ rsid_db = {
 }
 
 gnomad = {
-    "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.sites.tsv.bgz",
+    "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.sites.v2.tsv.bgz",
     "populations": ["afr", "amr", "asj", "eas", "fin", "mid", "nfe", "oth", "sas"],
     "url": "https://gnomad.broadinstitute.org/variant/[VARIANT]?dataset=gnomad_r4",
     "version": "4.0",
 }
 
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_finngen_version_20240121.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_finngen_version_20240219.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it will not be shown in the UI
     "resources": [
@@ -89,9 +89,9 @@ assoc = {
         },
         {
             "resource": "UKBB_pQTL",
-            "version": "2023-08-15",
+            "version": "2024-01-30",
             "data_types": ["pQTL"],
-            "n_traits": "Olink 1,459",
+            "n_traits": "Olink 2,655",
             # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
             "url": None,
             "pheno_urls": [
@@ -162,7 +162,7 @@ assoc = {
 }
 
 finemapped = {
-    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20231105.tsv.gz",
+    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20240219.tsv.gz",
     "resources": [
         {
             "resource": "eQTL_Catalogue_R6",
@@ -194,9 +194,9 @@ finemapped = {
         },
         {
             "resource": "UKBB_pQTL",
-            "version": "2023-08-15",
+            "version": "2024-01-30",
             "data_types": ["pQTL"],
-            "n_traits": "Olink 1,459",
+            "n_traits": "Olink 2,655",
             # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
             "url": None,
             "pheno_urls": [

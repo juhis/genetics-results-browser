@@ -540,7 +540,7 @@ def populate_traits(args):
                     "UKBB",
                     "/mnt/disks/data/olink_probe_map_ensembl.tsv",
                     44755,
-                    "2023-08-15",
+                    "2024-01-30",
                 ),
             )
             n_datasets += 1

@@ -16,8 +16,6 @@
 # ) | bgzip -@4 > gnomad.genomes.exomes.v4.0.sites.tsv.bgz && \
 # tabix -s 1 -b 2 -e 2 gnomad.genomes.exomes.v4.0.sites.tsv.bgz
 
-# accidentally for gnomad 4.0, "remaining" population was still labelled "oth"
-
 # to start a cluster:
 # (only use a high number of workers if sure that this works)
 # hailctl dataproc start gnomad --region europe-west1 --zone europe-west1-b --num-workers 10 --max-idle 30m --subnet projects/finngen-refinery-dev/regions/europe-west1/subnetworks/default
@@ -83,7 +81,7 @@ def annotate_table(table):
         AF_fin=table.freq[table.freq_index_dict["fin_adj"]].AF,
         AF_mid=table.freq[table.freq_index_dict["mid_adj"]].AF,
         AF_nfe=table.freq[table.freq_index_dict["nfe_adj"]].AF,
-        AF_oth=table.freq[table.freq_index_dict["remaining_adj"]].AF,
+        AF_remaining=table.freq[table.freq_index_dict["remaining_adj"]].AF,
         AF_sas=table.freq[table.freq_index_dict["sas_adj"]].AF,
         consequences=hl.array(
             hl.set(
@@ -92,6 +90,9 @@ def annotate_table(table):
                         gene_symbol=x.gene_symbol,
                         gene_id=x.gene_id,
                         consequences=x.consequence_terms,
+                        gene_symbol_source=x.gene_symbol_source,
+                        canonical=x.canonical,
+                        biotype=x.biotype,
                     )
                 )
             )
@@ -119,34 +120,6 @@ def annotate_table(table):
             ),
             missing_false=True,
         ),
-        genes_most_severe=hl.if_else(
-            hl.any(
-                lambda x: (x.canonical == 1)
-                & (x.biotype == "protein_coding")
-                & (x.gene_symbol_source != "Clone_based_ensembl_gene")
-                & (x.consequence_terms.contains(table.vep.most_severe_consequence)),
-                table.vep.transcript_consequences,
-            ),
-            canon_pc.map(
-                lambda x: hl.struct(gene_symbol=x.gene_symbol, gene_id=x.gene_id)
-            ),
-            hl.if_else(
-                hl.any(
-                    lambda x: (x.biotype == "protein_coding")
-                    & (x.gene_symbol_source != "Clone_based_ensembl_gene")
-                    & (x.consequence_terms.contains(table.vep.most_severe_consequence)),
-                    table.vep.transcript_consequences,
-                ),
-                most_severe.map(
-                    lambda x: hl.struct(gene_symbol=x.gene_symbol, gene_id=x.gene_id)
-                ),
-                most_severe_others.map(
-                    lambda x: hl.struct(gene_symbol=x.gene_symbol, gene_id=x.gene_id)
-                ),
-                missing_false=True,
-            ),
-            missing_false=True,
-        ),
     )
 
 
@@ -163,7 +136,7 @@ def export(table, outfile):
         "AF_fin",
         "AF_mid",
         "AF_nfe",
-        "AF_oth",
+        "AF_remaining",
         "AF_sas",
         "most_severe",
         "gene_most_severe",
@@ -176,12 +149,12 @@ table = hl.read_table(
 )
 
 table = filter_table(table)
-# rerunning VEP, gnomAD uses a different transcript set with a lot more non-coding transcripts and we want more coding genes
+# rerun VEP
 # table = hl.vep(table, "gs://hail-eu-vep/vep95-GRCh38-loftee-gcloud.json")
 table = (
     annotate_table(table).rename({"chr": "#chr"}).key_by("#chr", "pos", "ref", "alt")
 )
 export(
     table,
-    f"gs://gnomad2/{DATA_TYPE}_4.0/gnomad.{DATA_TYPE}.v4.0.sites.tsv.bgz",
+    f"gs://gnomad2/{DATA_TYPE}_4.0/gnomad.{DATA_TYPE}.v4.0.sites.v2.tsv.bgz",
 )
