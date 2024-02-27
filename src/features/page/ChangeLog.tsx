@@ -1,6 +1,17 @@
 const ChangeLog = () => {
   return (
     <>
+      <span>Feb 27th 2024:</span>
+      <ul>
+        <li>
+          Updated UKBB pQTL association and fine-mapping results from 1,459 to 2,655 proteins
+          (analysis by Zhili Zheng / FinnGen)
+        </li>
+        <li>
+          Unassigned population is now called "remaining" and not "oth" (in gnomAD, "oth" was used
+          until gnomAD 3 and "remaining" is used in gnomAD 4)
+        </li>
+      </ul>
       <span>Jan 21st 2024:</span>
       <ul>
         <li>Added FinnGen R12 + UKBB meta-analysis association results</li>
