@@ -157,9 +157,11 @@ def generate_entries_opentargets(resource, filename):
                 None,
                 int(p["n_initial"]),
                 int(p["n_cases"]) if p["n_cases"] != "None" else None,
-                int(p["n_initial"]) - int(p["n_cases"])
-                if p["n_cases"] != "None"
-                else None,
+                (
+                    int(p["n_initial"]) - int(p["n_cases"])
+                    if p["n_cases"] != "None"
+                    else None
+                ),
                 p["pub_author"],
                 p["pub_date"],
             )
@@ -182,9 +184,11 @@ def generate_entries_finngen(resource, filename, date):
                 None,
                 None,
                 None,
-                p["num_cases"]
-                if p["num_controls"] == 0
-                else p["num_cases"] + p["num_controls"],
+                (
+                    p["num_cases"]
+                    if p["num_controls"] == 0
+                    else p["num_cases"] + p["num_controls"]
+                ),
                 None if p["num_controls"] == 0 else p["num_cases"],
                 None if p["num_controls"] == 0 else p["num_controls"],
                 "FinnGen",
@@ -209,18 +213,24 @@ def generate_entries_finngen_ukbb_meta(resource, filename, date):
                 None,
                 None,
                 None,
-                p["fg_n_cases"] + p["ukbb_n_cases"]
-                if p["fg_n_controls"] == 0
-                else p["fg_n_cases"]
-                + p["ukbb_n_cases"]
-                + p["fg_n_controls"]
-                + p["ukbb_n_controls"],
-                None
-                if p["fg_n_controls"] == 0
-                else p["fg_n_cases"] + p["ukbb_n_cases"],
-                None
-                if p["fg_n_controls"] == 0
-                else p["fg_n_controls"] + p["ukbb_n_controls"],
+                (
+                    p["fg_n_cases"] + p["ukbb_n_cases"]
+                    if p["fg_n_controls"] == 0
+                    else p["fg_n_cases"]
+                    + p["ukbb_n_cases"]
+                    + p["fg_n_controls"]
+                    + p["ukbb_n_controls"]
+                ),
+                (
+                    None
+                    if p["fg_n_controls"] == 0
+                    else p["fg_n_cases"] + p["ukbb_n_cases"]
+                ),
+                (
+                    None
+                    if p["fg_n_controls"] == 0
+                    else p["fg_n_controls"] + p["ukbb_n_controls"]
+                ),
                 "FinnGen",
                 date,
             )
@@ -479,8 +489,8 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_finngen(
                     resource,
-                    "/mnt/disks/data/R12_pheno.json",
-                    "2023-10-25",
+                    "/mnt/disks/data/R10_pheno.json",
+                    "2023-12-08",
                 ),
             )
             n_datasets += 1
@@ -490,8 +500,8 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_finngen_ukbb_meta(
                     resource,
-                    "/mnt/disks/data/fg-ukb-meta-2024-01-pheno-list.json",
-                    "2023-10-31",
+                    "/mnt/disks/data/fg-ukb-meta-2022-11-pheno-list.json",
+                    "2023-12-08",
                 ),
             )
             n_datasets += 1

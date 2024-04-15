@@ -3,6 +3,7 @@ import { Box, Link, TextField, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CreateIcon from "@mui/icons-material/Create";
 import { useDataStore } from "../../store/store";
+import config from "../../config.json";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -355,14 +356,18 @@ const InputForm = () => {
           </LoadingButton>
           <Typography sx={{ marginBottom: "10px" }}>
             Or try <br />
-            <Link
-              sx={{ cursor: "pointer" }}
-              onClick={() => {
-                setExampleData("FinnGen_priority");
-              }}>
-              FinnGen EA5 priority variants
-            </Link>
-            <br />
+            {config.target === "finngen" ? (
+              <>
+                <Link
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setExampleData("FinnGen_priority");
+                  }}>
+                  FinnGen EA5 priority variants
+                </Link>
+                <br />
+              </>
+            ) : null}
             <Link
               sx={{ cursor: "pointer" }}
               onClick={() => {
@@ -387,13 +392,6 @@ const InputForm = () => {
               COVID-19 all lead variants
             </Link>
             <br />
-            {/* <Link
-              sx={{ cursor: "pointer" }}
-              onClick={() => {
-                setExampleData("1krandom");
-              }}>
-              1,000 random chr1 variants
-            </Link> */}
           </Typography>
         </Box>
       </form>

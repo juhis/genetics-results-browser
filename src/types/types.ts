@@ -1,3 +1,9 @@
+export type ChangeLogItem = {
+  type: string;
+  text?: string;
+  children?: Array<ChangeLogItem>;
+};
+
 export type GeneInfo = {
   _id: string;
   symbol: string;
@@ -226,12 +232,19 @@ export type URLWithLabel = {
   label: string;
 };
 
-export type SummaryTableData = Array<SummaryTableRow>;
+export type PhenoSummaryTableData = Array<PhenoSummaryTableRow>;
 
-export type SummaryTableRow = {
+export type PhenoSummaryTableRow = {
   pheno: Phenotype;
   dataset: string;
   total: number;
   consistent: number;
   opposite: number;
+};
+
+export type DatasetSummaryTableData = Array<DatasetSummaryTableRow>;
+
+export type DatasetSummaryTableRow = {
+  dataset: string;
+  total: number;
 };

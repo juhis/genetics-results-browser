@@ -1,5 +1,6 @@
 import { Typography, Box, Link } from "@mui/material";
 import { useHotkeys } from "react-hotkeys-hook";
+import config from "../../config.json";
 
 const Header = () => {
   const sounds = [
@@ -42,12 +43,11 @@ const Header = () => {
           </Link>
         </Typography>
         <Typography sx={{ paddingLeft: "20px", marginBottom: "10px", alignSelf: "center" }}>
-          Last updated Feb 27th 2024
+          Last updated {config.last_updated}
         </Typography>
       </Box>
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-        anno.finngen.fi / variant annotation and interpretation based on global human genomics
-        results
+        {config.title}
       </Typography>
     </>
   );

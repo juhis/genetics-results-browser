@@ -1,10 +1,13 @@
 FROM nikolaik/python-nodejs:python3.11-nodejs20-slim
-MAINTAINER Juha Karjalainen <jkarjala@broadinstitute.org>
+LABEL maintainer="Juha Karjalainen <jkarjala@broadinstitute.org>"
 
+ARG CONFIG_FILE
 WORKDIR /opt/browser
+
 RUN npm install -D webpack-cli
 
 COPY ./ ./
+COPY ${CONFIG_FILE} ./src/config.json
 
 RUN pip3 install -r requirements.txt
 RUN npm install
