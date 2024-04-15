@@ -1,12 +1,12 @@
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
-import { SummaryTableRow, TableData } from "../../../types/types";
+import { PhenoSummaryTableRow, TableData } from "../../../types/types";
 import { useMemo, useState } from "react";
-import { getVariantSummaryTableColumns } from "./PhenotypeSummaryTable.columns";
+import { getPhenoSummaryTableColumns } from "./PhenotypeSummaryTable.columns";
 import { useDataStore } from "../../../store/store";
 import { useServerQuery } from "../../../store/serverQuery";
-import { summarize } from "../../../store/munge";
+import { summarizePhenotypes } from "../../../store/munge";
 import VariantMainTable from "./VariantMainTable";
 
 const PhenotypeSummaryTable = (props: {}) => {
@@ -21,9 +21,9 @@ const PhenotypeSummaryTable = (props: {}) => {
     useDataStore((state) => state.variantInput)!
   );
 
-  const summaryData = useMemo(() => summarize(clientData), [clientData]);
-  const columns = useMemo<MRT_ColumnDef<SummaryTableRow>[]>(() => {
-    return getVariantSummaryTableColumns(
+  const summaryData = useMemo(() => summarizePhenotypes(clientData), [clientData]);
+  const columns = useMemo<MRT_ColumnDef<PhenoSummaryTableRow>[]>(() => {
+    return getPhenoSummaryTableColumns(
       clientData.phenos,
       clientData.datasets,
       clientData.meta,

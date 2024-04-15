@@ -9,9 +9,10 @@ import {
   FineMappedRecord,
   GroupedFineMappedRecord,
   FineMappedResource,
-  SummaryTableData,
+  PhenoSummaryTableData,
   DataType,
   QTLType,
+  DatasetSummaryTableData,
 } from "../types/types";
 
 const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
@@ -382,7 +383,7 @@ export const filterRows = (
   return { ...data, data: newData };
 };
 
-export const summarize = (data: TableData): SummaryTableData => {
+export const summarizePhenotypes = (data: TableData): PhenoSummaryTableData => {
   const startTime = performance.now();
   data.data.forEach((d) => {
     d.assoc.data.forEach((a) => {
@@ -407,7 +408,7 @@ export const summarize = (data: TableData): SummaryTableData => {
     };
     return p;
   }, {} as Record<string, Record<string, number | string>>);
-  const summaryTableData: SummaryTableData = Object.entries(phenoCounts)
+  const summaryTableData: PhenoSummaryTableData = Object.entries(phenoCounts)
     .sort((a, b) => (b[1].total as number) - (a[1].total as number))
     .map((d) => ({
       pheno: data.phenos[d[1].resource + ":" + d[1].phenocode],
@@ -418,5 +419,33 @@ export const summarize = (data: TableData): SummaryTableData => {
     }))
     .filter((d) => !d.pheno.is_na);
   console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over phenotypes`);
+  return summaryTableData;
+};
+
+export const summarizeDatasets = (data: TableData): DatasetSummaryTableData => {
+  const startTime = performance.now();
+  data.data.forEach((d) => {
+    d.assoc.data.forEach((a) => {
+      a.beta_input = d.beta;
+    });
+  });
+  const assocs: AssocRecord[] = data.data.flatMap((d) => d.assoc.data);
+  // TODO keys of phenoCounts not used
+  const phenoCounts = assocs.reduce((p, c) => {
+    const id = c.resource + ":" + c.dataset;
+    p[id] = {
+      resource: c.resource,
+      dataset: c.dataset,
+      total: ((p[id]?.total as number) || 0) + (c.beta != 0 ? 1 : 0),
+    };
+    return p;
+  }, {} as Record<string, Record<string, number | string>>);
+  const summaryTableData: DatasetSummaryTableData = Object.entries(phenoCounts)
+    .sort((a, b) => (b[1].total as number) - (a[1].total as number))
+    .map((d) => ({
+      dataset: d[1].dataset as string,
+      total: d[1].total as number,
+    }))
+  console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over datasets`);
   return summaryTableData;
 };

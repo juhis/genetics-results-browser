@@ -1,15 +1,15 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { ApiResponseMeta, DatasetMap, PhenoMap, SummaryTableRow } from "../../../types/types";
+import { ApiResponseMeta, DatasetMap, PhenoMap, PhenoSummaryTableRow } from "../../../types/types";
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { filterContainsWithTooltip } from "../utils/tableutil";
 
-export const getVariantSummaryTableColumns = (
+export const getPhenoSummaryTableColumns = (
   phenoMap: PhenoMap,
   datasetMap: DatasetMap,
   meta: ApiResponseMeta,
   has_betas: boolean
-): MRT_ColumnDef<SummaryTableRow>[] => {
-  let cols: MRT_ColumnDef<SummaryTableRow>[] = [
+): MRT_ColumnDef<PhenoSummaryTableRow>[] => {
+  let cols: MRT_ColumnDef<PhenoSummaryTableRow>[] = [
     {
       accessorFn: (row) => phenoMap[row.pheno.resource + ":" + row.pheno.phenocode].data_type,
       header: "type",
