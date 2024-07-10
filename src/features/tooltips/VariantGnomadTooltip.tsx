@@ -1,9 +1,12 @@
 import { Link, Typography, useTheme } from "@mui/material";
-//TODO using plotly increases the bundle size by 8MB uncompressed!
-import Plot from "react-plotly.js";
 import { useDataStore } from "../../store/store";
 import { GnomadRecord, GnomadVariantRecord } from "../../types/types";
 import { HtmlTooltip } from "./HtmlTooltip";
+import { ChartOptions, Plugin, TooltipItem } from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { Chart, CategoryScale, LinearScale, BarElement, Tooltip } from "chart.js";
+
+Chart.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 export const VariantGnomadToolTip = (props: { variant: string; gnomadData: GnomadRecord }) => {
   const theme = useTheme();
@@ -14,59 +17,101 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
   const gnomadData = props.gnomadData[
     props.gnomadData.preferred as keyof GnomadRecord
   ]! as GnomadVariantRecord;
+  const maxLogFreq = 5;
 
   const af_pops = Object.keys(gnomadData).filter((k) => k.startsWith("AF_"));
+  const labels = af_pops.map((pop) => pop.replace("AF_", ""));
+  // take log and then reverse the scale with 1e-maxLogFreq as minimum frequency
+  const dataValues = af_pops.map(
+    (pop) =>
+      maxLogFreq +
+      Math.max(-maxLogFreq, Math.log10(gnomadData[pop as keyof GnomadVariantRecord] as number))
+  );
+  const textValues = af_pops.map((pop) =>
+    gnomadData[pop as keyof GnomadVariantRecord] == null
+      ? "NA"
+      : gnomadData[pop as keyof GnomadVariantRecord] == 0
+      ? "0"
+      : (gnomadData[pop as keyof GnomadVariantRecord]! as number) < 0.01
+      ? (gnomadData[pop as keyof GnomadVariantRecord] as number).toExponential(1)
+      : (gnomadData[pop as keyof GnomadVariantRecord] as number).toPrecision(2)
+  );
 
-  const trace: Plotly.Data[] = [
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: `gnomAD ${gnomadVersion} ${props.gnomadData.preferred} allele frequency`,
+        data: dataValues,
+        backgroundColor: theme.palette.primary.main,
+        categoryPercentage: 0.95,
+      },
+    ],
+  };
+
+  const options: ChartOptions<"bar"> = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          callback: (_, index) => (index === maxLogFreq ? "" : `1e-${maxLogFreq - index}`),
+        },
+        grid: {
+          drawOnChartArea: true,
+          color: (context) => {
+            if (context.tick && context.index === maxLogFreq) {
+              return "rgba(0, 0, 0, 0)";
+            }
+            return "#E0E0E0";
+          },
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context: TooltipItem<"bar">) => {
+            let label = context.dataset.label || "";
+            if (label) {
+              label += ": ";
+            }
+            label += `${context.label} AF ${textValues[context.dataIndex]}`;
+            return label;
+          },
+        },
+      },
+    },
+    animation: false,
+  };
+
+  const plugins: Plugin<"bar">[] = [
     {
-      x: af_pops.map((pop) => pop.replace("AF_", "")),
-      // take log and then reverse the scale with 1e-5 as minimum frequency
-      y: af_pops.map(
-        (pop) =>
-          5 + Math.max(-5, Math.log10(gnomadData[pop as keyof GnomadVariantRecord] as number))
-      ),
-      text: af_pops.map((pop) =>
-        gnomadData[pop as keyof GnomadVariantRecord] == null
-          ? "NA"
-          : gnomadData[pop as keyof GnomadVariantRecord] == 0
-          ? "0"
-          : (gnomadData[pop as keyof GnomadVariantRecord]! as number) < 0.01
-          ? (gnomadData[pop as keyof GnomadVariantRecord] as number).toExponential(1)
-          : (gnomadData[pop as keyof GnomadVariantRecord] as number).toPrecision(2)
-      ),
-      textposition: "auto",
-      type: "bar",
-      hovertemplate: "%{x} AF %{text}<extra></extra>",
-      marker: { color: theme.palette.primary.main },
+      id: "dataLabelsOnTop",
+      afterDraw: (chart: Chart) => {
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((_, i) => {
+          const meta = chart.getDatasetMeta(i);
+          if (!meta.hidden) {
+            meta.data.forEach((element, index) => {
+              ctx.fillStyle = "rgb(255, 255, 255)";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "bottom";
+              const dataString = textValues[index] == "0" ? "" : textValues[index];
+              ctx.fillText(dataString, element.x, element.y + 15);
+            });
+          }
+        });
+      },
     },
   ];
-  const layout: Partial<Plotly.Layout> = {
-    font: {
-      family: "Roboto, Helvetica, Arial, sans-serif",
-      size: 11.4286,
-      color: "#000",
-    },
-    width: 500,
-    height: 250,
-    yaxis: {
-      range: [0, 5],
-      nticks: 6,
-      tickmode: "array",
-      tickvals: [0, 1, 2, 3, 4, 5],
-      ticktext: ["1e-5", "1e-4", "1e-3", "1e-2", "1e-1", ""],
-      gridwidth: 1,
-    },
-    xaxis: {
-      tickangle: 0,
-    },
-    bargap: 0.05,
-    margin: {
-      b: 40,
-      r: 10,
-      t: 20,
-      l: 30,
-    },
-  };
+
   const filterDisplay =
     gnomadData.filters != null ? (
       <>
@@ -124,14 +169,14 @@ export const VariantGnomadToolTip = (props: { variant: string; gnomadData: Gnoma
   return (
     <HtmlTooltip
       title={
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "column", width: "500px" }}>
           <Typography variant="h6" sx={{ paddingBottom: "10px" }}>
             gnomAD {gnomadVersion} {props.gnomadData.preferred} allele frequency
           </Typography>
           {filterDisplay}
           {afRangeDispl}
           {popsNotAvailableDispl}
-          <Plot data={trace} layout={layout} config={{ displayModeBar: false }} />
+          <Bar data={data} options={options} plugins={plugins} />
           <Link
             color="inherit"
             href={gnomadUrl.replace("[VARIANT]", props.variant)}
