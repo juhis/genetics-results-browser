@@ -1,12 +1,11 @@
 import { Box, Divider, useTheme } from "@mui/material";
-import MaterialReactTable from "material-react-table";
+import { MaterialReactTable } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
 import VariantFinemappedTable from "./VariantFinemappedTable";
 import { Phenotype, TableData, VariantRecord } from "../../../types/types";
 import { useMemo, useState } from "react";
-import ExportButtons from "../ExportToolbar";
 import { useDataStore } from "../../../store/store";
 import { useServerQuery } from "../../../store/serverQuery";
 import { filterRows } from "../../../store/munge";
@@ -109,7 +108,7 @@ const DataTypeTable = (props: {
             }
           : undefined
       }
-      muiTablePaginationProps={{
+      muiPaginationProps={{
         rowsPerPageOptions: [10, 20, 100, 1000],
       }}
       muiTableBodyRowProps={({ row }) => ({

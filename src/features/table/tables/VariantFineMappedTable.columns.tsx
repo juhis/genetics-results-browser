@@ -12,7 +12,7 @@ export const getFineMappingTableColumns = (
     accessorKey: "data_type",
     header: "type",
     filterFn: "contains",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "type" },
+    muiFilterTextFieldProps: { placeholder: "type" },
     size: 65,
   },
   {
@@ -31,7 +31,7 @@ export const getFineMappingTableColumns = (
     filterFn: filterContainsWithTooltip,
     //filterVariant: 'multi-select',
     //filterSelectOptions: data.finemapped.datasets,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "dataset" },
+    muiFilterTextFieldProps: { placeholder: "dataset" },
     size: 150,
   },
   {
@@ -60,7 +60,7 @@ export const getFineMappingTableColumns = (
     // },
     header: "trait",
     filterFn: "contains",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
+    muiFilterTextFieldProps: { placeholder: "trait" },
   },
   {
     accessorFn: (row) => pValRepr(row.mlog10p[0]),
@@ -69,7 +69,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: "lessThan",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+    muiFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
   {
@@ -79,7 +79,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+    muiFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
   {
@@ -119,7 +119,7 @@ export const getFineMappingTableColumns = (
     sortingFn: "alphanumeric",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+    muiFilterTextFieldProps: { placeholder: "filter" },
     size: 75,
   },
 ];

@@ -17,7 +17,7 @@ export const getDataTypeTableColumns = (
       id: "variant",
       filterFn: "contains",
       sortingFn: "variantSort",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "variant" },
+      muiFilterTextFieldProps: { placeholder: "variant" },
       size: 70,
     },
     {
@@ -30,7 +30,7 @@ export const getDataTypeTableColumns = (
       id: "gene_most_severe",
       header: "most severe gene",
       filterFn: filterContainsWithTooltip,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "gene" },
+      muiFilterTextFieldProps: { placeholder: "gene" },
       enableSorting: false,
       size: 70,
     },
@@ -39,7 +39,7 @@ export const getDataTypeTableColumns = (
       header: "GWAS traits",
       // need dot notation for naInfSort
       id: "assoc.counts.gwas.total",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -49,7 +49,7 @@ export const getDataTypeTableColumns = (
       header: "eQTL traits",
       // need dot notation for naInfSort
       id: "assoc.counts.eqtl.total",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -59,7 +59,7 @@ export const getDataTypeTableColumns = (
       header: "pQTL traits",
       // need dot notation for naInfSort
       id: "assoc.counts.pqtl.total",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -69,7 +69,7 @@ export const getDataTypeTableColumns = (
       header: "sQTL traits",
       // need dot notation for naInfSort
       id: "assoc.counts.sqtl.total",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -123,7 +123,7 @@ export const getDataTypeTableColumns = (
       id: "top_gwas",
       filterFn: filterContainsWithTooltip,
       enableSorting: false,
-      muiTableHeadCellFilterTextFieldProps: {
+      muiFilterTextFieldProps: {
         placeholder: "top GWAS",
       },
       size: 150,
@@ -177,7 +177,7 @@ export const getDataTypeTableColumns = (
       id: "top_eqtl",
       filterFn: filterContainsWithTooltip,
       enableSorting: false,
-      muiTableHeadCellFilterTextFieldProps: {
+      muiFilterTextFieldProps: {
         placeholder: "top eQTL",
       },
       size: 70,
@@ -231,7 +231,7 @@ export const getDataTypeTableColumns = (
       id: "top_pqtl",
       filterFn: filterContainsWithTooltip,
       enableSorting: false,
-      muiTableHeadCellFilterTextFieldProps: {
+      muiFilterTextFieldProps: {
         placeholder: "top pQTL",
       },
       size: 70,
@@ -285,7 +285,7 @@ export const getDataTypeTableColumns = (
       id: "top_sqtl",
       filterFn: filterContainsWithTooltip,
       enableSorting: false,
-      muiTableHeadCellFilterTextFieldProps: {
+      muiFilterTextFieldProps: {
         placeholder: "top sQTL",
       },
       size: 70,

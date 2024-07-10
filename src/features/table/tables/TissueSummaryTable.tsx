@@ -1,15 +1,14 @@
 import { MaterialReactTable, MRT_ColumnDef } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
-import { PhenoSummaryTableRow, TableData } from "../../../types/types";
+import { DatasetSummaryTableRow, TableData } from "../../../types/types";
 import { useMemo, useState } from "react";
-import { getPhenoSummaryTableColumns } from "./PhenotypeSummaryTable.columns";
+import { getTissueSummaryTableColumns } from "./TissueSummaryTable.columns";
 import { useDataStore } from "../../../store/store";
 import { useServerQuery } from "../../../store/serverQuery";
-import { summarizePhenotypes } from "../../../store/munge";
-import VariantMainTable from "./VariantMainTable";
+import { summarizeDatasets } from "../../../store/munge";
 
-const PhenotypeSummaryTable = (props: {}) => {
+const TissueSummaryTable = (props: {}) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -21,9 +20,9 @@ const PhenotypeSummaryTable = (props: {}) => {
     useDataStore((state) => state.variantInput)!
   );
 
-  const summaryData = useMemo(() => summarizePhenotypes(clientData), [clientData]);
-  const columns = useMemo<MRT_ColumnDef<PhenoSummaryTableRow>[]>(() => {
-    return getPhenoSummaryTableColumns(
+  const summaryData = useMemo(() => summarizeDatasets(clientData), [clientData]);
+  const columns = useMemo<MRT_ColumnDef<DatasetSummaryTableRow>[]>(() => {
+    return getTissueSummaryTableColumns(
       clientData.phenos,
       clientData.datasets,
       clientData.meta,
@@ -43,13 +42,13 @@ const PhenotypeSummaryTable = (props: {}) => {
         density: "compact",
         sorting: [{ id: "total", desc: true }],
       }}
-      renderDetailPanel={({ row }) => (
-        <VariantMainTable
-          phenotype={row.original.pheno}
-          showTraitCounts={false}
-          enableTopToolbar={false}
-        />
-      )}
+      // renderDetailPanel={({ row }) => (
+      // <VariantMainTable
+      //   phenotype={row.original.pheno}
+      //   showTraitCounts={false}
+      //   enableTopToolbar={false}
+      // />
+      // )}
       muiTableProps={{
         sx: {
           tableLayout: "fixed",
@@ -88,4 +87,4 @@ const PhenotypeSummaryTable = (props: {}) => {
   );
 };
 
-export default PhenotypeSummaryTable;
+export default TissueSummaryTable;

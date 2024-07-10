@@ -1,5 +1,5 @@
 import { Box, Divider, useTheme } from "@mui/material";
-import MaterialReactTable from "material-react-table";
+import { MaterialReactTable } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
@@ -124,7 +124,7 @@ const VariantMainTable = (props: {
             }
           : undefined
       }
-      muiTablePaginationProps={{
+      muiPaginationProps={{
         rowsPerPageOptions: [10, 20, 100, 1000],
       }}
       muiTableBodyRowProps={({ row }) => ({

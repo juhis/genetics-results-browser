@@ -1,4 +1,3 @@
-import { Row } from "@tanstack/react-table";
 import { TableData } from "../../../types/types";
 
 export const pValRepr = (mlogp: number): string => {
@@ -27,7 +26,7 @@ export const renderPThreshold = (clientData: TableData, thres: number): string =
 // TODO should use the raw data instead of the HTML in these functions
 // or make all HTML columns use the same format, e.g. give a value prop
 // or use the meta property of the columns
-export const filterAbsGreaterThanHTML = (row: Row<any>, id: string, filterValue: any): boolean => {
+export const filterAbsGreaterThanHTML = (row: any, id: string, filterValue: any): boolean => {
   const rowVal = row.getValue(id) as any;
   const val =
     typeof rowVal === "number"
@@ -44,7 +43,7 @@ export const filterAbsGreaterThanHTML = (row: Row<any>, id: string, filterValue:
   return Math.abs(val) > filterValue;
 };
 
-export const filterLessThanHTML = (row: Row<any>, id: string, filterValue: any): boolean => {
+export const filterLessThanHTML = (row: any, id: string, filterValue: any): boolean => {
   const rowVal = row.getValue(id) as any;
   const val = id.toLowerCase().startsWith("gnomad.af")
     ? Number(row.getValue("af_hidden"))
@@ -54,7 +53,7 @@ export const filterLessThanHTML = (row: Row<any>, id: string, filterValue: any):
   return val < filterValue;
 };
 
-export const filterContainsWithTooltip = (row: Row<any>, id: string, filterValue: any): boolean => {
+export const filterContainsWithTooltip = (row: any, id: string, filterValue: any): boolean => {
   const val = row.getValue(id) as any;
   if (typeof val === "string") {
     return (val as string).toLowerCase().indexOf(filterValue.toLowerCase()) > -1;

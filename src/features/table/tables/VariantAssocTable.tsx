@@ -1,6 +1,6 @@
 import { ReactElement, useMemo, useState } from "react";
 import { Box, Typography, FormControlLabel, Switch, FormGroup } from "@mui/material";
-import MaterialReactTable from "material-react-table";
+import { MaterialReactTable } from "material-react-table";
 import type { MRT_ColumnDef } from "material-react-table";
 import { VariantRecord, TableData, GroupedAssocRecord, DataType } from "../../../types/types";
 import { naInfSort } from "../utils/sorting";

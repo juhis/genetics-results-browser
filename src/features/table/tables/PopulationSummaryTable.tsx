@@ -1,7 +1,7 @@
 import { TableData } from "../../../types/types";
 import { useMemo } from "react";
 import { useDataStore } from "../../../store/store";
-import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+import { MaterialReactTable, MRT_ColumnDef } from "material-react-table";
 
 const VariantSummaryStats = (props: {}) => {
   const clientData: TableData = useDataStore((state) => state.clientData)!;
@@ -11,19 +11,19 @@ const VariantSummaryStats = (props: {}) => {
         accessorKey: "pop",
         header: "population",
         filterFn: "contains",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "population" },
+        muiFilterTextFieldProps: { placeholder: "population" },
       },
       {
         accessorKey: "max",
         header: "max AF",
         filterFn: "greaterThan",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "max" },
+        muiFilterTextFieldProps: { placeholder: "max" },
       },
       {
         accessorKey: "min",
         header: "min AF",
         filterFn: "greaterThan",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "min" },
+        muiFilterTextFieldProps: { placeholder: "min" },
       },
     ],
     []

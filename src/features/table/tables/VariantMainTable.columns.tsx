@@ -28,7 +28,7 @@ export const getVariantMainTableColumns = (
       id: "variant",
       filterFn: "contains",
       sortingFn: "variantSort",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "variant" },
+      muiFilterTextFieldProps: { placeholder: "variant" },
       size: 100,
     },
     {
@@ -36,7 +36,7 @@ export const getVariantMainTableColumns = (
       id: "rsid",
       header: "rsid",
       filterFn: "contains",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "rsid" },
+      muiFilterTextFieldProps: { placeholder: "rsid" },
       size: 80,
     },
     {
@@ -44,7 +44,7 @@ export const getVariantMainTableColumns = (
       id: selectedPopulation === undefined ? "gnomad.AF" : `gnomad.AF_${selectedPopulation}`,
       header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: false,
       size: 60,
@@ -71,7 +71,7 @@ export const getVariantMainTableColumns = (
       filterFn: filterContainsWithTooltip,
       filterVariant: "multi-select",
       filterSelectOptions: data ? data["most_severe"].map((ms) => ({ text: ms, value: ms })) : [],
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "consequence" },
+      muiFilterTextFieldProps: { placeholder: "consequence" },
       enableSorting: false,
       size: 100,
     },
@@ -85,7 +85,7 @@ export const getVariantMainTableColumns = (
       id: "gene_most_severe",
       header: "most severe gene",
       filterFn: filterContainsWithTooltip,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "gene" },
+      muiFilterTextFieldProps: { placeholder: "gene" },
       enableSorting: false,
       size: 80,
     },
@@ -97,7 +97,7 @@ export const getVariantMainTableColumns = (
         header: "traits",
         // need dot notation for naInfSort
         id: "assoc.counts.total.total",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+        muiFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 60,
@@ -113,7 +113,7 @@ export const getVariantMainTableColumns = (
         ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.up",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+        muiFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 60,
@@ -129,7 +129,7 @@ export const getVariantMainTableColumns = (
         ),
         // need dot notation for naInfSort
         id: "assoc.counts.total.down",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+        muiFilterTextFieldProps: { placeholder: "filter" },
         sortingFn: "naInfSort",
         sortDescFirst: true,
         size: 60,
@@ -182,7 +182,7 @@ export const getVariantMainTableColumns = (
       id: "top_pheno",
       filterFn: filterContainsWithTooltip,
       enableSorting: false,
-      muiTableHeadCellFilterTextFieldProps: {
+      muiFilterTextFieldProps: {
         placeholder: selectedPheno ? "selected association" : "top association",
       },
     },
@@ -196,7 +196,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.mlogp.0",
       filterFn: filterLessThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 60,
@@ -217,7 +217,7 @@ export const getVariantMainTableColumns = (
       // need dot notation for naInfSort
       id: "assoc.groupedData.0.beta.0",
       filterFn: filterAbsGreaterThanHTML,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+      muiFilterTextFieldProps: { placeholder: "filter" },
       sortingFn: "naInfSort",
       sortDescFirst: true,
       size: 50,
@@ -237,7 +237,7 @@ export const getVariantMainTableColumns = (
         header: "my beta",
         id: "beta",
         filterFn: filterAbsGreaterThanHTML,
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "my beta" },
+        muiFilterTextFieldProps: { placeholder: "my beta" },
         size: 50,
       },
     ]);
@@ -249,7 +249,7 @@ export const getVariantMainTableColumns = (
         header: "my value",
         id: "value",
         filterFn: "greaterThan",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "my value" },
+        muiFilterTextFieldProps: { placeholder: "my value" },
         size: 50,
       },
     ]);

@@ -10,7 +10,7 @@ import {
   TableData,
   DatasetMap,
 } from "../../../types/types";
-import { ExportToCsv } from "export-to-csv";
+import { download, generateCsv, mkConfig } from "export-to-csv";
 import { getAssociationTableColumns } from "../tables/VariantAssocTable.columns";
 import { pValRepr } from "./tableutil";
 
@@ -60,7 +60,12 @@ export const handleMainTableExport = (
           }
         } else if (val.props.content && val.props.content.props.children) {
           // tooltipped value
-          p[colname] = val.props.content.props.children || "NA";
+          if (Array.isArray(val.props.content.props.children)) {
+            // top pheno has a list
+            p[colname] = val.props.content.props.children[0] || "NA";
+          } else {
+            p[colname] = val.props.content.props.children || "NA";
+          }
         } else {
           console.warn(`unhandled export field will be NA: ${colId}`);
           p[colname] = "NA";
@@ -69,18 +74,20 @@ export const handleMainTableExport = (
       return p;
     }, {} as Record<string, string>);
   });
-  new ExportToCsv({
+  const csvConfig = mkConfig({
     fieldSeparator: "\t",
     filename: `variant_annotation_${dataExport.length}_variants_${SHA256(variantInput)
       .toString()
       .substring(0, 7)}`,
-    quoteStrings: "",
+    quoteStrings: false,
     decimalSeparator: ".",
-    showLabels: true,
     useBom: false, //never
     useKeysAsHeaders: true,
     useTextFile: true,
-  }).generateCsv(dataExport);
+  });
+  console.log(dataExport);
+  const csv = generateCsv(csvConfig)(dataExport);
+  download(csvConfig)(csv);
 };
 
 export const handleFineMappingTableExport = (
@@ -154,18 +161,19 @@ export const handleFineMappingTableExport = (
       });
     })
     .flat();
-  new ExportToCsv({
+  const csvConfig = mkConfig({
     fieldSeparator: "\t",
     filename: `variant_annotation_${numVariants}_variants_finemapping_${SHA256(variantInput)
       .toString()
       .substring(0, 7)}`,
-    quoteStrings: "",
+    quoteStrings: false,
     decimalSeparator: ".",
-    showLabels: true,
     useBom: false, //never
     useKeysAsHeaders: true,
     useTextFile: true,
-  }).generateCsv(dataExport);
+  });
+  const csv = generateCsv(csvConfig)(dataExport);
+  download(csvConfig)(csv);
 };
 
 export const handleAssocTableExport = (
@@ -248,16 +256,17 @@ export const handleAssocTableExport = (
       return assocData.filter((v) => Number(v["p-value"]) < 1);
     })
     .flat();
-  new ExportToCsv({
+  const csvConfig = mkConfig({
     fieldSeparator: "\t",
     filename: `variant_annotation_${numVariants}_variants_associations_${SHA256(variantInput)
       .toString()
       .substring(0, 7)}`,
-    quoteStrings: "",
+    quoteStrings: false,
     decimalSeparator: ".",
-    showLabels: true,
     useBom: false, //never
     useKeysAsHeaders: true,
     useTextFile: true,
-  }).generateCsv(dataExport);
+  });
+  const csv = generateCsv(csvConfig)(dataExport);
+  download(csvConfig)(csv);
 };

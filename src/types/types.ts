@@ -1,3 +1,36 @@
+type PhenoUrl = {
+  label: string;
+  url: string | null;
+};
+
+type ResourceConfig = {
+  data_types: DataType[];
+  n_traits: string;
+  p_thres?: number;
+  pheno_urls: PhenoUrl[];
+  resource: string;
+  url: string | null;
+  version: string;
+};
+
+type AssocOrFinemappedConfig = {
+  file: string;
+  resources: ResourceConfig[];
+};
+
+type GnomadConfig = {
+  file: string;
+  populations: string[];
+  url: string;
+  version: string;
+};
+
+export type Config = {
+  assoc: AssocOrFinemappedConfig;
+  finemapped: AssocOrFinemappedConfig;
+  gnomad: GnomadConfig;
+};
+
 export type ChangeLogItem = {
   type: string;
   text?: string;

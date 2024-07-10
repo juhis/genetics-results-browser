@@ -1,6 +1,6 @@
 import { useState, useMemo, ReactElement } from "react";
 import { Box, Typography, FormControlLabel, Switch, FormGroup } from "@mui/material";
-import MaterialReactTable from "material-react-table";
+import { MaterialReactTable } from "material-react-table";
 import type { MRT_ColumnDef } from "material-react-table";
 
 import { VariantRecord, GroupedFineMappedRecord, TableData, DataType } from "../../../types/types";

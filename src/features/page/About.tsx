@@ -1,5 +1,5 @@
 import { Link, Typography } from "@mui/material";
-import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+import { MaterialReactTable, MRT_ColumnDef } from "material-react-table";
 import { useConfigQuery } from "../../store/serverQuery";
 import { useMemo, useState } from "react";
 
@@ -31,7 +31,7 @@ const About = () => {
     }
   }, [data]);
 
-  const columns: MRT_ColumnDef[] = [
+  const columns: MRT_ColumnDef<any>[] = [
     {
       accessorFn: (row: any) => {
         return (

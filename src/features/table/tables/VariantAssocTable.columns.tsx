@@ -18,7 +18,7 @@ export const getAssociationTableColumns = (
     filterFn: "contains",
     //filterVariant: 'multi-select',
     //filterSelectOptions: props.data.assoc.resources,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "type" },
+    muiFilterTextFieldProps: { placeholder: "type" },
     size: 65,
   },
   {
@@ -32,7 +32,7 @@ export const getAssociationTableColumns = (
     },
     header: "dataset",
     filterFn: "contains",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "dataset" },
+    muiFilterTextFieldProps: { placeholder: "dataset" },
     size: 150,
   },
   {
@@ -61,7 +61,7 @@ export const getAssociationTableColumns = (
     },
     header: "trait",
     filterFn: filterContainsWithTooltip,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
+    muiFilterTextFieldProps: { placeholder: "trait" },
   },
   {
     accessorFn: (row) => pValRepr(row.mlogp[0]),
@@ -70,7 +70,7 @@ export const getAssociationTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: "lessThan",
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+    muiFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
   {
@@ -80,7 +80,7 @@ export const getAssociationTableColumns = (
     sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
-    muiTableHeadCellFilterTextFieldProps: { placeholder: "filter" },
+    muiFilterTextFieldProps: { placeholder: "filter" },
     size: 60,
   },
 ];

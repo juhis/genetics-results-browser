@@ -16,7 +16,7 @@ export const getPhenoSummaryTableColumns = (
       filterFn: "contains",
       //filterVariant: 'multi-select',
       //filterSelectOptions: props.data.assoc.resources,
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "type" },
+      muiFilterTextFieldProps: { placeholder: "type" },
       size: 65,
     },
     {
@@ -30,7 +30,7 @@ export const getPhenoSummaryTableColumns = (
       },
       header: "dataset",
       filterFn: "contains",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "dataset" },
+      muiFilterTextFieldProps: { placeholder: "dataset" },
       size: 150,
     },
     {
@@ -49,14 +49,14 @@ export const getPhenoSummaryTableColumns = (
       id: "trait",
       filterFn: filterContainsWithTooltip,
       sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "trait" },
+      muiFilterTextFieldProps: { placeholder: "trait" },
     },
     {
       accessorKey: "total",
       header: "variants",
       filterFn: "greaterThan",
       sortingFn: "alphanumeric",
-      muiTableHeadCellFilterTextFieldProps: { placeholder: "variants" },
+      muiFilterTextFieldProps: { placeholder: "variants" },
       size: 50,
     },
   ];
@@ -67,7 +67,7 @@ export const getPhenoSummaryTableColumns = (
         header: "consistent",
         filterFn: "greaterThan",
         sortingFn: "alphanumeric",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "consistent" },
+        muiFilterTextFieldProps: { placeholder: "consistent" },
         size: 50,
       },
       {
@@ -75,7 +75,7 @@ export const getPhenoSummaryTableColumns = (
         header: "opposite",
         filterFn: "greaterThan",
         sortingFn: "alphanumeric",
-        muiTableHeadCellFilterTextFieldProps: { placeholder: "opposite" },
+        muiFilterTextFieldProps: { placeholder: "opposite" },
         size: 50,
       },
     ]);

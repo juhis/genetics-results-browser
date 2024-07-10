@@ -1,6 +1,4 @@
-import { SortingFn } from "@tanstack/react-table";
-
-export const variantSort: SortingFn<any> = (rowA: any, rowB: any, id: string) => {
+export const variantSort = (rowA: any, rowB: any, id: string) => {
   const cpraA = rowA.original[id].split("-");
   const cpraB = rowB.original[id].split("-");
   // chromosome
@@ -26,7 +24,7 @@ export const variantSort: SortingFn<any> = (rowA: any, rowB: any, id: string) =>
   return 0;
 };
 
-export const naInfSort: SortingFn<any> = (rowA: any, rowB: any, id: string) => {
+export const naInfSort = (rowA: any, rowB: any, id: string) => {
   // https://stackoverflow.com/a/22129960
   let valA = id.split(".").reduce((p, c) => p[c], rowA.original);
   let valB = id.split(".").reduce((p, c) => p[c], rowB.original);
