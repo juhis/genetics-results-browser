@@ -120,10 +120,13 @@ const About = () => {
       <MaterialReactTable
         columns={columns}
         data={datasets}
+        enablePagination={false}
+        enableBottomToolbar={false}
         enableTopToolbar={false}
         enableColumnFilters={false}
         initialState={{
           density: "compact",
+          pagination: { pageSize: 20, pageIndex: 0 },
         }}
         muiTableProps={{
           sx: {
@@ -144,8 +147,26 @@ const About = () => {
         }}
       />
       <Typography>
+        <br />
         FinnGen results from Open Targets are not shown in this tool - more recent FinnGen results
-        are shown instead
+        are shown instead.
+      </Typography>
+      <Typography>
+        <br />
+        rsids, variant consequence and gene assignments come from gnomAD v4.0.
+        <br />
+        The <i>vep.most_severe_consequence</i> gnomAD field is used to determine most severe
+        <br />
+        variant consequence. Note that in gnomAD internally, <i>vep.most_severe_consequence</i> is
+        <br />
+        determined by Ensembl and RefSeq annotations, but only Ensembl annotations are shown in the
+        <br />
+        gnomAD browser.
+      </Typography>
+      <Typography>
+        <br />
+        Gene information in gene tooltips comes from{" "}
+        <Link href="https://mygene.info/">mygene.info</Link>
       </Typography>
     </>
   );
