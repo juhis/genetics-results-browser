@@ -1,17 +1,19 @@
-import VariantMainTable from "./tables/VariantMainTable";
 import QueryVariantInfo from "../input/QueryVariantInfo";
 import InputForm from "../input/InputForm";
 import { useDataStore } from "../../store/store";
-import { Box, Link, Tab, Tabs, Typography } from "@mui/material";
+import { Box, CircularProgress, Link, Tab, Tabs, Typography } from "@mui/material";
 import TabPanel from "@mui/lab/TabPanel";
 import { TabContext } from "@mui/lab";
 import GlobalControlContainer from "../controls/GlobalControlContainer";
-import PhenotypeSummaryTable from "./tables/PhenotypeSummaryTable";
-import VariantSummaryStats from "./tables/PopulationSummaryTable";
 import { useServerQuery } from "../../store/serverQuery";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { renderPThreshold } from "./utils/tableutil";
-import DataTypeTable from "./tables/DataTypeTable";
+
+const VariantMainTable = lazy(() => import("./tables/VariantMainTable"));
+const PhenotypeSummaryTable = lazy(() => import("./tables/PhenotypeSummaryTable"));
+const DataTypeTable = lazy(() => import("./tables/DataTypeTable"));
+const TissueSummaryTable = lazy(() => import("./tables/TissueSummaryTable"));
+const PopulationSummaryTable = lazy(() => import("./tables/PopulationSummaryTable"));
 
 const TableContainer = () => {
   const activeTab = useDataStore((state) => state.activeTab);
@@ -49,6 +51,11 @@ const TableContainer = () => {
                 disabled={clientData === undefined}
               />
               <Tab value="summary" label="phenotype summary" disabled={clientData === undefined} />
+              <Tab
+                value="tissue_summary"
+                label="tissue and cell type summary"
+                disabled={clientData === undefined}
+              />
             </Tabs>
             <TabPanel value="variants" sx={{ padding: 0 }}>
               <Box display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
@@ -65,7 +72,9 @@ const TableContainer = () => {
                   Use the arrows on the left of each variant to expand that variant and see all of
                   its associations and fine-mapping results.
                 </Typography>
-                <VariantMainTable enableTopToolbar={true} showTraitCounts={true} />
+                <Suspense fallback={<CircularProgress />}>
+                  <VariantMainTable enableTopToolbar={true} showTraitCounts={true} />
+                </Suspense>
               </Box>
             </TabPanel>
             <TabPanel value="datatypes" sx={{ padding: 0 }}>
@@ -81,7 +90,9 @@ const TableContainer = () => {
                   Use the arrows on the left of each variant to expand that variant and see all of
                   its associations and fine-mapping results.
                 </Typography>
-                <DataTypeTable enableTopToolbar={true} showTraitCounts={true} />
+                <Suspense fallback={<CircularProgress />}>
+                  <DataTypeTable enableTopToolbar={true} showTraitCounts={true} />
+                </Suspense>
               </Box>
             </TabPanel>
             <TabPanel value="summary" sx={{ padding: 0 }}>
@@ -113,7 +124,9 @@ const TableContainer = () => {
                       </>
                     )}
                   </Typography>
-                  <PhenotypeSummaryTable />
+                  <Suspense fallback={<CircularProgress />}>
+                    <PhenotypeSummaryTable />
+                  </Suspense>
                 </Box>
                 <Box
                   flex="1"
@@ -136,7 +149,29 @@ const TableContainer = () => {
                     )}
                     &nbsp;
                   </Typography>
-                  <VariantSummaryStats />
+                  <Suspense fallback={<CircularProgress />}>
+                    <PopulationSummaryTable />
+                  </Suspense>
+                </Box>
+              </Box>
+            </TabPanel>
+            <TabPanel value="tissue_summary" sx={{ padding: 0 }}>
+              <Box display="flex" flexDirection="row">
+                <Box flex="5" display="flex" flexDirection="column" sx={{ paddingTop: "10px" }}>
+                  <Typography
+                    sx={{ marginBottom: "10px", paddingLeft: "20px", fontWeight: "bold" }}>
+                    Tissue and cell type summary
+                  </Typography>
+                  <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
+                    This table shows the number of your input variants that are QTLs for at least
+                    one gene with a p-value less than {renderPThreshold(clientData!, pThreshold)} in
+                    each tissue or cell type.
+                    <br />
+                    You can toggle different QTL associations with the switches above.
+                  </Typography>
+                  <Suspense fallback={<CircularProgress />}>
+                    <TissueSummaryTable />
+                  </Suspense>
                 </Box>
               </Box>
             </TabPanel>

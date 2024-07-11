@@ -1,14 +1,15 @@
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { indigo, pink } from "@mui/material/colors";
 import Header from "./features/page/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TableContainer from "./features/table/TableContainer";
-import About from "./features/page/About";
-import ChangeLog from "./features/page/ChangeLog";
+import CircularProgress from "@mui/material/CircularProgress"; // Import a component for fallback
+
+const TableContainer = lazy(() => import("./features/table/TableContainer"));
+const About = lazy(() => import("./features/page/About"));
+const ChangeLog = lazy(() => import("./features/page/ChangeLog"));
 
 export const App = () => {
   //TODO dark/light mode
@@ -50,11 +51,13 @@ export const App = () => {
           <CssBaseline enableColorScheme />
           <div style={{ padding: "10px" }}>
             <Header />
-            <Routes>
-              <Route path="/" element={<TableContainer />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/changelog" element={<ChangeLog />} />
-            </Routes>
+            <Suspense fallback={<CircularProgress />}>
+              <Routes>
+                <Route path="/" element={<TableContainer />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/changelog" element={<ChangeLog />} />
+              </Routes>
+            </Suspense>
           </div>
         </ThemeProvider>
       </QueryClientProvider>
