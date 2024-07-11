@@ -3,7 +3,7 @@ type PhenoUrl = {
   url: string | null;
 };
 
-type ResourceConfig = {
+export type ResourceConfig = {
   data_types: DataType[];
   n_traits: string;
   p_thres?: number;
@@ -11,6 +11,8 @@ type ResourceConfig = {
   resource: string;
   url: string | null;
   version: string;
+  assoc?: boolean;
+  finemapped?: boolean;
 };
 
 type AssocOrFinemappedConfig = {

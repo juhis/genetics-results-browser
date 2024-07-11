@@ -2,29 +2,25 @@ import { Link, Typography } from "@mui/material";
 import { MaterialReactTable, MRT_ColumnDef } from "material-react-table";
 import { useConfigQuery } from "../../store/serverQuery";
 import { useMemo, useState } from "react";
+import { ResourceConfig } from "../../types/types";
 
 const About = () => {
   const { data } = useConfigQuery();
-  const [datasets, setDatasets] = useState([]);
+  const [datasets, setDatasets] = useState<ResourceConfig[]>([]);
 
   useMemo(() => {
     if (data) {
-      const dsets = {};
-      data.assoc.resources.forEach((dataset: any) => {
+      const dsets: Record<string, ResourceConfig> = {};
+      data.assoc.resources.forEach((dataset) => {
         if (!(dataset.resource in dsets)) {
-          //TODO typing
-          //@ts-ignore
           dsets[dataset.resource] = dataset;
         }
-        //@ts-ignore
         dsets[dataset.resource].assoc = true;
       });
       data.finemapped.resources.forEach((dataset: any) => {
         if (!(dataset.resource in dsets)) {
-          //@ts-ignore
           dsets[dataset.resource] = dataset;
         }
-        //@ts-ignore
         dsets[dataset.resource].finemapped = true;
       });
       setDatasets(Object.values(dsets));
