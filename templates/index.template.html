@@ -11,22 +11,18 @@
     <style>
       /* don't show table filter helper text  */
       .MuiFormHelperText-root {
-	  visibility: hidden
+        visibility: hidden;
       }
     </style>
   </head>
   <body>
     {% if current_user and current_user.is_authenticated %}
-    <div style="float: right; padding-right: 10px; padding-top: 10px;">
-      <a href="{{ url_for('logout') }}" style="color: #fff; font-weight: bold;"
+    <div style="float: right; padding-right: 10px; padding-top: 10px">
+      <a href="{{ url_for('logout') }}" style="color: #fff; font-weight: bold"
         >logout ({{ current_user.email }})</a
       >
     </div>
     {% endif %}
     <div id="reactEntry"></div>
-    <script
-      type="text/javascript"
-      src="{{ url_for('static', filename='bundle.js') }}"
-    ></script>
   </body>
 </html>
