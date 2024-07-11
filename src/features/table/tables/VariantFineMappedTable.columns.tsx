@@ -116,7 +116,7 @@ export const getFineMappingTableColumns = (
     },
     id: "pip",
     header: "PIP",
-    sortingFn: "alphanumeric",
+    sortingFn: "naInfSort",
     sortDescFirst: true,
     filterFn: filterAbsGreaterThanHTML,
     muiFilterTextFieldProps: { placeholder: "filter" },
