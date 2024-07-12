@@ -28,85 +28,76 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
         gap: "1rem",
         p: "0.5rem",
         flexWrap: "wrap",
-        flexDirection: "column",
+        flexDirection: "row",
       }}>
-      <Box
-        sx={{
-          display: "flex",
-          gap: "1rem",
-          p: "0.5rem",
-          flexWrap: "wrap",
-          flexDirection: "row",
-        }}>
-        <Button
-          disabled={isError || isFetching || isLoading}
-          color="primary"
-          onClick={() => {
-            handleMainTableExport(
-              variantInput,
-              props.table,
-              getVariantMainTableColumns(
-                clientData,
-                cisWindow,
-                !!selectedPheno,
-                selectedPopulation,
-                true
-              )
-            );
-          }}
-          startIcon={<FileDownloadIcon />}
-          variant="contained">
-          export Variants table
-        </Button>
-        <Button
-          disabled={isError || isFetching || isLoading}
-          color="primary"
-          onClick={() => {
-            handleFineMappingTableExport(
-              variantInput,
-              clientData.phenos,
-              clientData.data.length,
-              props.table,
-              getVariantMainTableColumns(
-                clientData,
-                cisWindow,
-                !!selectedPheno,
-                selectedPopulation,
-                true
-              ),
-              getFineMappingTableColumns(clientData.phenos, clientData.datasets)
-            );
-          }}
-          startIcon={<FileDownloadIcon />}
-          variant="contained">
-          export fine-mapping results
-        </Button>
-        <Button
-          disabled={isError || isFetching || isLoading}
-          color="primary"
-          onClick={() => {
-            handleAssocTableExport(
-              variantInput,
-              clientData.phenos,
-              clientData.data.length,
-              props.table,
-              getVariantMainTableColumns(
-                clientData,
-                cisWindow,
-                !!selectedPheno,
-                selectedPopulation,
-                true
-              ),
-              clientData.phenos,
-              clientData.datasets,
-              clientData.meta
-            );
-          }}
-          startIcon={<FileDownloadIcon />}
-          variant="contained">
-          export association results
-        </Button>
-      </Box>
+      <Button
+        disabled={isError || isFetching || isLoading}
+        color="primary"
+        onClick={() => {
+          handleMainTableExport(
+            variantInput,
+            props.table,
+            getVariantMainTableColumns(
+              clientData,
+              cisWindow,
+              !!selectedPheno,
+              selectedPopulation,
+              true
+            )
+          );
+        }}
+        startIcon={<FileDownloadIcon />}
+        variant="contained">
+        download Variants table
+      </Button>
+      <Button
+        disabled={isError || isFetching || isLoading}
+        color="primary"
+        onClick={() => {
+          handleFineMappingTableExport(
+            variantInput,
+            clientData.phenos,
+            clientData.data.length,
+            props.table,
+            getVariantMainTableColumns(
+              clientData,
+              cisWindow,
+              !!selectedPheno,
+              selectedPopulation,
+              true
+            ),
+            getFineMappingTableColumns(clientData.phenos, clientData.datasets)
+          );
+        }}
+        startIcon={<FileDownloadIcon />}
+        variant="contained">
+        download fine-mapping results
+      </Button>
+      <Button
+        disabled={isError || isFetching || isLoading}
+        color="primary"
+        onClick={() => {
+          handleAssocTableExport(
+            variantInput,
+            clientData.phenos,
+            clientData.data.length,
+            props.table,
+            getVariantMainTableColumns(
+              clientData,
+              cisWindow,
+              !!selectedPheno,
+              selectedPopulation,
+              true
+            ),
+            clientData.phenos,
+            clientData.datasets,
+            clientData.meta
+          );
+        }}
+        startIcon={<FileDownloadIcon />}
+        variant="contained">
+        download association results
+      </Button>
     </Box>
   );
 };
