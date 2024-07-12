@@ -1,11 +1,13 @@
 {
   "name": "genetics_browser",
-  "version": "2023.0.1",
+  "version": "2024.0.1",
   "description": "genetics result browser",
   "main": "src/index.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx webpack --mode production"
+    "build": "npx webpack --mode production",
+    "dev": "npx webpack --mode development --watch",
+    "flask": "nodemon"
   },
   "author": "jkarjala@broadinstitute.org",
   "license": "MIT",
@@ -39,11 +41,19 @@
     "fork-ts-checker-notifier-webpack-plugin": "^9.0.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "html-webpack-plugin": "^5.6.0",
+    "nodemon": "^3.1.4",
     "source-map-loader": "^5.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.3",
     "webpack": "^5.92.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "./static"
+    ],
+    "ext": "js,html",
+    "exec": "fuser -k 8081/tcp || true && server/run.py --port 8081"
   }
 }
