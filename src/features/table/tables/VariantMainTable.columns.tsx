@@ -16,7 +16,7 @@ import GeneTooltip from "../../tooltips/GeneToolTip";
 export const getVariantMainTableColumns = (
   data: TableData,
   cisWindow: number,
-  selectedPheno: Phenotype | undefined,
+  selectedPheno: boolean | undefined,
   selectedPopulation: string | undefined,
   showTraitCounts: boolean
 ): MRT_ColumnDef<VariantRecord>[] => {

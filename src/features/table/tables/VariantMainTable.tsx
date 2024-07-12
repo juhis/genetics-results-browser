@@ -13,6 +13,7 @@ import { useServerQuery } from "../../../store/serverQuery";
 import { filterRows } from "../../../store/munge";
 
 const VariantMainTable = (props: {
+  data?: VariantRecord[];
   phenotype?: Phenotype;
   showTraitCounts: boolean;
   enableTopToolbar: boolean;
@@ -42,12 +43,15 @@ const VariantMainTable = (props: {
   const columns = getVariantMainTableColumns(
     clientData!,
     cisWindow,
-    selectedPheno,
+    !!selectedPheno,
     selectedPopulation,
     props.showTraitCounts
   );
 
   const tableData: VariantRecord[] = useMemo(() => {
+    if (props.data) {
+      return props.data;
+    }
     return props.phenotype === undefined
       ? clientData?.data ?? []
       : filterRows(
@@ -61,7 +65,7 @@ const VariantMainTable = (props: {
           props.phenotype,
           false
         ).data;
-  }, [clientData, props.phenotype]);
+  }, [props.data, clientData, props.phenotype]);
 
   return (
     <MaterialReactTable

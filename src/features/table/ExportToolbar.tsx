@@ -48,7 +48,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
               getVariantMainTableColumns(
                 clientData,
                 cisWindow,
-                selectedPheno,
+                !!selectedPheno,
                 selectedPopulation,
                 true
               )
@@ -70,7 +70,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
               getVariantMainTableColumns(
                 clientData,
                 cisWindow,
-                selectedPheno,
+                !!selectedPheno,
                 selectedPopulation,
                 true
               ),
@@ -93,7 +93,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
               getVariantMainTableColumns(
                 clientData,
                 cisWindow,
-                selectedPheno,
+                !!selectedPheno,
                 selectedPopulation,
                 true
               ),
