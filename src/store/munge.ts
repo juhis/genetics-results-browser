@@ -404,7 +404,7 @@ export const summarizePhenotypes = (data: TableData): PhenoSummaryTableData => {
       opposite:
         ((p[id]?.opposite as number) || 0) +
         (c.beta_input !== undefined && c.beta * c.beta_input < 0 ? 1 : 0),
-      total: ((p[id]?.total as number) || 0) + (c.beta != 0 ? 1 : 0),
+      total: ((p[id]?.total as number) || 0) + 1,
     };
     return p;
   }, {} as Record<string, Record<string, number | string>>);

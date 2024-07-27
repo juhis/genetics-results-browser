@@ -208,7 +208,7 @@ export const getVariantMainTableColumns = (
           <div>
             <UpOrDownIcon value={assoc.beta[0]} />
             <span style={assoc.mlogp[0] <= 0 ? { color: "gray" } : {}}>
-              {assoc.beta[0].toFixed(2)}
+              {(assoc.beta[0] && assoc.beta[0].toFixed(2)) || ""}
             </span>
           </div>
         );
