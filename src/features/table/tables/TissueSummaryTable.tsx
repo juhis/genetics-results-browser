@@ -1,12 +1,13 @@
 import { MaterialReactTable, MRT_ColumnDef } from "material-react-table";
 
 import { naInfSort, variantSort } from "../utils/sorting";
-import { DatasetSummaryTableRow, TableData } from "../../../types/types";
+import { TissueSummaryTableRow, TableData } from "../../../types/types";
 import { useMemo, useState } from "react";
 import { getTissueSummaryTableColumns } from "./TissueSummaryTable.columns";
 import { useDataStore } from "../../../store/store";
 import { useServerQuery } from "../../../store/serverQuery";
-import { summarizeDatasets } from "../../../store/munge";
+import { summarizeTissues } from "../../../store/munge";
+import VariantMainTable from "./VariantMainTable";
 
 const TissueSummaryTable = (props: {}) => {
   const [pagination, setPagination] = useState({
@@ -20,14 +21,9 @@ const TissueSummaryTable = (props: {}) => {
     useDataStore((state) => state.variantInput)!
   );
 
-  const summaryData = useMemo(() => summarizeDatasets(clientData), [clientData]);
-  const columns = useMemo<MRT_ColumnDef<DatasetSummaryTableRow>[]>(() => {
-    return getTissueSummaryTableColumns(
-      clientData.phenos,
-      clientData.datasets,
-      clientData.meta,
-      clientData.has_betas
-    );
+  const summaryData = useMemo(() => summarizeTissues(clientData), [clientData]);
+  const columns = useMemo<MRT_ColumnDef<TissueSummaryTableRow>[]>(() => {
+    return getTissueSummaryTableColumns();
   }, [summaryData]);
 
   return (
@@ -42,13 +38,13 @@ const TissueSummaryTable = (props: {}) => {
         density: "compact",
         sorting: [{ id: "total", desc: true }],
       }}
-      // renderDetailPanel={({ row }) => (
-      // <VariantMainTable
-      //   phenotype={row.original.pheno}
-      //   showTraitCounts={false}
-      //   enableTopToolbar={false}
-      // />
-      // )}
+      renderDetailPanel={({ row }) => (
+        <VariantMainTable
+          data={row.original.qtlAssocs}
+          showTraitCounts={false}
+          enableTopToolbar={false}
+        />
+      )}
       muiTableProps={{
         sx: {
           tableLayout: "fixed",

@@ -277,9 +277,10 @@ export type PhenoSummaryTableRow = {
   opposite: number;
 };
 
-export type DatasetSummaryTableData = Array<DatasetSummaryTableRow>;
+export type TissueSummaryTableData = Array<TissueSummaryTableRow>;
 
-export type DatasetSummaryTableRow = {
-  dataset: string;
+export type TissueSummaryTableRow = {
+  tissue: string;
   total: number;
+  qtlAssocs: VariantRecord[];
 };

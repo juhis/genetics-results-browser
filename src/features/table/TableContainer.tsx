@@ -116,11 +116,11 @@ const TableContainer = () => {
                         If you paste effect size betas with your input variants, the table will also
                         show the number of variants with
                         <br />
-                        consistent and opposite effect direction (try the "
+                        consistent and opposite effect direction (try the{" "}
                         <Link href="/?q=MwWgLArAHAjLEE4QHEQEECQB2AdAJgQFEQAGGDAZwFMA3AKD1BggDYS88YsQAVEAYQwgWOCCWJlKAVwoBjOkk54SLNiwEoMYHGBYTy1ejCQwSwCHjBg8KARmA4oefZVp11YZspZgStzA7A4qQGblzgCFAswHhsGph4OAgwLoZ0xuBYXKp+aJqJvqluoJBYCMAIeBD+GIlmqTLyMCDMFuzlYLx2LUkQRfScIMAxwFjRSHnIGDCOUP0MzcMdUFY1M2Xz6jFZVhxdgj2q8zDNMJwIF82oPEIz0cfqUMkILJZIqJgzYsdMZ1Cw1m4-F40xwwDmIVc9C2JycLGg6E0PTg8xsbDAUBIkFAk1uOBgekhaU6pg4LCwEAsGhuMxgYAacjonSqwDOoxsuNpwGO3Eg0TEkRqyOcRLcJggZWg5lsNPxKVFRkWVkxYAQ1WBNx6JCICqZLRI0AQWCe6g+ePYxz8ZSNWBUV3QGAQoh17AwADsmsynggSOwoIipiAnZAJHhpIyzi0YqwIODuHwDk6OKGoQoo9twTBQBqhE6CSmKI06NUs5ZPHgKftHTgVAWwjYTgQOBT-QmMFAkoTXWkMhjbXh-v7UAcO1h6aQw4WI8JVWAdtxrkJR-Lu2EkGJRuVXlWO-C6wNmp456YWPbMCAO4h9+4QAQEHPVc0cxedC7J25uBTXs31Pw8oIOwqFMPT1KorDGMwhUArt33obhTF9bYMhzDss2vf02AgLNyxqXACGvJBhmsLCohQHg0DQYEpjwmD3XkbgOCgCAMRYVtulwM5r2aLAxygYAwHBXCa1onskEgKIjWSdAeD4TBcCxa8mDIHxjWYoUREpAsiy2IIAX46kMAgHBT2Apo-EbI0wP9YFzyM0ZrxsWJT1YsQZS0HAxi48BWIQwU23AYy31TcIKguP0kCo9ySAhV0QIyf4XjVTozUSH0tOnVoCQIIIhUSJ5TLoJg1R46KsBsNtEj3Uhw1kPA6CAA">
                           COVID-19 all lead variants
-                        </Link>
-                        " input example).
+                        </Link>{" "}
+                        input example).
                       </>
                     )}
                   </Typography>
@@ -165,7 +165,8 @@ const TableContainer = () => {
                   <Typography sx={{ marginBottom: "10px", paddingLeft: "20px" }}>
                     This table shows the number of your input variants that are QTLs for at least
                     one gene with a p-value less than {renderPThreshold(clientData!, pThreshold)} in
-                    each tissue or cell type.
+                    each tissue or cell type. For eQTL Catalogue only gene expression (ge) eQTLs are
+                    counted.
                     <br />
                     You can toggle different QTL associations with the switches above.
                   </Typography>

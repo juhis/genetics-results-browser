@@ -1,33 +1,13 @@
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  ApiResponseMeta,
-  DatasetMap,
-  DatasetSummaryTableRow,
-  PhenoMap,
-  PhenoSummaryTableRow,
-} from "../../../types/types";
-import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
-import { filterContainsWithTooltip } from "../utils/tableutil";
+import { ApiResponseMeta, DatasetMap, TissueSummaryTableRow, PhenoMap } from "../../../types/types";
 
-export const getTissueSummaryTableColumns = (
-  phenoMap: PhenoMap,
-  datasetMap: DatasetMap,
-  meta: ApiResponseMeta,
-  has_betas: boolean
-): MRT_ColumnDef<DatasetSummaryTableRow>[] => {
-  let cols: MRT_ColumnDef<DatasetSummaryTableRow>[] = [
+export const getTissueSummaryTableColumns = (): MRT_ColumnDef<TissueSummaryTableRow>[] => {
+  let cols: MRT_ColumnDef<TissueSummaryTableRow>[] = [
     {
-      accessorFn: (row) => {
-        // if dataset metadata is available, use it to display dataset name
-        const dataset = datasetMap[row.dataset];
-        const datasetName = dataset
-          ? `${dataset.study_label}:${dataset.sample_group}:${dataset.quant_method}`
-          : row.dataset;
-        return datasetName;
-      },
-      header: "dataset",
+      accessorKey: "tissue",
+      header: "tissue",
       filterFn: "contains",
-      muiFilterTextFieldProps: { placeholder: "dataset" },
+      muiFilterTextFieldProps: { placeholder: "tissue" },
       size: 150,
     },
     {

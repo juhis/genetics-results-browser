@@ -12,7 +12,7 @@ import {
   PhenoSummaryTableData,
   DataType,
   QTLType,
-  DatasetSummaryTableData,
+  TissueSummaryTableData,
 } from "../types/types";
 
 const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
@@ -422,30 +422,80 @@ export const summarizePhenotypes = (data: TableData): PhenoSummaryTableData => {
   return summaryTableData;
 };
 
-export const summarizeDatasets = (data: TableData): DatasetSummaryTableData => {
+type TissueInfo = {
+  count: number;
+  qtlAssocs: VariantRecord[];
+};
+
+export const summarizeTissues = (data: TableData): TissueSummaryTableData => {
   const startTime = performance.now();
-  data.data.forEach((d) => {
-    d.assoc.data.forEach((a) => {
-      a.beta_input = d.beta;
+  const qtlAssocs: AssocRecord[][] = data.data.map((d) =>
+    d.assoc.data.filter((item) => item.data_type.endsWith("QTL"))
+  );
+  const tissueCounts = qtlAssocs.reduce((acc: Record<string, TissueInfo>, d, dIndex) => {
+    d.forEach((a) => {
+      if (
+        data.datasets[a.dataset] &&
+        data.datasets[a.dataset].quant_method !== "ge" &&
+        data.datasets[a.dataset].quant_method !== "leafcutter" &&
+        data.datasets[a.dataset].quant_method !== "aptamer"
+      ) {
+        return;
+      }
+      const tissue_label = data.datasets[a.dataset]?.tissue_label || a.dataset; // TODO map FG and UK data to tissues
+      if (!acc[tissue_label]) {
+        acc[tissue_label] = { count: 0, qtlAssocs: [] };
+      }
+      const variantRecord = data.data[dIndex];
+      const filteredAssocs = variantRecord.assoc.data.filter(
+        (item) =>
+          (data.datasets[item.dataset] &&
+            data.datasets[item.dataset]?.tissue_label === tissue_label &&
+            (data.datasets[item.dataset].quant_method === "ge" ||
+              data.datasets[item.dataset].quant_method === "leafcutter" ||
+              data.datasets[item.dataset].quant_method === "aptamer")) ||
+          item.dataset === a.dataset // TODO map FG and UK data to tissues
+      );
+      const filteredFM = variantRecord.finemapped.data.filter(
+        (item) =>
+          (data.datasets[item.dataset] &&
+            data.datasets[item.dataset]?.tissue_label === tissue_label &&
+            // TODO these should be decided by the toggles, now showing all of these in the detail table even if the corresponding toggle is not on
+            (data.datasets[item.dataset].quant_method === "ge" ||
+              data.datasets[item.dataset].quant_method === "leafcutter" ||
+              data.datasets[item.dataset].quant_method === "aptamer")) ||
+          item.dataset === a.dataset // TODO map FG and UK data to tissues
+      );
+      const filteredVariantRecord = {
+        ...variantRecord,
+        assoc: {
+          ...variantRecord.assoc,
+          data: filteredAssocs,
+          groupedData: groupAssocPhenos(filteredAssocs, data.phenos),
+        },
+        finemapped: {
+          ...variantRecord.finemapped,
+          data: filteredFM,
+          groupedData: groupFineMappedTraits(filteredFM),
+        },
+      };
+      const isVariantRecordPresent = acc[tissue_label].qtlAssocs.some(
+        (vr) => vr.variant === filteredVariantRecord.variant
+      );
+      if (!isVariantRecordPresent) {
+        acc[tissue_label].count += 1;
+        acc[tissue_label].qtlAssocs.push(filteredVariantRecord);
+      }
     });
-  });
-  const assocs: AssocRecord[] = data.data.flatMap((d) => d.assoc.data);
-  // TODO keys of phenoCounts not used
-  const phenoCounts = assocs.reduce((p, c) => {
-    const id = c.resource + ":" + c.dataset;
-    p[id] = {
-      resource: c.resource,
-      dataset: c.dataset,
-      total: ((p[id]?.total as number) || 0) + (c.beta != 0 ? 1 : 0),
-    };
-    return p;
-  }, {} as Record<string, Record<string, number | string>>);
-  const summaryTableData: DatasetSummaryTableData = Object.entries(phenoCounts)
-    .sort((a, b) => (b[1].total as number) - (a[1].total as number))
-    .map((d) => ({
-      dataset: d[1].dataset as string,
-      total: d[1].total as number,
-    }))
-  console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over datasets`);
-  return summaryTableData;
+    return acc;
+  }, {});
+
+  const tissueCountsArray = Object.entries(tissueCounts).map(([tissue, { count, qtlAssocs }]) => ({
+    tissue,
+    total: count,
+    qtlAssocs,
+  }));
+
+  console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over tissues`);
+  return tissueCountsArray;
 };
