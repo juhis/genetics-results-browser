@@ -14,6 +14,45 @@ import { download, generateCsv, mkConfig } from "export-to-csv";
 import { getAssociationTableColumns } from "../tables/VariantAssocTable.columns";
 import { pValRepr } from "./tableutil";
 
+export const handlePhenoSummaryTableExport = (data: TableData) => {
+  const phenos = Object.keys(data.phenos).map((k) => data.phenos[k]);
+  // filter phenos to those that at least one variant has a result for
+  const phenosFiltered = phenos.filter(
+    (p) =>
+      p.data_type !== "NA" &&
+      data.data.some((d) => d.assoc.data.some((a) => a.phenocode === p.phenocode))
+  );
+  const variants = data.data.map((d) => d.variant);
+
+  // make a matrix [variants][phenos] with beta values, or NA if not present
+  const dataExport: Record<string, string>[] = variants.map((v) => {
+    const variantData: Record<string, string> = { variant: v };
+    phenosFiltered.forEach((p) => {
+      const beta =
+        data.data.find((d) => d.variant === v)?.assoc.data.find((a) => a.phenocode === p.phenocode)
+          ?.beta || "NA";
+      const phenoRep = `${p.resource}:${p.phenocode}:${p.phenostring}`;
+      variantData[phenoRep] = String(beta);
+    });
+    return variantData;
+  });
+  const csvConfig = mkConfig({
+    fieldSeparator: "\t",
+    filename: `variant_annotation_${variants.length}_variants_pheno_beta_grid_${SHA256(
+      variants.join("")
+    )
+      .toString()
+      .substring(0, 7)}`,
+    quoteStrings: false,
+    decimalSeparator: ".",
+    useBom: false,
+    useKeysAsHeaders: true,
+    useTextFile: true,
+  });
+  const csv = generateCsv(csvConfig)(dataExport);
+  download(csvConfig)(csv);
+};
+
 // TODO these functions are complicated and error prone if the tables are changed and should be refactored
 // perhaps munging the data to a more direct export format helps
 // or make all HTML columns use the same format, e.g. give a value prop
@@ -74,6 +113,7 @@ export const handleMainTableExport = (
       return p;
     }, {} as Record<string, string>);
   });
+  console.log(dataExport);
   const csvConfig = mkConfig({
     fieldSeparator: "\t",
     filename: `variant_annotation_${dataExport.length}_variants_${SHA256(variantInput)

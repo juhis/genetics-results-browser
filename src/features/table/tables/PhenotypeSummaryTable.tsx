@@ -4,6 +4,7 @@ import { naInfSort, variantSort } from "../utils/sorting";
 import { PhenoSummaryTableRow, TableData } from "../../../types/types";
 import { useMemo, useState } from "react";
 import { getPhenoSummaryTableColumns } from "./PhenotypeSummaryTable.columns";
+import PhenoExportButtons from "../PhenoExportToolbar";
 import { useDataStore } from "../../../store/store";
 import { useServerQuery } from "../../../store/serverQuery";
 import { summarizePhenotypes } from "../../../store/munge";
@@ -35,8 +36,8 @@ const PhenotypeSummaryTable = (props: {}) => {
     <MaterialReactTable
       data={summaryData}
       columns={columns}
-      //renderTopToolbarCustomActions={({ table }) => <ExportButtons table={table} />}
-      enableTopToolbar={false}
+      enableTopToolbar={true}
+      renderTopToolbarCustomActions={({ table }) => <PhenoExportButtons />} //table={table} />}
       enableColumnFilters={true}
       initialState={{
         showColumnFilters: true,
