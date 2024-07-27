@@ -212,7 +212,7 @@ def results() -> Any | tuple[Any, int]:
                 continue
             try:
                 finemapped = fetch_finemapped.get_finemapped(var)
-                assoc = fetch.get_assoc(var)
+                assoc = fetch.get_assoc_and_ld_assoc(var)
             except DataException as e:
                 return jsonify({"message": str(e)}), 500
             data.append(

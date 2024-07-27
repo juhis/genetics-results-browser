@@ -28,6 +28,17 @@ class Datafetch(object, metaclass=Singleton):
                 )
             }
         )
+        self.ld_tabix_assoc: dict[int, pysam.TabixFile] = dd(
+            lambda: pysam.TabixFile(self.conf["ld_assoc"]["file"], parser=None)  # type: ignore
+        )
+        self.ld_assoc_headers: dict[str, int] = od(
+            {
+                h: idx
+                for idx, h in enumerate(
+                    self.ld_tabix_assoc[threading.get_ident()].header[0].split("\t")
+                )
+            }
+        )
 
     def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
@@ -111,3 +122,82 @@ class Datafetch(object, metaclass=Singleton):
             },
             "time": end_time,
         }
+
+    def get_ld_assoc(self, variant: Variant) -> AssociationResults:
+        start_time = timeit.default_timer()
+        assoc: list[AssociationResult] = []
+        resources = set()
+        tabix_iter = self.ld_tabix_assoc[threading.get_ident()].fetch(
+            variant.chr, variant.pos - 1, variant.pos
+        )
+        for row in tabix_iter:
+            d = row.split("\t")
+            ref = d[self.ld_assoc_headers["tag_ref"]]
+            alt = d[self.ld_assoc_headers["tag_alt"]]
+            lead_pos = int(d[self.ld_assoc_headers["lead_pos"]])
+            lead_ref = d[self.ld_assoc_headers["lead_ref"]]
+            lead_alt = d[self.ld_assoc_headers["lead_alt"]]
+            resource = "Open_Targets" # TODO include in data file
+            if (
+                ref == variant.ref
+                and alt == variant.alt
+                and lead_pos == variant.pos
+                and lead_ref == variant.ref
+                and lead_alt == variant.alt
+                and resource
+                in self.assoc_resource_ids  # skip results for resources not in the config
+            ):
+                dataset = "Open_Targets_22.09" # TODO include in data file
+                data_type = "GWAS" # TODO include in data file
+                phenocode = d[self.ld_assoc_headers["#study_id"]]
+                beta_str = d[self.ld_assoc_headers["beta"]]
+                odds_ratio_str = d[self.ld_assoc_headers["odds_ratio"]]
+                try:
+                    if beta_str != "None":
+                        beta = float(beta_str)
+                    elif odds_ratio_str != "None":
+                        beta = math.log(float(odds_ratio_str))
+                    else: # there are missing effect sizes in the data
+                        beta = 0
+                except ValueError:
+                    print(f"Could not parse beta or odds ratio: {beta_str} {odds_ratio_str}")
+                    beta = 0
+                mlogp = -math.log10(float(d[self.ld_assoc_headers["pval"]]))
+                if mlogp == np.inf:
+                    mlogp = -math.log10(5e-324) # this is the smallest number in the ot file
+                assoc.append(
+                    {
+                        "resource": resource,
+                        "dataset": dataset,
+                        "data_type": data_type,
+                        "phenocode": phenocode
+                        if data_type != "sQTL"
+                        else dataset + ":" + phenocode,
+                        "mlogp": mlogp,
+                        "beta": beta,
+                        "sebeta": -1,
+                    }
+                )
+                resources.add(resource)
+        assoc = sorted(assoc, key=lambda x: -float(x["mlogp"]))
+        end_time = timeit.default_timer() - start_time
+        return {
+            "variant": str(variant),
+            "assoc": {
+                "data": assoc,
+                "resources": sorted(list(resources)),
+            },
+            "time": end_time,
+        }
+
+    def get_assoc_and_ld_assoc(self, variant: Variant) -> AssociationResults:
+        assoc = self.get_assoc(variant)
+        ld_assoc = self.get_ld_assoc(variant)
+        # merge the two results
+        assoc["assoc"]["data"].extend(ld_assoc["assoc"]["data"])
+        assoc["assoc"]["resources"].extend(ld_assoc["assoc"]["resources"])
+        # sort by mlogp
+        assoc["assoc"]["data"] = sorted(
+            assoc["assoc"]["data"], key=lambda x: -float(x["mlogp"])
+        )
+        return assoc
