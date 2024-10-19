@@ -38,6 +38,12 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
           mlogp: [c.mlogp],
           beta: [c.beta],
           sebeta: [c.sebeta],
+          ld: [c.ld],
+          lead: [c.lead || false],
+          lead_chr: [c.lead_chr || undefined],
+          lead_pos: [c.lead_pos || undefined],
+          lead_ref: [c.lead_ref || undefined],
+          lead_alt: [c.lead_alt || undefined],
           count: 1,
         };
       } else {
@@ -45,8 +51,41 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
         p[groupId]["mlogp"].push(c.mlogp);
         p[groupId]["beta"].push(c.beta);
         p[groupId]["sebeta"].push(c.sebeta);
+        p[groupId]["ld"].push(c.ld);
+        p[groupId]["lead"].push(c.lead || false);
+        p[groupId]["lead_chr"].push(c.lead_chr || undefined);
+        p[groupId]["lead_pos"].push(c.lead_pos || undefined);
+        p[groupId]["lead_ref"].push(c.lead_ref || undefined);
+        p[groupId]["lead_alt"].push(c.lead_alt || undefined);
         p[groupId]["count"] += 1;
       }
+      // remove results that are in LD when there is also a result of the exact variant
+      Object.keys(p).forEach((key) => {
+        if (p[key].ld.includes(true) && p[key].ld.includes(false)) {
+          const ld_idxs = p[key].ld.map((ld, idx) => (ld ? idx : -1)).filter((idx) => idx !== -1);
+          Object.keys(p[key]).forEach((k) => {
+            if (Array.isArray(p[key][k as keyof GroupedAssocRecord])) {
+              // @ts-ignore
+              p[key][k] = p[key][k].filter((_, idx) => !ld_idxs.includes(idx));
+            }
+          });
+        }
+      });
+      // remove results that are from LD data and the LD variant is not the lead when there is also a result where the exact variant is the lead
+      Object.keys(p).forEach((key) => {
+        if (p[key].lead.includes(true) && p[key].lead.includes(false)) {
+          const lead_idxs = p[key].lead
+            .map((lead, idx) => (lead ? idx : -1))
+            .filter((idx) => idx !== -1);
+          Object.keys(p[key]).forEach((k) => {
+            if (Array.isArray(p[key][k as keyof GroupedAssocRecord])) {
+              // @ts-ignore
+              p[key][k] = p[key][k].filter((_, idx) => lead_idxs.includes(idx));
+            }
+          });
+        }
+        p[key].count = p[key].ld.length;
+      });
       return p;
     }, {} as Record<string, GroupedAssocRecord>)
   );
@@ -117,6 +156,7 @@ const countAssocPhenos = (d: GroupedAssocRecord[], resources: Array<AssocResourc
   };
   return { total, resource, eqtl, pqtl, sqtl, edqtl, qtl, gwas };
 };
+
 // convert array to a deduped array:
 // only one item per dataset/trait/direction, with possibly multiple molecular_trait_ids
 // otherwise e.g. GTEx exons could be too many crowding out other datasets

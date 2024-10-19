@@ -4,6 +4,7 @@ import { filterAbsGreaterThanHTML, filterContainsWithTooltip, pValRepr } from ".
 import { PhenoTooltip } from "../../tooltips/PhenoTooltip";
 import { UpOrDownIcon } from "../UpDownIcons";
 import { isQTLInCis, isQTLInTrans } from "../../../store/munge";
+import { AssocPValLDTooltip } from "../../tooltips/AssocPValLDTooltip";
 
 export const getAssociationTableColumns = (
   variant: string | undefined,
@@ -64,7 +65,23 @@ export const getAssociationTableColumns = (
     muiFilterTextFieldProps: { placeholder: "trait" },
   },
   {
-    accessorFn: (row) => pValRepr(row.mlogp[0]),
+    accessorFn: (row) => {
+      const phenos = row.phenocode.map((phenocode) => phenoMap[row.resource + ":" + phenocode]);
+      const resource = meta.assoc.resources.find((r) => r.resource == phenos[0].resource)!;
+      return row.ld[0] && !row.lead[0] ? (
+        <AssocPValLDTooltip
+          variant={variant!}
+          phenos={phenos}
+          resource={resource}
+          row={row}
+          content={
+            <span style={{ textDecoration: "underline dotted" }}>{pValRepr(row.mlogp[0])}</span>
+          }
+        />
+      ) : (
+        <span>{pValRepr(row.mlogp[0])}</span>
+      );
+    },
     id: "mlogp",
     header: "p-value",
     sortingFn: "naInfSort",

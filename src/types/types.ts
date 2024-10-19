@@ -173,6 +173,12 @@ export type AssocRecord = {
   mlogp: number;
   beta: number;
   sebeta: number;
+  ld: boolean; // if the result is from open targets v2d ld data
+  lead?: boolean; // if this is the lead variant
+  lead_chr?: string;
+  lead_pos?: number; // position of lead variant when this is not the lead variant
+  lead_ref?: string;
+  lead_alt?: string;
   beta_input?: number;
 };
 
@@ -186,6 +192,12 @@ export type GroupedAssocRecord = {
   mlogp: number[];
   beta: number[];
   sebeta: number[];
+  ld: boolean[];
+  lead: boolean[];
+  lead_chr: Array<string | undefined>;
+  lead_pos: Array<number | undefined>;
+  lead_ref: Array<string | undefined>;
+  lead_alt: Array<string | undefined>;
   count: number;
 };
 
