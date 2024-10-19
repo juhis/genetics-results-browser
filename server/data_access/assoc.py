@@ -86,6 +86,7 @@ class Datafetch(object, metaclass=Singleton):
                     ) - math.log10(2)
                 assoc.append(
                     {
+                        "ld": False,
                         "resource": resource,
                         "dataset": dataset,
                         "data_type": data_type,
@@ -141,9 +142,6 @@ class Datafetch(object, metaclass=Singleton):
             if (
                 ref == variant.ref
                 and alt == variant.alt
-                and lead_pos == variant.pos
-                and lead_ref == variant.ref
-                and lead_alt == variant.alt
                 and resource
                 in self.assoc_resource_ids  # skip results for resources not in the config
             ):
@@ -165,19 +163,26 @@ class Datafetch(object, metaclass=Singleton):
                 mlogp = -math.log10(float(d[self.ld_assoc_headers["pval"]]))
                 if mlogp == np.inf:
                     mlogp = -math.log10(5e-324) # this is the smallest number in the ot file
-                assoc.append(
-                    {
-                        "resource": resource,
-                        "dataset": dataset,
-                        "data_type": data_type,
-                        "phenocode": phenocode
-                        if data_type != "sQTL"
-                        else dataset + ":" + phenocode,
-                        "mlogp": mlogp,
-                        "beta": beta,
-                        "sebeta": -1,
-                    }
-                )
+                result = {
+                    "ld": True,
+                    "resource": resource,
+                    "dataset": dataset,
+                    "data_type": data_type,
+                    "phenocode": phenocode,
+                    "mlogp": mlogp,
+                    "beta": beta,
+                    "sebeta": -1,
+                }
+                if (lead_pos == variant.pos
+                and lead_ref == variant.ref
+                and lead_alt == variant.alt):
+                    result["lead"] = True
+                else:
+                    result["lead"] = False
+                    result["lead_pos"] = lead_pos
+                    result["lead_ref"] = lead_ref
+                    result["lead_alt"] = lead_alt
+                assoc.append(result)
                 resources.add(resource)
         assoc = sorted(assoc, key=lambda x: -float(x["mlogp"]))
         end_time = timeit.default_timer() - start_time
