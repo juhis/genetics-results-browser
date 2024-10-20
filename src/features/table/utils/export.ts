@@ -24,22 +24,24 @@ export const handlePhenoSummaryTableExport = (data: TableData) => {
   );
   const variants = data.data.map((d) => d.variant);
 
-  // make a matrix [variants][phenos] with beta values, or NA if not present
-  const dataExport: Record<string, string>[] = variants.map((v) => {
-    const variantData: Record<string, string> = { variant: v };
-    phenosFiltered.forEach((p) => {
+  // make a matrix [phenos][variants] with beta values, or NA if not present
+  const dataExport: Record<string, string>[] = phenosFiltered.map((p) => {
+    const phenoData: Record<string, string> = {
+      phenotype: `${p.resource}:${p.phenocode}:${p.phenostring}`,
+    };
+    variants.forEach((v) => {
       const beta =
         data.data.find((d) => d.variant === v)?.assoc.data.find((a) => a.phenocode === p.phenocode)
           ?.beta || "NA";
-      const phenoRep = `${p.resource}:${p.phenocode}:${p.phenostring}`;
-      variantData[phenoRep] = String(beta);
+      phenoData[v] = String(beta);
     });
-    return variantData;
+    return phenoData;
   });
+
   const csvConfig = mkConfig({
     fieldSeparator: "\t",
-    filename: `variant_annotation_${variants.length}_variants_pheno_beta_grid_${SHA256(
-      variants.join("")
+    filename: `pheno_annotation_${phenosFiltered.length}_phenos_variant_beta_grid_${SHA256(
+      phenosFiltered.map((p) => p.phenocode).join("")
     )
       .toString()
       .substring(0, 7)}`,
