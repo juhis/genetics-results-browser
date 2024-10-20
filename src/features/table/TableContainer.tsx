@@ -169,6 +169,9 @@ const TableContainer = () => {
                     counted.
                     <br />
                     You can toggle different QTL associations with the switches above.
+                    <br />
+                    Use the arrows on the left of each cell type to expand it and see variants that
+                    are a QTL for that cell type.
                   </Typography>
                   <Suspense fallback={<CircularProgress />}>
                     <TissueSummaryTable />
