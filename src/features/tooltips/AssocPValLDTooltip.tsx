@@ -36,7 +36,11 @@ export const AssocPValLDTooltip = (props: {
         </tr>
         <tr>
           <td>overall r2</td>
-          <td>{props.row.overall_r2[idx]!.toPrecision(3)}</td>
+          <td>
+            {props.row.overall_r2[idx] === undefined
+              ? "N/A"
+              : props.row.overall_r2[idx].toPrecision(3)}
+          </td>
         </tr>
         <tr>
           <td>study</td>

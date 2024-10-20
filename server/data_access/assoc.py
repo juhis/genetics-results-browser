@@ -150,7 +150,10 @@ class Datafetch(object, metaclass=Singleton):
                 phenocode = d[self.ld_assoc_headers["#study_id"]]
                 beta_str = d[self.ld_assoc_headers["beta"]]
                 odds_ratio_str = d[self.ld_assoc_headers["odds_ratio"]]
-                overall_r2 = float(d[self.ld_assoc_headers["overall_r2"]])
+                try:
+                    overall_r2 = float(d[self.ld_assoc_headers["overall_r2"]])
+                except ValueError:
+                    overall_r2 = 0
                 try:
                     if beta_str != "None":
                         beta = float(beta_str)
