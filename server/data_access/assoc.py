@@ -150,6 +150,7 @@ class Datafetch(object, metaclass=Singleton):
                 phenocode = d[self.ld_assoc_headers["#study_id"]]
                 beta_str = d[self.ld_assoc_headers["beta"]]
                 odds_ratio_str = d[self.ld_assoc_headers["odds_ratio"]]
+                overall_r2 = float(d[self.ld_assoc_headers["overall_r2"]])
                 try:
                     if beta_str != "None":
                         beta = float(beta_str)
@@ -172,6 +173,7 @@ class Datafetch(object, metaclass=Singleton):
                     "mlogp": mlogp,
                     "beta": beta,
                     "sebeta": -1,
+                    "overall_r2": overall_r2,
                 }
                 if (lead_pos == variant.pos
                 and lead_ref == variant.ref
@@ -179,6 +181,7 @@ class Datafetch(object, metaclass=Singleton):
                     result["lead"] = True
                 else:
                     result["lead"] = False
+                    result["lead_chr"] = variant.chr
                     result["lead_pos"] = lead_pos
                     result["lead_ref"] = lead_ref
                     result["lead_alt"] = lead_alt

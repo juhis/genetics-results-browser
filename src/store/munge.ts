@@ -40,6 +40,7 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
           sebeta: [c.sebeta],
           ld: [c.ld],
           lead: [c.lead || false],
+          overall_r2: [c.overall_r2 || undefined],
           lead_chr: [c.lead_chr || undefined],
           lead_pos: [c.lead_pos || undefined],
           lead_ref: [c.lead_ref || undefined],
@@ -52,6 +53,7 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
         p[groupId]["beta"].push(c.beta);
         p[groupId]["sebeta"].push(c.sebeta);
         p[groupId]["ld"].push(c.ld);
+        p[groupId]["overall_r2"].push(c.overall_r2 || undefined);
         p[groupId]["lead"].push(c.lead || false);
         p[groupId]["lead_chr"].push(c.lead_chr || undefined);
         p[groupId]["lead_pos"].push(c.lead_pos || undefined);

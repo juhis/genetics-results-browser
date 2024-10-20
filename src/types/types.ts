@@ -175,6 +175,7 @@ export type AssocRecord = {
   sebeta: number;
   ld: boolean; // if the result is from open targets v2d ld data
   lead?: boolean; // if this is the lead variant
+  overall_r2?: number;
   lead_chr?: string;
   lead_pos?: number; // position of lead variant when this is not the lead variant
   lead_ref?: string;
@@ -194,6 +195,7 @@ export type GroupedAssocRecord = {
   sebeta: number[];
   ld: boolean[];
   lead: boolean[];
+  overall_r2: Array<number | undefined>;
   lead_chr: Array<string | undefined>;
   lead_pos: Array<number | undefined>;
   lead_ref: Array<string | undefined>;

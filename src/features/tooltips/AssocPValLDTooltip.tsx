@@ -35,6 +35,10 @@ export const AssocPValLDTooltip = (props: {
           <td>{props.row.lead_pos[idx]! - Number(props.variant.split("-")[1])} bp</td>
         </tr>
         <tr>
+          <td>overall r2</td>
+          <td>{props.row.overall_r2[idx]!.toPrecision(3)}</td>
+        </tr>
+        <tr>
           <td>study</td>
           <td>
             <a
