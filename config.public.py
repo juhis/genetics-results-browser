@@ -3,9 +3,8 @@ import logging
 log_level = logging.INFO
 
 authentication = False
-authentication_file = "/mnt/disks/data/finngen_auth_prod.json"
 
-metadata_db = "/mnt/disks/data/meta_finngen_version_20240709.db"
+metadata_db = "/mnt/disks/data/meta_public_version_20240709.db"
 
 rsid_db = {
     "file": "/mnt/disks/data/gnomad/gnomad.genomes.exomes.v4.0.rsid.db",
@@ -18,35 +17,24 @@ gnomad = {
     "version": "4.0",
 }
 
-ld_assoc = {
-    "file": "/mnt/disks/data/ot_v2d_no_finngen_22.09_with_studycols.tsv.gz",
-    "resources": [
-        {
-            "resource": "Open_Targets",
-            "version": "October 2022",
-            "data_types": ["GWAS"],
-        }
-    ]
-}
-
 assoc = {
-    "file": "/mnt/disks/data/assoc_resources_finngen_version_20240709.tsv.gz",
+    "file": "/mnt/disks/data/assoc_resources_public_version_20240709.tsv.gz",
     # not all resources in the data file need to be listed here
     # if a resource is not listed here, data for it will not be shown in the UI
     "resources": [
         {
             "resource": "FinnGen_UKBB_meta",
-            "version": "R12",
+            "version": "R11",
             "data_types": ["GWAS"],
-            "n_traits": "873",
-            "url": "https://www.finngen.fi/en/for_researchers",
+            "n_traits": "762",
+            "url": "https://finngen.gitbook.io/documentation",
             "pheno_urls": [
                 {
-                    "url": "https://metaresults-ukbb.finngen.fi/pheno/[PHENOCODE]",
+                    "url": "https://public-metaresults-fg-ukbb.finngen.fi/pheno/[PHENOCODE]",
                     "label": "FinnGen/UKBB meta Pheweb",
                 },
                 {
-                    "url": "https://r12.risteys.finregistry.fi/endpoints/[PHENOCODE]",
+                    "url": "https://r11.risteys.finregistry.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
@@ -54,17 +42,17 @@ assoc = {
         },
         {
             "resource": "FinnGen",
-            "version": "R12",
+            "version": "R11",
             "data_types": ["GWAS"],
-            "n_traits": "2,469",
-            "url": "https://finngen.gitbook.io/documentation/methods/phewas",
+            "n_traits": "2,444",
+            "url": "https://finngen.gitbook.io/documentation/v/r11/methods/phewas",
             "pheno_urls": [
                 {
-                    "url": "https://r12.finngen.fi/pheno/[PHENOCODE]",
+                    "url": "https://r11.finngen.fi/pheno/[PHENOCODE]",
                     "label": "FinnGen Pheweb",
                 },
                 {
-                    "url": "https://r12.risteys.finregistry.fi/endpoints/[PHENOCODE]",
+                    "url": "https://r11.risteys.finregistry.fi/endpoints/[PHENOCODE]",
                     "label": "FinnGen Risteys",
                 },
             ],
@@ -72,43 +60,14 @@ assoc = {
         },
         {
             "resource": "FinnGen_pQTL",
-            "version": "SomaScan 2023-03-02, Olink 2023-10-11",
+            "version": "2023-03-02",
             "data_types": ["pQTL"],
-            "n_traits": "SomaScan 7,596, Olink 2,925",
-            "url": "https://finngen.gitbook.io/documentation/methods/pqtl-analysis",
+            "n_traits": "SomaScan 7,596, Olink 2,941",
+            "url": "https://finngen.gitbook.io/documentation/v/r11/methods/pqtl-analysis",
             "pheno_urls": [
                 {
-                    "url": "https://r12.finngen.fi/gene/[GENE]",
+                    "url": "https://r11.finngen.fi/gene/[GENE]",
                     "label": "FinnGen Pheweb",
-                }
-            ],
-            "p_thres": 5e-3,
-        },
-        {
-            "resource": "FinnGen_eQTL",
-            "version": "2023-10-05",
-            "data_types": ["eQTL"],
-            "n_traits": "26,624 genes, 35 predicted cell types",
-            "url": "https://www.finngen.fi/en/for_researchers",
-            "pheno_urls": [
-                {
-                    "url": "https://r12.finngen.fi/gene/[GENE]",
-                    "label": "FinnGen Pheweb",
-                }
-            ],
-            "p_thres": 5e-3,
-        },
-        {
-            "resource": "UKBB_pQTL",
-            "version": "2024-01-30",
-            "data_types": ["pQTL"],
-            "n_traits": "Olink 2,655",
-            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
-            "url": None,
-            "pheno_urls": [
-                {
-                    "url": "https://www.finngen.fi/en/for_researchers",
-                    "label": "FinnGen analysis",
                 }
             ],
             "p_thres": 5e-3,
@@ -156,6 +115,21 @@ assoc = {
             "p_thres": 5e-3,
         },
         {
+            "resource": "UKBB_pQTL",
+            "version": "2024-01-30",
+            "data_types": ["pQTL"],
+            "n_traits": "Olink 2,655",
+            # "url": "https://www.biorxiv.org/content/10.1101/2022.06.17.496443v1.full",
+            "url": None,
+            "pheno_urls": [
+                {
+                    "url": "https://www.finngen.fi/en/for_researchers",
+                    "label": "FinnGen analysis",
+                }
+            ],
+            "p_thres": 5e-3,
+        },
+        {
             "resource": "GTEx_v8_edQTL",
             "version": "2022",
             "data_types": ["edQTL"],
@@ -173,7 +147,7 @@ assoc = {
 }
 
 finemapped = {
-    "file": "/mnt/disks/data/finemapped_resources_finngen_version_20240709.tsv.gz",
+    "file": "/mnt/disks/data/finemapped_resources_public_version_20240709.tsv.gz",
     "resources": [
         {
             "resource": "eQTL_Catalogue_R7",
@@ -184,24 +158,10 @@ finemapped = {
         },
         {
             "resource": "FinnGen",
-            "version": "R12",
+            "version": "R11",
             "data_types": ["GWAS"],
-            "n_traits": "2,469",
-            "url": "https://finngen.gitbook.io/documentation/methods/phewas",
-        },
-        {
-            "resource": "FinnGen_pQTL",
-            "version": "SomaScan 2023-03-02, Olink 2023-10-11",
-            "data_types": ["pQTL"],
-            "n_traits": "SomaScan 7,596, Olink 2,925",
-            "url": "https://finngen.gitbook.io/documentation/methods/pqtl-analysis",
-        },
-        {
-            "resource": "FinnGen_eQTL",
-            "version": "2023-10-05",
-            "data_types": ["eQTL"],
-            "n_traits": "26,624 genes, 35 predicted cell types",
-            "url": "https://www.finngen.fi/en/for_researchers",
+            "n_traits": "2,444",
+            "url": "https://finngen.gitbook.io/documentation/v/r11/methods/phewas",
         },
         {
             "resource": "UKBB_pQTL",

@@ -163,3 +163,4 @@ cython_debug/
 bundle.js*
 node_modules
 config.py.bak
+static
