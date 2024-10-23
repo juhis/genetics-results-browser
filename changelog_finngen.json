@@ -2,6 +2,37 @@
   "content": [
     {
       "type": "span",
+      "text": "Oct 23rd 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Updated eQTL Catalogue data from R6 to R7"
+            },
+            {
+              "type": "li",
+              "text": "Added data on variants that are in LD with the input variant from Open Targets"
+            },
+            {
+              "type": "li",
+              "text": "Added a tissue and cell type summary tab showing the number of QTL variants per tissue or cell type"
+            },
+            {
+              "type": "li",
+              "text": "Added a variant/phenotype grid download option to phenotype summary table"
+            },
+            {
+              "type": "li",
+              "text": "Page load performance improvements"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Feb 28th 2024:",
       "children": [
         {

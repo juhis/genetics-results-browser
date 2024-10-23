@@ -2,7 +2,7 @@ import logging
 
 log_level = logging.INFO
 
-authentication = False
+authentication = True
 authentication_file = "/mnt/disks/data/finngen_auth_prod.json"
 
 metadata_db = "/mnt/disks/data/meta_finngen_version_20240709.db"
