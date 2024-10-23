@@ -49,6 +49,10 @@ const Header = () => {
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
         {config.title}
       </Typography>
+      <Typography mb={2}>
+        There is a bug when sometimes it claims "variants not found". Please refresh the page until
+        it works while we figure out and fix this.
+      </Typography>
     </>
   );
 };
