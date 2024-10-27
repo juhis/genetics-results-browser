@@ -2,6 +2,25 @@
   "content": [
     {
       "type": "span",
+      "text": "Oct 27th 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Fixed a concurrency issue that at times caused a \"No variants found\" or 500 error"
+            },
+            {
+              "type": "li",
+              "text": "Rows of the downloaded variant/phenotype grid are now sorted by the number of variants with data"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Oct 23rd 2024:",
       "children": [
         {
