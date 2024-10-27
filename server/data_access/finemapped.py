@@ -1,7 +1,7 @@
+import gzip
 import sqlite3
+import subprocess
 from typing import Any
-import pysam
-import threading
 import timeit
 from collections import OrderedDict as od, defaultdict as dd
 
@@ -9,23 +9,16 @@ from datatypes import (
     FineMappedResult,
     FineMappedResults,
 )
+from exceptions import DataException
 from variant import Variant
 from singleton import Singleton
 
 
 class Finemapped(object, metaclass=Singleton):
     def _init_tabix(self) -> None:
-        self.tabix: dict[int, pysam.TabixFile] = dd(
-            lambda: pysam.TabixFile(self.conf["finemapped"]["file"], parser=None)  # type: ignore
-        )
-        self.headers = od(
-            {
-                h: i
-                for i, h in enumerate(
-                    self.tabix[threading.get_ident()].header[0].split("\t")
-                )
-            }
-        )
+        with gzip.open(self.conf["finemapped"]["file"], "rt") as f:
+            headers = f.readline().strip().split("\t")
+        self.headers: dict[str, int] = od({h: idx for idx, h in enumerate(headers)})
 
     def __init__(self, conf: dict[str, Any]) -> None:
         self.conf = conf
@@ -41,10 +34,24 @@ class Finemapped(object, metaclass=Singleton):
         start_time = timeit.default_timer()
         finemapped: list[FineMappedResult] = []
         found_resources = set()
-        tabix_iter = self.tabix[threading.get_ident()].fetch(
-            variant.chr, variant.pos - 1, variant.pos
-        )
-        for row in tabix_iter:
+        try:
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["finemapped"]["file"],
+                    f"{variant.chr}:{variant.pos}-{variant.pos}",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
             data = row.split("\t")
             resource = data[self.headers["#resource"]]
             if (
@@ -61,9 +68,9 @@ class Finemapped(object, metaclass=Singleton):
                     "resource": resource,
                     "dataset": dataset,
                     "data_type": data_type,
-                    "phenocode": phenocode
-                    if data_type != "sQTL"
-                    else dataset + ":" + phenocode,
+                    "phenocode": (
+                        phenocode if data_type != "sQTL" else dataset + ":" + phenocode
+                    ),
                     "mlog10p": float(data[self.headers["mlog10p"]]),
                     "beta": float(data[self.headers["beta"]]),
                     "se": float(data[self.headers["se"]]),
