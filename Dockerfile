@@ -17,4 +17,4 @@ RUN npx webpack --mode production
 EXPOSE 8080
 
 WORKDIR /mnt/disks/data
-CMD touch /mnt/disks/data/*.tbi && touch /mnt/disks/data/gnomad/*.tbi && service nginx start && /var/www/genetics-results-browser/server/run.py --port 8081
+CMD service nginx start && /var/www/genetics-results-browser/server/run.py --port 8081
