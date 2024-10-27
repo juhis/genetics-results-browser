@@ -25,18 +25,26 @@ export const handlePhenoSummaryTableExport = (data: TableData) => {
   const variants = data.data.map((d) => d.variant);
 
   // make a matrix [phenos][variants] with beta values, or NA if not present
-  const dataExport: Record<string, string>[] = phenosFiltered.map((p) => {
-    const phenoData: Record<string, string> = {
-      phenotype: `${p.resource}:${p.phenocode}:${p.phenostring}`,
-    };
-    variants.forEach((v) => {
-      const beta =
-        data.data.find((d) => d.variant === v)?.assoc.data.find((a) => a.phenocode === p.phenocode)
-          ?.beta || "NA";
-      phenoData[v] = String(beta);
-    });
-    return phenoData;
-  });
+  const dataExport: Record<string, string>[] = phenosFiltered
+    .map((p) => {
+      const phenoData: Record<string, string> = {
+        phenotype: `${p.resource}:${p.phenocode}:${p.phenostring}`,
+      };
+      let nonNACount = 0;
+      variants.forEach((v) => {
+        const beta =
+          data.data
+            .find((d) => d.variant === v)
+            ?.assoc.data.find((a) => a.phenocode === p.phenocode)?.beta || "NA";
+        phenoData[v] = String(beta);
+        if (beta !== "NA") {
+          nonNACount++;
+        }
+      });
+      return { phenoData, nonNACount };
+    })
+    .sort((a, b) => b.nonNACount - a.nonNACount)
+    .map((item) => item.phenoData);
 
   const csvConfig = mkConfig({
     fieldSeparator: "\t",
