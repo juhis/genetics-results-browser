@@ -244,7 +244,12 @@ def results() -> Any | tuple[Any, int]:
             for type in ["exomes", "genomes"]:
                 if type in gnomad["gnomad"] and gnomad["gnomad"][type] is not None:
                     uniq_most_severe.add(gnomad["gnomad"][type]["most_severe"])
-    freq_summary = gnomad_fetch.summarize_freq(data)
+    try:
+        freq_summary = gnomad_fetch.summarize_freq(data)
+    except IndexError as e:
+        app.logger.error(e)
+        freq_summary = []
+
     try:
         # use resource:phenocode as key
         # note that for eQTL Catalogue leafcutter, phenocode is dataset:phenocode

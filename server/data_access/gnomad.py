@@ -1,10 +1,10 @@
+import gzip
+import subprocess
 from typing import Any, Optional, TypedDict
-import pysam
-import threading
 import timeit
 import json
 from collections import OrderedDict as od, defaultdict as dd
-from exceptions import ACZeroException, VariantNotFoundException
+from exceptions import ACZeroException, DataException, VariantNotFoundException
 from singleton import Singleton
 from typing import TypedDict
 from variant import Variant
@@ -28,13 +28,27 @@ class GnomAD(object, metaclass=Singleton):
     def get_gnomad(self, variant: Variant) -> dict[str, Any]:
         start_time: float = timeit.default_timer()
         try:
-            tabix_iter = self.tabix_gnomad[threading.get_ident()].fetch(
-                variant.chr, variant.pos - 1, variant.pos
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["gnomad"]["file"],
+                    f"{variant.chr}:{variant.pos}-{variant.pos}",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
             )
-        except ValueError:
-            raise VariantNotFoundException("chromosome not found")
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        if not result.stdout:
+            raise VariantNotFoundException(f"variant {variant} not found")
+
         gnomad = {"exomes": None, "genomes": None}
-        for row in tabix_iter:
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
             data = row.split("\t")
             if (
                 data[self.gnomad_headers["ref"]] == variant.ref
@@ -99,17 +113,9 @@ class GnomAD(object, metaclass=Singleton):
         }
 
     def _init_tabix(self) -> None:
-        self.tabix_gnomad: dict[int, pysam.TabixFile] = dd(
-            lambda: pysam.TabixFile(self.conf["gnomad"]["file"], parser=None)  # type: ignore
-        )
-        self.gnomad_headers: dict[str, int] = od(
-            {
-                h: i
-                for i, h in enumerate(
-                    self.tabix_gnomad[threading.get_ident()].header[0].split("\t")
-                )
-            }
-        )
+        with gzip.open(self.conf["gnomad"]["file"], "rt") as f:
+            headers = f.readline().strip().split("\t")
+        self.gnomad_headers: dict[str, int] = od({h: i for i, h in enumerate(headers)})
 
     def summarize_freq(self, data: list[Any]) -> list[dict[str, str | int | float]]:
         gn = [d["gnomad"] for d in data]

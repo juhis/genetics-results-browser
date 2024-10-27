@@ -1,8 +1,8 @@
+import gzip
 import math
+import subprocess
 from typing import Any
 import numpy as np
-import pysam
-import threading
 import timeit
 from collections import OrderedDict as od, defaultdict as dd
 
@@ -11,33 +11,22 @@ from datatypes import (
     AssociationResult,
     AssociationResults,
 )
+from exceptions import DataException
 from variant import Variant
 from singleton import Singleton
 
 
 class Datafetch(object, metaclass=Singleton):
     def _init_tabix(self) -> None:
-        self.tabix_assoc: dict[int, pysam.TabixFile] = dd(
-            lambda: pysam.TabixFile(self.conf["assoc"]["file"], parser=None)  # type: ignore
-        )
+        with gzip.open(self.conf["assoc"]["file"], "rt") as f:
+            headers = f.readline().strip().split("\t")
         self.assoc_headers: dict[str, int] = od(
-            {
-                h: idx
-                for idx, h in enumerate(
-                    self.tabix_assoc[threading.get_ident()].header[0].split("\t")
-                )
-            }
+            {h: idx for idx, h in enumerate(headers)}
         )
-        self.ld_tabix_assoc: dict[int, pysam.TabixFile] = dd(
-            lambda: pysam.TabixFile(self.conf["ld_assoc"]["file"], parser=None)  # type: ignore
-        )
+        with gzip.open(self.conf["ld_assoc"]["file"], "rt") as f:
+            headers = f.readline().strip().split("\t")
         self.ld_assoc_headers: dict[str, int] = od(
-            {
-                h: idx
-                for idx, h in enumerate(
-                    self.ld_tabix_assoc[threading.get_ident()].header[0].split("\t")
-                )
-            }
+            {h: idx for idx, h in enumerate(headers)}
         )
 
     def __init__(self, conf: dict[str, Any]) -> None:
@@ -53,10 +42,24 @@ class Datafetch(object, metaclass=Singleton):
         start_time = timeit.default_timer()
         assoc: list[AssociationResult] = []
         resources = set()
-        tabix_iter = self.tabix_assoc[threading.get_ident()].fetch(
-            variant.chr, variant.pos - 1, variant.pos
-        )
-        for row in tabix_iter:
+        try:
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["assoc"]["file"],
+                    f"{variant.chr}:{variant.pos}-{variant.pos}",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
             d = row.split("\t")
             ref = d[self.assoc_headers["ref"]]
             alt = d[self.assoc_headers["alt"]]
@@ -90,9 +93,11 @@ class Datafetch(object, metaclass=Singleton):
                         "resource": resource,
                         "dataset": dataset,
                         "data_type": data_type,
-                        "phenocode": phenocode
-                        if data_type != "sQTL"
-                        else dataset + ":" + phenocode,
+                        "phenocode": (
+                            phenocode
+                            if data_type != "sQTL"
+                            else dataset + ":" + phenocode
+                        ),
                         "mlogp": mlogp,
                         "beta": beta,
                         "sebeta": sebeta,
@@ -128,25 +133,39 @@ class Datafetch(object, metaclass=Singleton):
         start_time = timeit.default_timer()
         assoc: list[AssociationResult] = []
         resources = set()
-        tabix_iter = self.ld_tabix_assoc[threading.get_ident()].fetch(
-            variant.chr, variant.pos - 1, variant.pos
-        )
-        for row in tabix_iter:
+        try:
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["ld_assoc"]["file"],
+                    f"{variant.chr}:{variant.pos}-{variant.pos}",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
             d = row.split("\t")
             ref = d[self.ld_assoc_headers["tag_ref"]]
             alt = d[self.ld_assoc_headers["tag_alt"]]
             lead_pos = int(d[self.ld_assoc_headers["lead_pos"]])
             lead_ref = d[self.ld_assoc_headers["lead_ref"]]
             lead_alt = d[self.ld_assoc_headers["lead_alt"]]
-            resource = "Open_Targets" # TODO include in data file
+            resource = "Open_Targets"  # TODO include in data file
             if (
                 ref == variant.ref
                 and alt == variant.alt
                 and resource
                 in self.assoc_resource_ids  # skip results for resources not in the config
             ):
-                dataset = "Open_Targets_22.09" # TODO include in data file
-                data_type = "GWAS" # TODO include in data file
+                dataset = "Open_Targets_22.09"  # TODO include in data file
+                data_type = "GWAS"  # TODO include in data file
                 phenocode = d[self.ld_assoc_headers["#study_id"]]
                 beta_str = d[self.ld_assoc_headers["beta"]]
                 odds_ratio_str = d[self.ld_assoc_headers["odds_ratio"]]
@@ -159,14 +178,18 @@ class Datafetch(object, metaclass=Singleton):
                         beta = float(beta_str)
                     elif odds_ratio_str != "None":
                         beta = math.log(float(odds_ratio_str))
-                    else: # there are missing effect sizes in the data
+                    else:  # there are missing effect sizes in the data
                         beta = 0
                 except ValueError:
-                    print(f"Could not parse beta or odds ratio: {beta_str} {odds_ratio_str}")
+                    print(
+                        f"Could not parse beta or odds ratio: {beta_str} {odds_ratio_str}"
+                    )
                     beta = 0
                 mlogp = -math.log10(float(d[self.ld_assoc_headers["pval"]]))
                 if mlogp == np.inf:
-                    mlogp = -math.log10(5e-324) # this is the smallest number in the ot file
+                    mlogp = -math.log10(
+                        5e-324
+                    )  # this is the smallest number in the ot file
                 result = {
                     "ld": True,
                     "resource": resource,
@@ -178,9 +201,11 @@ class Datafetch(object, metaclass=Singleton):
                     "sebeta": -1,
                     "overall_r2": overall_r2,
                 }
-                if (lead_pos == variant.pos
-                and lead_ref == variant.ref
-                and lead_alt == variant.alt):
+                if (
+                    lead_pos == variant.pos
+                    and lead_ref == variant.ref
+                    and lead_alt == variant.alt
+                ):
                     result["lead"] = True
                 else:
                     result["lead"] = False
