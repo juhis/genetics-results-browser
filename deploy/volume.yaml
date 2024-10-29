@@ -11,7 +11,7 @@ spec:
   storageClassName: premium-rox
   gcePersistentDisk:
     fsType: ext4
-    pdName: genetics-results-20240121
+    pdName: genetics-results-20241027
   mountOptions:
     - noatime
     - nodiratime
