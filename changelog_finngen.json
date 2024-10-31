@@ -2,6 +2,21 @@
   "content": [
     {
       "type": "span",
+      "text": "Oct 31st 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Fix: Open Target LD variants were counted in phenotype summary table, not anymore"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Oct 27th 2024:",
       "children": [
         {
