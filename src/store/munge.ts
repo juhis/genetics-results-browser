@@ -432,7 +432,7 @@ export const summarizePhenotypes = (data: TableData): PhenoSummaryTableData => {
       a.beta_input = d.beta;
     });
   });
-  const assocs: AssocRecord[] = data.data.flatMap((d) => d.assoc.data);
+  const assocs: AssocRecord[] = data.data.flatMap((d) => d.assoc.data).filter((a) => !a.ld); // filter out ld variants
   // TODO keys of phenoCounts not used
   const phenoCounts = assocs.reduce((p, c) => {
     const id = c.resource + ":" + c.dataset + ":" + c.phenocode;
@@ -460,6 +460,7 @@ export const summarizePhenotypes = (data: TableData): PhenoSummaryTableData => {
       opposite: d[1].opposite as number,
     }))
     .filter((d) => !d.pheno.is_na);
+  console.log(summaryTableData);
   console.info(`${(performance.now() - startTime) / 1000} seconds to summarize over phenotypes`);
   return summaryTableData;
 };
