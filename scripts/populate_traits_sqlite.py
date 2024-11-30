@@ -411,34 +411,34 @@ def populate_traits(args):
     for resource in args.resources.split(","):
         print(resource)
         c.execute(DELETE_TEMPLATE, (resource,))
-        if resource == "eQTL_Catalogue_R6":
+        if resource == "eQTL_Catalogue_R7":
             for file in [
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/Affy_Human_Gene_1_0_ST_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/Affy_Human_Gene_1_0_ST_Ensembl_96_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/HumanHT-12_V4_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/HumanHT-12_V4_Ensembl_96_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/SomaLogic_Ensembl_96_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/SomaLogic_Ensembl_96_phenotype_metadata.tsv.gz",
                     "pQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/exon_counts_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/exon_counts_Ensembl_105_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/gene_counts_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/gene_counts_Ensembl_105_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/transcript_usage_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/transcript_usage_Ensembl_105_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
                 (
-                    "/mnt/disks/data/eqtl_catalogue_r6/metadata/txrevise_Ensembl_105_phenotype_metadata.tsv.gz",
+                    "/mnt/disks/data/eqtl_catalogue_r7/metadata/txrevise_Ensembl_105_phenotype_metadata.tsv.gz",
                     "eQTL",
                 ),
             ]:
@@ -448,14 +448,14 @@ def populate_traits(args):
                 )
             print("eQTL Catalogue - Leafcutter")
             for line in open(
-                "/mnt/disks/data/eqtl_catalogue_r6/leafcutter_studies", "rt"
+                "/mnt/disks/data/eqtl_catalogue_r7/leafcutter_studies", "rt"
             ).readlines():
                 c.executemany(
                     INSERT_TEMPLATE,
                     generate_entries_eqtl_cat_with_dataset(
                         resource,
                         line.strip(),
-                        "/mnt/disks/data/eqtl_catalogue_r6/metadata/leafcutter_[STUDY]_Ensembl_105_phenotype_metadata.tsv.gz",
+                        "/mnt/disks/data/eqtl_catalogue_r7/metadata/leafcutter_[STUDY]_Ensembl_105_phenotype_metadata.tsv.gz",
                         "sQTL",
                     ),
                 )

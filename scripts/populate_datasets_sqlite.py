@@ -74,8 +74,8 @@ def populate_datasets(args):
     c.executemany(
         INSERT_TEMPLATE,
         generate_entries_eqtl_cat(
-            "eQTL_Catalogue_R6",
-            "/mnt/disks/data/eqtl_catalogue_r6/dataset_metadata.tsv",
+            "eQTL_Catalogue_R7",
+            "/mnt/disks/data/eqtl_catalogue_r7/dataset_metadata.tsv",
         ),
     )
     conn.commit()
