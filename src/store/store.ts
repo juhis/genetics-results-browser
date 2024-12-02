@@ -62,6 +62,7 @@ export const useDataStore = create<DataState>()(
       pQTL: true,
       sQTL: true,
       edQTL: true,
+      metaboQTL: true,
     },
     toggledDataTypes: {
       GWAS: true,
@@ -69,6 +70,7 @@ export const useDataStore = create<DataState>()(
       pQTL: false,
       sQTL: false,
       edQTL: false,
+      metaboQTL: false,
     },
     toggleDataType: (dataType: string) => {
       set((state) => {

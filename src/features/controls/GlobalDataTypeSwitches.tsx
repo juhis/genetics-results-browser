@@ -17,6 +17,7 @@ const GlobalDataTypeSwitches = (props: { isNotReadyYet: boolean }) => {
   useHotkeys("p", () => toggleDataType(DataType.PQTL));
   useHotkeys("s", () => toggleDataType(DataType.SQTL));
   useHotkeys("d", () => toggleDataType(DataType.EDQTL));
+  useHotkeys("m", () => toggleDataType(DataType.METABOQTL));
 
   useHotkeys("b", () => toggleGWASType("case-control"));
   useHotkeys("q", () => toggleGWASType("continuous"));

@@ -245,6 +245,7 @@ export enum DataType {
   PQTL = "pQTL",
   SQTL = "sQTL",
   EDQTL = "edQTL",
+  METABOQTL = "metaboQTL",
   NA = "NA",
 }
 

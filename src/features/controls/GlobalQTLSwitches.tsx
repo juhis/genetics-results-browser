@@ -42,7 +42,8 @@ const GlobalQTLSwitches = (props: { isNotReadyYet: boolean }) => {
                   (!toggledDataTypes["eQTL"] &&
                     !toggledDataTypes["sQTL"] &&
                     !toggledDataTypes["edQTL"] &&
-                    !toggledDataTypes["pQTL"])
+                    !toggledDataTypes["pQTL"] &&
+                    !toggledDataTypes["metaboQTL"])
                 }
                 onChange={() => {
                   toggleQTLType(QTLType);
