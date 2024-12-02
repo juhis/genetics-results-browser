@@ -337,7 +337,7 @@ const InputForm = () => {
             sx={{ marginBottom: "10px", width: "260px" }}
             id="filled-multiline-flexible"
             name="variantInput"
-            label="Paste GRCh38 variant ids or rsids"
+            label="Paste GRCh38 variant ids or rsids, or enter a gene"
             value={formValues.variantInput}
             multiline
             rows={10}
