@@ -12,7 +12,7 @@ import argparse
 CREATE_STMT = """
 CREATE TABLE IF NOT EXISTS trait (
     resource TEXT NOT NULL,
-    data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL','edQTL') ),
+    data_type TEXT NOT NULL CHECK( data_type IN ('GWAS','eQTL','pQTL','sQTL','edQTL','metaboQTL') ),
     trait_type TEXT NOT NULL CHECK( trait_type IN ('continuous','case-control')),
     phenocode TEXT NOT NULL,
     phenostring TEXT NOT NULL,
@@ -237,6 +237,31 @@ def generate_entries_finngen_ukbb_meta(resource, filename, date):
         )
 
 
+def generate_entries_finngen_mvp_ukbb_meta(resource, filename, date):
+    with open(filename, "r") as f:
+        phenos = json.load(f)
+    for p in phenos:
+        yield (
+            (
+                resource,
+                "GWAS",
+                "continuous" if p["fg_n_controls"] == 0 else "case-control",
+                p["phenocode"],
+                p["phenostring"],
+                p["category"],
+                None,
+                None,
+                None,
+                None,
+                p["num_cases"] + p["num_controls"],
+                p["num_cases"],
+                p["num_controls"],
+                "FinnGen",
+                date,
+            )
+        )
+
+
 def generate_entries_soma(resource, source_name, filename, n_samples, date):
     with open(filename, "r") as f:
         h = {h: i for i, h in enumerate(f.readline().strip().split("\t"))}
@@ -393,6 +418,32 @@ def generate_entries_edqtl(resource, filename, date):
             )
 
 
+# gsutil cat red/nmr/Variable_description_*.csv | grep -v DATATYPE_FORMAT_ID | cut -d';' -f2-4 | tr ';' '\t' | sort -u > nmr_phenos.tsv
+def generate_entries_nmr(resource, filename, num_samples, date):
+    with open(filename, "r") as f:
+        for line in f:
+            p = line.strip().split("\t")
+            yield (
+                (
+                    resource,
+                    "metaboQTL",
+                    "continuous",
+                    p[0],
+                    p[2].capitalize(),
+                    "Nuclear Magnetic Resonance",
+                    None,
+                    None,
+                    None,
+                    None,
+                    num_samples,
+                    None,
+                    None,
+                    "FinnGen",
+                    date,
+                )
+            )
+
+
 def populate_traits(args):
     start_time = timeit.default_timer()
     conn = sqlite3.connect(args.db_name)
@@ -489,8 +540,8 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_finngen(
                     resource,
-                    "/mnt/disks/data/R10_pheno.json",
-                    "2023-12-08",
+                    "/mnt/disks/data/R12_pheno.json",
+                    "2023-10-25",
                 ),
             )
             n_datasets += 1
@@ -502,6 +553,17 @@ def populate_traits(args):
                     resource,
                     "/mnt/disks/data/fg-ukb-meta-2022-11-pheno-list.json",
                     "2023-12-08",
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "FinnGen_MVP_UKBB_meta":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_finngen_mvp_ukbb_meta(
+                    resource,
+                    "/mnt/disks/data/fg-mvp-ukb-meta-2024-11-pheno-list.json",
+                    "2024-11-09",
                 ),
             )
             n_datasets += 1
@@ -569,6 +631,15 @@ def populate_traits(args):
                 INSERT_TEMPLATE,
                 generate_entries_edqtl(
                     resource, "/mnt/disks/data/GTEx_v8_edQTL.traits", "2022-08-03"
+                ),
+            )
+            n_datasets += 1
+
+        if resource == "NMR":
+            c.executemany(
+                INSERT_TEMPLATE,
+                generate_entries_nmr(
+                    resource, "/mnt/disks/data/nmr_phenos.tsv", 28844, "2024-10-28"
                 ),
             )
             n_datasets += 1
