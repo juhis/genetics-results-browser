@@ -30,6 +30,78 @@ class Finemapped(object, metaclass=Singleton):
             [resource["resource"] for resource in self.conf["finemapped"]["resources"]]
         )
 
+    def get_finemapped_range(self, tabix_range: str) -> FineMappedResults:
+        start_time = timeit.default_timer()
+        finemapped = dd(lambda: {"data": [], "resources": set()})
+        try:
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["finemapped"]["file"],
+                    tabix_range,
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
+            data = row.split("\t")
+            resource = data[self.headers["#resource"]]
+            if (
+                # skip results for resources not in the config
+                resource
+                in self.finemapped_resources
+            ):
+                data_type = data[self.headers["data_type"]]
+                dataset = data[self.headers["dataset"]]
+                phenocode = data[self.headers["trait"]]
+                result: FineMappedResult = {
+                    "resource": resource,
+                    "dataset": dataset,
+                    "data_type": data_type,
+                    "phenocode": (
+                        phenocode if data_type != "sQTL" else dataset + ":" + phenocode
+                    ),
+                    "mlog10p": float(data[self.headers["mlog10p"]]),
+                    "beta": float(data[self.headers["beta"]]),
+                    "se": float(data[self.headers["se"]]),
+                    "pip": float(data[self.headers["pip"]]),
+                    "cs_size": int(data[self.headers["cs_size"]]),
+                    "cs_min_r2": float(data[self.headers["cs_min_r2"]]),
+                }
+                variant = Variant(
+                    f"{data[self.headers['chr']]}-{data[self.headers['pos']]}-{data[self.headers['ref']]}-{data[self.headers['alt']]}"
+                )
+                finemapped[str(variant)]["data"] = finemapped[str(variant)]["data"] + [
+                    result
+                ]
+                finemapped[str(variant)]["resources"].add(resource)
+
+        for variant in finemapped:
+            finemapped[variant]["data"] = sorted(
+                finemapped[variant]["data"], key=lambda x: -float(x["pip"])
+            )
+            # keep order of resources from the config
+            # TODO why not doing the same in assoc?
+            finemapped[str(variant)]["resources"] = [
+                resource["resource"]
+                for resource in self.conf["finemapped"]["resources"]
+                if resource["resource"] in finemapped[str(variant)]["resources"]
+            ]
+        end_time = timeit.default_timer() - start_time
+        return {
+            "finemapped": {
+                "data": finemapped,
+            },
+            "time": end_time,
+        }
+
     def get_finemapped(self, variant: Variant) -> FineMappedResults:
         start_time = timeit.default_timer()
         finemapped: list[FineMappedResult] = []

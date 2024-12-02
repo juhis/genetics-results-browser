@@ -25,6 +25,92 @@ class GnomAD(object, metaclass=Singleton):
         self.conf = conf
         self._init_tabix()
 
+    def get_gnomad_range(self, tabix_range: str, gene: str | None) -> dict[str, Any]:
+        start_time: float = timeit.default_timer()
+        try:
+            result = subprocess.run(
+                [
+                    "tabix",
+                    self.conf["gnomad"]["file"],
+                    tabix_range,
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        if not result.stdout:
+            raise VariantNotFoundException(f"No variants found")
+
+        gnomad_results = dd(lambda: {"exomes": None, "genomes": None})
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
+            data = row.split("\t")
+            # if (
+            #     data[self.gnomad_headers["AF"]] == "NA"
+            #     or float(data[self.gnomad_headers["AF"]]) > 1e-4
+            # ) and (
+            #     gene is None
+            #     or data[self.gnomad_headers["gene_most_severe"]] == gene.upper()
+            # ):
+            if (
+                gene is None
+                or data[self.gnomad_headers["gene_most_severe"]].upper() == gene.upper()
+            ):
+                data = self._get_gnomad_fields(data)
+                variant = str(
+                    Variant(f'{data["#chr"]}:{data["pos"]}:{data["ref"]}:{data["alt"]}')
+                )
+                if data["genome_or_exome"] == "e":
+                    gnomad_results[variant]["exomes"] = data
+                elif data["genome_or_exome"] == "g":
+                    gnomad_results[variant]["genomes"] = data
+
+        uniq_variants = list(gnomad_results.keys())
+        if len(uniq_variants) == 0:
+            raise VariantNotFoundException(f"No variants found")
+
+        # calculate min and max AFs over populations
+        for v in gnomad_results:
+            for ge in ["exomes", "genomes"]:
+                d = gnomad_results[v][ge]
+                if d is not None:
+                    popmax_pop = "NA"
+                    popmax_af = 0
+                    popmin_pop = "NA"
+                    popmin_af = 1
+                    for k in d.keys():
+                        if k.startswith("AF_") and d[k] is not None:
+                            if d[k] > popmax_af:
+                                popmax_af = d[k]
+                                popmax_pop = k.replace("AF_", "")
+                            if d[k] < popmin_af:
+                                popmin_af = d[k]
+                                popmin_pop = k.replace("AF_", "")
+                    d["popmax"] = {"pop": popmax_pop, "af": popmax_af}
+                    d["popmin"] = {"pop": popmin_pop, "af": popmin_af}
+            # prefer exomes over genomes only if AN in exomes is higher than AN in genomes
+            gnomad_results[v]["preferred"] = "genomes"
+            if gnomad_results[v]["genomes"] is None or (
+                gnomad_results[v]["exomes"] is not None
+                and gnomad_results[v]["exomes"]["AN"]
+                > gnomad_results[v]["genomes"]["AN"]
+            ):
+                gnomad_results[v]["preferred"] = "exomes"
+
+        end_time: float = timeit.default_timer() - start_time
+
+        return {
+            "range": tabix_range,
+            "gene": gene,
+            "gnomad": gnomad_results,
+            "time": end_time,
+        }
+
     def get_gnomad(self, variant: Variant) -> dict[str, Any]:
         start_time: float = timeit.default_timer()
         try:
@@ -145,11 +231,11 @@ class GnomAD(object, metaclass=Singleton):
             )
             min_freqs[min_freq[0]] = min_freqs.get(min_freq[0], 0) + 1
 
-        all_pops = [
-            k.split("_")[1]
-            for k in data[0]["gnomad"]["genomes"].keys()
-            if k.startswith("AF_")
-        ]
+        try:
+            keys = data[0]["gnomad"]["genomes"].keys()
+        except AttributeError:
+            keys = data[0]["gnomad"]["exomes"].keys()
+        all_pops = [k.split("_")[1] for k in keys if k.startswith("AF_")]
         all_pops_freqs = [
             {
                 "pop": pop,

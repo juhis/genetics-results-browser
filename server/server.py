@@ -22,6 +22,7 @@ import werkzeug
 from exceptions import (
     ACZeroException,
     DataException,
+    GeneNotFoundException,
     ParseException,
     VariantNotFoundException,
 )
@@ -67,13 +68,44 @@ meta = Metadata(config)
 gnomad_fetch = GnomAD(config)
 rsid_db = RsidDB(config)
 
+GENEUPPER2RANGE = {}
+with open(config["gene_chr_pos"], "r") as f:
+    for line in f:
+        s = line.strip().split("\t")
+        GENEUPPER2RANGE[s[0].upper()] = (s[1], int(s[2]), int(s[3]))
+
+
+def get_gene_range(gene: str) -> tuple[str, int, int]:
+    if gene.upper() not in GENEUPPER2RANGE:
+        raise GeneNotFoundException(f"Gene {gene} not found")
+    return GENEUPPER2RANGE[gene.upper()]
+
+
+coding_set = set(
+    [
+        "missense",
+        "frameshift",
+        "inframe insertion",
+        "inframe deletion",
+        "transcript ablation",
+        "stop gained",
+        "stop lost",
+        "start lost",
+        "splice acceptor",
+        "splice donor",
+        "incomplete terminal codon",
+        "protein altering",
+        "coding sequence",
+    ]
+)
+
 
 def parse_query(
     query: str,
 ) -> tuple[Literal["single", "group"], list[tuple[str, float, str | None]]]:
     items = sep_re_line.split(query)
     len_first = len(sep_re_delim.split(items[0]))
-    if len_first > 1:
+    if len_first > 1:  # input has betas and possibly groups attached
         input = []
         try:
             for line in items:
@@ -154,10 +186,25 @@ def get_config() -> Any:
     )
 
 
+def looks_like_a_gene(query: str) -> bool:
+    items = [item for item in sep_re_line.split(query) if item.strip() != ""]
+    if len(items) != 1:
+        return False
+    try:
+        _ = Variant(items[0])
+    except ParseException:
+        return True
+    return False
+
+
 @app.route("/api/v1/results", methods=["POST"])
 def results() -> Any | tuple[Any, int]:
     start_time = timeit.default_timer()
-    query = request.json["variants"].strip()
+    query = request.json[
+        "variants"
+    ].strip()  # TODO this shouldn't be called "variants" now that it may be a gene too
+    if looks_like_a_gene(query):
+        return gene_results(query)
     try:
         parsed = parse_query(query)
     except ParseException as e:
@@ -284,6 +331,130 @@ def results() -> Any | tuple[Any, int]:
                 "unparsed": sorted(list(unparsed_variants)),
                 "rsid_map": rsid_map,
             },
+            "meta": {
+                "gnomad": config["gnomad"],
+                "assoc": config["assoc"],
+                "finemapped": config["finemapped"],
+            },
+            "time": time,
+        }
+    )
+
+
+# @app.route("/api/v1/gene_results/<gene>", methods=["GET"])
+def gene_results(gene: str) -> Any | tuple[Any, int]:
+    start_time = timeit.default_timer()
+    try:
+        tabix_range = get_gene_range(gene)
+    except GeneNotFoundException as e:
+        return jsonify({"message": str(e)}), 404
+    tabix_range_str = f"{tabix_range[0]}:{tabix_range[1]}-{tabix_range[2]}"
+    time: ResponseTime = {"gnomad": 0, "finemapped": 0, "assoc": 0, "total": 0}
+    uniq_most_severe: set[str] = set()
+    uniq_phenos: set[tuple[str, str, str, str]] = set()
+    uniq_datasets: set[str] = set()
+    data = []
+    try:
+        gnomad = gnomad_fetch.get_gnomad_range(tabix_range_str, gene)
+    except VariantNotFoundException as e:
+        return jsonify({"message": f"No variants found for gene {gene}"}), 404
+    try:  # TODO only parse variants that are in the gnomad result set for speedup
+        finemapped = fetch_finemapped.get_finemapped_range(tabix_range_str)
+        assoc = fetch.get_assoc_range(tabix_range_str)
+    except DataException as e:
+        return jsonify({"message": str(e)}), 500
+    for variant in gnomad["gnomad"]:
+        if gnomad["gnomad"][variant]["exomes"] is not None:
+            csq = gnomad["gnomad"][variant]["exomes"]["consequences"]
+            for c in csq:
+                if (
+                    (
+                        "gene_symbol" not in c
+                        or c["gene_symbol"] is None
+                        or c["gene_symbol"].upper() == gene.upper()
+                    )
+                    and c["consequence"] in coding_set
+                    and (
+                        variant in finemapped["finemapped"]["data"]
+                        or variant in assoc["assoc"]["data"]
+                    )
+                ):
+                    data.append(
+                        {
+                            "variant": variant,
+                            "gnomad": gnomad["gnomad"][variant],
+                            "finemapped": (
+                                finemapped["finemapped"]["data"][variant]
+                                if variant in finemapped["finemapped"]["data"]
+                                else {"data": [], "resources": []}
+                            ),
+                            "assoc": (
+                                assoc["assoc"]["data"][variant]
+                                if variant in assoc["assoc"]["data"]
+                                else {"data": [], "resources": []}
+                            ),
+                        }
+                    )
+                    uniq_phenos.update(
+                        [
+                            (
+                                a["data_type"],
+                                a["resource"],
+                                a["dataset"],
+                                a["phenocode"],
+                            )
+                            for a in assoc["assoc"]["data"][variant]["data"]
+                            + finemapped["finemapped"]["data"][variant]["data"]
+                        ]
+                    )
+                    uniq_datasets.update(
+                        a["dataset"]
+                        for a in assoc["assoc"]["data"][variant]["data"]
+                        + finemapped["finemapped"]["data"][variant]["data"]
+                    )
+                    for type in ["exomes", "genomes"]:
+                        if (
+                            type in gnomad["gnomad"]
+                            and gnomad["gnomad"][type] is not None
+                        ):
+                            uniq_most_severe.add(gnomad["gnomad"][type]["most_severe"])
+                    break
+    try:
+        freq_summary = gnomad_fetch.summarize_freq(data)
+    except IndexError as e:
+        app.logger.error(e)
+        freq_summary = []
+    time["gnomad"] += gnomad["time"]
+    time["finemapped"] += finemapped["time"]
+    time["assoc"] += assoc["time"]
+
+    try:
+        # use resource:phenocode as key
+        # note that for eQTL Catalogue leafcutter, phenocode is dataset:phenocode
+        phenos = {
+            pheno[1]
+            + ":"
+            + pheno[3]: meta.get_phenotype(pheno[0], pheno[1], pheno[2], pheno[3])
+            for pheno in uniq_phenos
+        }
+    except DataException as e:
+        app.logger.error(e)
+        return jsonify({"message": str(e)}), 500
+    datasets = {
+        ds["dataset_id"]: ds
+        for ds in [meta.get_dataset(dataset) for dataset in uniq_datasets]
+        if ds is not None
+    }
+    time["total"] = timeit.default_timer() - start_time
+    return jsonify(
+        {
+            "data": data,
+            "most_severe": sorted(list(uniq_most_severe)),
+            "phenos": phenos,
+            "datasets": datasets,
+            "freq_summary": freq_summary,
+            "has_betas": False,
+            "has_custom_values": False,
             "meta": {
                 "gnomad": config["gnomad"],
                 "assoc": config["assoc"],

@@ -14,6 +14,10 @@ class VariantNotFoundException(NotFoundException):
     pass
 
 
+class GeneNotFoundException(NotFoundException):
+    pass
+
+
 class PhenoNotFoundException(NotFoundException):
     pass
 

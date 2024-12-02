@@ -38,6 +38,92 @@ class Datafetch(object, metaclass=Singleton):
         # NA resource placeholder
         self.assoc_resource_ids.add("NA")
 
+    def get_assoc_range(self, tabix_range: str) -> AssociationResults:
+        start_time = timeit.default_timer()
+        assoc = dd(lambda: {"data": [], "resources": set()})
+        try:
+            result = subprocess.run(
+                ["tabix", self.conf["assoc"]["file"], tabix_range],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise DataException from e
+        if result.stderr:
+            raise DataException(result.stderr)
+        for row in result.stdout.strip().split("\n"):
+            if row == "":
+                continue
+            data = row.split("\t")
+            resource = data[self.assoc_headers["#resource"]]
+            if (
+                resource
+                in self.assoc_resource_ids  # skip results for resources not in the config
+                and data[self.assoc_headers["beta"]]
+                != "NA"  # TODO check when munging data in that there is no NA or allow and report it
+                and f"{data[self.assoc_headers['dataset']]}:{data[self.assoc_headers['trait']]}"
+                not in self.conf["ignore_phenos"]["assoc"]
+            ):
+                dataset = data[self.assoc_headers["dataset"]]
+                data_type = data[self.assoc_headers["data_type"]]
+                phenocode = data[self.assoc_headers["trait"]]
+                beta = float(data[self.assoc_headers["beta"]])
+                sebeta = float(data[self.assoc_headers["se"]])
+                mlogp = float(data[self.assoc_headers["mlog10p"]])
+                # if mlog10p is missing, calculate it from beta and se
+                # this is off when t distribution was used for the original
+                # but we don't currently have sample size available here to use t distribution
+                # this will be a lot off if there would be case/control studies
+                # TODO prepare the data up front so that mlog10p is always available
+                if mlogp == np.inf:
+                    mlogp = -sp.stats.norm.logsf(abs(beta) / sebeta) / math.log(
+                        10
+                    ) - math.log10(2)
+                result = {
+                    "ld": False,
+                    "resource": resource,
+                    "dataset": dataset,
+                    "data_type": data_type,
+                    "phenocode": (
+                        phenocode if data_type != "sQTL" else dataset + ":" + phenocode
+                    ),
+                    "mlogp": mlogp,
+                    "beta": beta,
+                    "sebeta": sebeta,
+                }
+                variant = Variant(
+                    f"{data[self.assoc_headers['chr']]}-{data[self.assoc_headers['pos']]}-{data[self.assoc_headers['ref']]}-{data[self.assoc_headers['alt']]}"
+                )
+                assoc[str(variant)]["data"] = assoc[str(variant)]["data"] + [result]
+                assoc[str(variant)]["resources"].add(resource)
+        # return also placeholders so that the frontend can show something when data are filtered
+        for variant in assoc:
+            for resource in self.assoc_resource_ids:
+                placeholder: AssociationResult = {
+                    "resource": resource,
+                    "dataset": "NA",
+                    "data_type": "NA",
+                    "phenocode": "NA",
+                    # the NA resource will be before the others in sorted order
+                    # feels hacky but is useful for the frontend
+                    "mlogp": 0 if resource == "NA" else -1,
+                    "beta": 0,
+                    "sebeta": 0,
+                }
+                assoc[variant]["data"].append(placeholder)
+            assoc[variant]["data"] = sorted(
+                assoc[variant]["data"], key=lambda x: -float(x["mlogp"])
+            )
+            assoc[variant]["resources"] = sorted(list(assoc[variant]["resources"]))
+        end_time = timeit.default_timer() - start_time
+        return {
+            "assoc": {
+                "data": assoc,
+            },
+            "time": end_time,
+        }
+
     def get_assoc(self, variant: Variant) -> AssociationResults:
         start_time = timeit.default_timer()
         assoc: list[AssociationResult] = []
@@ -71,6 +157,8 @@ class Datafetch(object, metaclass=Singleton):
                 in self.assoc_resource_ids  # skip results for resources not in the config
                 and d[self.assoc_headers["beta"]]
                 != "NA"  # TODO check when munging data in that there is no NA or allow and report it
+                and f"{d[self.assoc_headers['dataset']]}:{d[self.assoc_headers['trait']]}"
+                not in self.conf["ignore_phenos"]["assoc"]
             ):
                 dataset = d[self.assoc_headers["dataset"]]
                 data_type = d[self.assoc_headers["data_type"]]
