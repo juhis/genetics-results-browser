@@ -86,7 +86,7 @@ const groupAssocPhenos = (d: AssocRecord[], phenos: PhenoMap) => {
             }
           });
         }
-        p[key].count = p[key].ld.length;
+        p[key].count = new Set(p[key].phenocode).size;
       });
       return p;
     }, {} as Record<string, GroupedAssocRecord>)
@@ -422,6 +422,7 @@ export const filterRows = (
     }
     d.finemapped.data = d.finemapped.data.filter((a) => a.pip >= pip);
     d.assoc.groupedData = groupAssocPhenos(d.assoc.data, data.phenos);
+    console.log(d.assoc.groupedData);
     d.assoc.counts = countAssocPhenos(d.assoc.groupedData, data.meta.assoc.resources);
     d.finemapped.groupedData = groupFineMappedTraits(d.finemapped.data);
     d.finemapped.counts = countFineMappedTraits(
