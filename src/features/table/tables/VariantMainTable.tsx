@@ -1,11 +1,10 @@
 import { Box, Divider, useTheme } from "@mui/material";
-import { MaterialReactTable } from "material-react-table";
-
+import { MaterialReactTable, MRT_SortingState } from "material-react-table";
 import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
 import VariantFinemappedTable from "./VariantFinemappedTable";
 import { Phenotype, TableData, VariantRecord } from "../../../types/types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getVariantMainTableColumns } from "./VariantMainTable.columns";
 import ExportButtons from "../ExportToolbar";
 import { useDataStore } from "../../../store/store";
@@ -40,6 +39,15 @@ const VariantMainTable = (props: {
 
   const { error, isError, isFetching, isLoading } = useServerQuery(variantInput);
 
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  useEffect(() => {
+    if (clientData?.query_type === "gene") {
+      setSorting([{ id: "assoc.groupedData.0.mlogp.0", desc: true }]);
+    } else {
+      setSorting([]);
+    }
+  }, [clientData?.query_type]);
+
   const columns = getVariantMainTableColumns(
     clientData!,
     cisWindow,
@@ -69,7 +77,7 @@ const VariantMainTable = (props: {
 
   return (
     <MaterialReactTable
-      data={tableData ?? []}
+      data={tableData}
       columns={columns}
       enableTopToolbar={props.enableTopToolbar}
       renderTopToolbarCustomActions={({ table }) =>
@@ -84,6 +92,10 @@ const VariantMainTable = (props: {
         density: "compact",
         columnOrder: ["mrt-row-expand"].concat(columns.map((c) => c.id!)),
         columnVisibility: { af_hidden: false },
+        // sorting:
+        //   clientData?.query_type === "gene"
+        //     ? [{ id: "assoc.groupedData.0.mlogp.0", desc: true }]
+        //     : [],
       }}
       state={{
         isLoading: isLoading,
@@ -91,7 +103,9 @@ const VariantMainTable = (props: {
         showProgressBars: isFetching,
         pagination,
         columnOrder: ["mrt-row-expand"].concat(columns.map((c) => c.id!)),
+        sorting: sorting,
       }}
+      onSortingChange={setSorting}
       onPaginationChange={setPagination}
       onColumnOrderChange={(newOrder) => {
         console.log(newOrder);
