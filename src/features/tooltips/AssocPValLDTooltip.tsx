@@ -1,5 +1,4 @@
 import { AssocResource, GroupedAssocRecord, Phenotype } from "../../types/types";
-import { variantSort } from "../table/utils/sorting";
 import { pValRepr } from "../table/utils/tableutil";
 import { HtmlTooltip } from "./HtmlTooltip";
 
@@ -16,9 +15,21 @@ export const AssocPValLDTooltip = (props: {
   }
   let title;
   if (n_ld_vars === 1) {
-    title = <div>This result is for a variant in LD with your input variant.</div>;
+    title = (
+      <div>
+        This result is for a variant in LD with your input variant,
+        <br />
+        or for a variant in the region when LD is not available.
+      </div>
+    );
   } else {
-    title = <div>These results are for variants in LD with your input variant.</div>;
+    title = (
+      <div>
+        These results are for variants in LD with your input variant,
+        <br />
+        or for variants in the region when LD is not available.
+      </div>
+    );
   }
   const tables = props.row.ld.map((_, idx) => (
     <table key={idx} style={{ marginTop: "10px" }}>
