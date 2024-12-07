@@ -336,6 +336,7 @@ def results() -> Any | tuple[Any, int]:
                 "assoc": config["assoc"],
                 "finemapped": config["finemapped"],
             },
+            "query_type": "variant",
             "time": time,
         }
     )
@@ -460,6 +461,7 @@ def gene_results(gene: str) -> Any | tuple[Any, int]:
                 "assoc": config["assoc"],
                 "finemapped": config["finemapped"],
             },
+            "query_type": "gene",
             "time": time,
         }
     )

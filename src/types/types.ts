@@ -56,6 +56,7 @@ export type TableData = {
   input_variants: InputVariants;
   meta: ApiResponseMeta;
   freq_summary: Array<PopFreqSummary>;
+  query_type: "variant" | "gene";
 };
 
 export type PopFreqSummary = {

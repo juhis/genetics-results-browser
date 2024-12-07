@@ -7,9 +7,20 @@ const QueryVariantInfo = (props: {}) => {
   const variantInput: string = useDataStore((state) => state.variantInput)!;
   const message: string | undefined = useDataStore((state) => state.message);
   const { error, isError, isFetching, isLoading } = useServerQuery(variantInput);
+  const nVariants = useDataStore((state) => state.clientData?.data.length);
   const input = useDataStore((state) => state.clientData?.input_variants);
+  const queryType = useDataStore((state) => state.clientData?.query_type);
   const gnomadVersion = useDataStore((state) => state.serverData?.meta.gnomad.version);
 
+  if (queryType === "gene") {
+    return isLoading || isFetching || isError ? (
+      <></>
+    ) : (
+      <Typography variant="h6" gutterBottom>
+        Found {nVariants} coding variants with gnomAD gene_most_severe {variantInput}
+      </Typography>
+    );
+  }
   if (!input || isLoading || isFetching || isError) {
     return <></>;
   }
@@ -29,7 +40,7 @@ const QueryVariantInfo = (props: {}) => {
             ? input.found.length == 2
               ? "Both "
               : `All ${input.found.length} `
-            : ""}
+            : input.found.length}{" "}
           variants found
         </Typography>
       );
