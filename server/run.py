@@ -14,7 +14,7 @@ from server import app
 def run_gunicorn(app: Any, args: Any) -> None:
     print("Running gunicorn")
 
-    class StandaloneGunicornApplication(gunicorn.app.base.BaseApplication): # type: ignore
+    class StandaloneGunicornApplication(gunicorn.app.base.BaseApplication):  # type: ignore
         # from <http://docs.gunicorn.org/en/stable/custom.html>
         def __init__(self, app: Any, opts: Any = None) -> None:
             self.application = app
@@ -35,7 +35,7 @@ def run_gunicorn(app: Any, args: Any) -> None:
         "accesslog": args.accesslog,
         "access_log_format": '%(t)s | %(s)s | %(L)ss | %(m)s %(U)s | resp_len:%(B)s | referrer:"%(f)s" | ip:%(h)s | agent:%(a)s',
         "loglevel": args.loglevel,
-        "timeout": 120,
+        "timeout": 300,
         "worker_class": "sync",
     }
     sga = StandaloneGunicornApplication(app, options)
