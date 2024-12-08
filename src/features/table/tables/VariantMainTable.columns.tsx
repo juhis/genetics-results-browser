@@ -45,7 +45,7 @@ export const getVariantMainTableColumns = (
       header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
       muiFilterTextFieldProps: { placeholder: "filter" },
-      sortingFn: "naInfSort",
+      sortingFn: "gnomadAFSort",
       sortDescFirst: false,
       size: 60,
     },

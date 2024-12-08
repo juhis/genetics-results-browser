@@ -422,7 +422,6 @@ export const filterRows = (
     }
     d.finemapped.data = d.finemapped.data.filter((a) => a.pip >= pip);
     d.assoc.groupedData = groupAssocPhenos(d.assoc.data, data.phenos);
-    console.log(d.assoc.groupedData);
     d.assoc.counts = countAssocPhenos(d.assoc.groupedData, data.meta.assoc.resources);
     d.finemapped.groupedData = groupFineMappedTraits(d.finemapped.data);
     d.finemapped.counts = countFineMappedTraits(
