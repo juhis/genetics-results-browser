@@ -46,16 +46,3 @@ export const naInfSort = (rowA: any, rowB: any, id: string) => {
   }
   return a - b;
 };
-
-export const gnomadAFSort = (rowA: any, rowB: any) => {
-  let a = rowA.original.gnomad[rowA.original.gnomad.preferred]?.AF;
-  let b = rowB.original.gnomad[rowB.original.gnomad.preferred]?.AF;
-  if (isNaN(a)) {
-    // NA to bottom
-    a = Number.POSITIVE_INFINITY;
-  }
-  if (Number.isNaN(b)) {
-    b = Number.POSITIVE_INFINITY;
-  }
-  return a - b;
-};

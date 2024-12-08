@@ -1,6 +1,6 @@
 import { Box, Divider, useTheme } from "@mui/material";
 import { MaterialReactTable, MRT_SortingState } from "material-react-table";
-import { naInfSort, gnomadAFSort, variantSort } from "../utils/sorting";
+import { naInfSort, variantSort } from "../utils/sorting";
 import VariantAssocTable from "./VariantAssocTable";
 import VariantFinemappedTable from "./VariantFinemappedTable";
 import { Phenotype, TableData, VariantRecord } from "../../../types/types";
@@ -153,7 +153,6 @@ const VariantMainTable = (props: {
       })}
       sortingFns={{
         naInfSort,
-        gnomadAFSort,
         variantSort,
       }}
       // would be great to have the global filter but

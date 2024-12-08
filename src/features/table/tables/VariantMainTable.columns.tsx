@@ -1,5 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { Phenotype, VariantRecord, TableData } from "../../../types/types";
+import { VariantRecord, TableData } from "../../../types/types";
 import {
   filterContainsWithTooltip,
   filterAbsGreaterThanHTML,
@@ -45,7 +45,24 @@ export const getVariantMainTableColumns = (
       header: `${selectedPopulation || "global"} AF`,
       filterFn: filterLessThanHTML,
       muiFilterTextFieldProps: { placeholder: "filter" },
-      sortingFn: "gnomadAFSort",
+      sortingFn: (rowA: any, rowB: any) => {
+        let a =
+          rowA.original.gnomad[rowA.original.gnomad.preferred]?.[
+            selectedPopulation !== undefined ? `AF_${selectedPopulation}` : "AF"
+          ];
+        let b =
+          rowB.original.gnomad[rowB.original.gnomad.preferred]?.[
+            selectedPopulation !== undefined ? `AF_${selectedPopulation}` : "AF"
+          ];
+        if (isNaN(a)) {
+          // NA to bottom
+          a = Number.POSITIVE_INFINITY;
+        }
+        if (Number.isNaN(b)) {
+          b = Number.POSITIVE_INFINITY;
+        }
+        return a - b;
+      },
       sortDescFirst: false,
       size: 60,
     },
