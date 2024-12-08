@@ -2,6 +2,48 @@
   "content": [
     {
       "type": "span",
+      "text": "Dec 8th 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Added Nightingale nuclear magnetic resonance (NMR) metaboQTL results"
+            }
+          ]
+        },
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Added FinnGen/MVP/UKBB meta-analysis results"
+            }
+          ]
+        },
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Added gene-based search that returns results for coding variants in the gene"
+            }
+          ]
+        },
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Fixed sorting by AF and number of phenotypes of the same name in association table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Oct 31st 2024:",
       "children": [
         {
@@ -9,7 +51,7 @@
           "children": [
             {
               "type": "li",
-              "text": "Fix: Open Target LD variants were counted in phenotype summary table, not anymore"
+              "text": "Fixed a bug where Open Target LD variants were included in phenotype summary table counts"
             }
           ]
         }
