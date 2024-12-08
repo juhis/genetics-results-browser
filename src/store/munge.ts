@@ -338,6 +338,9 @@ const changePlaceholderPhenostring = (
 };
 
 export const isQTLInCis = (variant: string, p: Phenotype, cisWindow: number) => {
+  if (p.data_type === DataType.METABOQTL) {
+    return false;
+  }
   const chr = variant.split("-")[0];
   if (
     !p.data_type.endsWith("QTL") ||
@@ -354,6 +357,9 @@ export const isQTLInCis = (variant: string, p: Phenotype, cisWindow: number) => 
 };
 
 export const isQTLInTrans = (variant: string, p: Phenotype, cisWindow: number) => {
+  if (p.data_type === DataType.METABOQTL) {
+    return false;
+  }
   const chr = variant.split("-")[0];
   if (
     !p.data_type.endsWith("QTL") ||
