@@ -2,6 +2,21 @@
   "content": [
     {
       "type": "span",
+      "text": "Dec 9th 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Fixed a bug where variants with only fine-mapping results and no association results crashed the page"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Dec 8th 2024:",
       "children": [
         {
