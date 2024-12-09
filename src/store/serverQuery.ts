@@ -34,6 +34,7 @@ export const useServerQuery = (
           }
         }
       }
+      data.data = data.data.filter((row) => row.assoc.data.length > 0);
       console.info(data);
       return data;
     },
