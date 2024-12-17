@@ -2,6 +2,30 @@
   "content": [
     {
       "type": "span",
+      "text": "Dec 17th 2024:",
+      "children": [
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "Added more informative dataset names for eQTL Catalogue in downloaded fine-mapping tables, e.g. \"GTEx:artery aorta:ge\" instead of \"QTD000131\""
+            }
+          ]
+        },
+        {
+          "type": "ul",
+          "children": [
+            {
+              "type": "li",
+              "text": "When variant input is a single rsid, it's not confused for a gene anymore"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "span",
       "text": "Dec 9th 2024:",
       "children": [
         {
