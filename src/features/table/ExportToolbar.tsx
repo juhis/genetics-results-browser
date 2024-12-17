@@ -57,6 +57,7 @@ const ExportButtons = (props: { table: MRT_TableInstance<VariantRecord> }) => {
           handleFineMappingTableExport(
             variantInput,
             clientData.phenos,
+            clientData.datasets,
             clientData.data.length,
             props.table,
             getVariantMainTableColumns(

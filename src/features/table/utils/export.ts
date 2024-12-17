@@ -143,6 +143,7 @@ export const handleMainTableExport = (
 export const handleFineMappingTableExport = (
   variantInput: string,
   phenoMap: PhenoMap,
+  datasetMap: DatasetMap,
   numVariants: number,
   table: MRT_TableInstance<VariantRecord>,
   mainTableColumns: MRT_ColumnDef<VariantRecord>[],
@@ -196,6 +197,12 @@ export const handleFineMappingTableExport = (
             p[hdr] = phenoMap[fm.resource + ":" + fm.phenocode].phenostring;
           } else if (hdr == "p-value") {
             p[hdr] = pValRepr(fm.mlog10p);
+          } else if (hdr == "dataset") {
+            const dataset = datasetMap[fm.dataset];
+            const datasetName = dataset
+              ? `${dataset.study_label}:${dataset.sample_group}:${dataset.quant_method}`
+              : fm.dataset;
+            p[hdr] = datasetName.replace(/_/g, " ");
           } else {
             const colId = c.id
               ? (c.id as keyof FineMappedRecord)
