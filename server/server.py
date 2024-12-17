@@ -193,7 +193,10 @@ def looks_like_a_gene(query: str) -> bool:
     try:
         _ = Variant(items[0])
     except ParseException:
-        return True
+        if not re.match(
+            r"^rs\d\d+", items[0]
+        ):  # not an rsid - apparently RS1 is the only gene that starts with rs
+            return True
     return False
 
 
